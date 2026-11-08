@@ -1,0 +1,1130 @@
+/* 盲派八字 — 宣纸赭墨 */
+
+:root{
+  --bg:#f2ede0; --bg2:#e8e1d0; --card:#fdfbf5; --line:#ddd4c0;
+  --ink:#2b2b28; --ink2:#5c5850; --ink3:#8b857a;
+  --indigo:#7a3b22; --indigo2:#a0522d; --indigo-soft:#f1e4da;
+  --cinnabar:#b8482e; --gold:#a8802a;
+  --ok:#3f7a4d; --warn:#b0741e;
+  --shadow:0 1px 3px rgba(60,50,30,.10), 0 6px 18px rgba(60,50,30,.06);
+  --radius:14px;
+  --tabh:60px;
+
+  /* 五行本色。⚠️ 金的白、水的黑在浅底上都不可读，按传统意象取变体：
+     金→暗金褐，水→玄（深蓝黑）。深色主题里再各自提亮。 */
+  --wx-mu:#2e7d5b;    /* 木 · 青 */
+  --wx-huo:#c0392b;   /* 火 · 赤 */
+  --wx-tu:#7a4a24;    /* 土 · 棕 */
+  --wx-jin:#a06d1f;   /* 金 · 金黄 */
+  --wx-shui:#1f4e79;  /* 水 · 玄 */
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#16191c; --bg2:#1b1f23; --card:#212629; --line:#333a3f;
+    --ink:#dfe3e6; --ink2:#a8b0b6; --ink3:#79838a;
+    --indigo:#e0976c; --indigo2:#eeb08a; --indigo-soft:#33231b;
+    --cinnabar:#e08066; --gold:#d0a54e;
+    --ok:#6fbe84; --warn:#d9a24e;
+    --wx-mu:#5fbf8f; --wx-huo:#e8705f; --wx-tu:#b07d54;
+    --wx-jin:#d9a94e; --wx-shui:#6fa8dc;
+    --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f2ede0; --bg2:#e8e1d0; --card:#fdfbf5; --line:#ddd4c0;
+  --ink:#2b2b28; --ink2:#5c5850; --ink3:#8b857a;
+  --indigo:#7a3b22; --indigo2:#a0522d; --indigo-soft:#f1e4da;
+  --cinnabar:#b8482e; --gold:#a8802a; --ok:#3f7a4d; --warn:#b0741e;
+  --shadow:0 1px 3px rgba(60,50,30,.10), 0 6px 18px rgba(60,50,30,.06);
+  --wx-mu:#2e7d5b; --wx-huo:#c0392b; --wx-tu:#7a4a24;
+  --wx-jin:#a06d1f; --wx-shui:#1f4e79;
+}
+:root[data-theme="dark"]{
+  --bg:#16191c; --bg2:#1b1f23; --card:#212629; --line:#333a3f;
+  --ink:#dfe3e6; --ink2:#a8b0b6; --ink3:#79838a;
+  --indigo:#e0976c; --indigo2:#eeb08a; --indigo-soft:#33231b;
+  --cinnabar:#e08066; --gold:#d0a54e; --ok:#6fbe84; --warn:#d9a24e;
+  --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
+  --wx-mu:#5fbf8f; --wx-huo:#e8705f; --wx-tu:#b07d54;
+  --wx-jin:#d9a94e; --wx-shui:#6fa8dc;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+}
+
+/* 每次整页进入都要重答；不写 localStorage，刷新也不会跳过。 */
+body.entry-locked{overflow:hidden}
+.entry-gate{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;
+  background:color-mix(in srgb,var(--bg) 94%,#18252d 6%)}
+.entry-gate[hidden]{display:none}
+.entry-gate.done{opacity:0;pointer-events:none;transition:opacity .28s ease}
+.entry-gate-card{width:min(100%,520px);max-height:calc(100dvh - 40px);overflow:auto;
+  padding:26px 20px 22px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:var(--shadow)}
+.entry-gate-kicker{text-align:center;color:var(--gold);font-size:12px;letter-spacing:3px}
+.entry-gate h2{margin:5px 0 4px;text-align:center;font:700 26px/1.35 "Songti SC","STSong",serif;color:var(--indigo)}
+.entry-gate-tip{margin:0 auto 18px;max-width:390px;text-align:center;color:var(--ink2);font-size:14px;line-height:1.65}
+.entry-gate-progress{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin:0 0 16px}
+.entry-gate-step{height:7px;border-radius:8px;background:var(--bg2);border:1px solid var(--line)}
+.entry-gate-step.on{background:var(--indigo);border-color:var(--indigo)}
+.entry-gate-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.entry-gate-option{min-height:52px;padding:10px 8px;border:1px solid var(--line);border-radius:12px;
+  background:var(--bg);color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;line-height:1.35;cursor:pointer}
+.entry-gate-option:active{transform:scale(.98)}
+.entry-gate-option.picked{border-color:var(--ok);background:color-mix(in srgb,var(--card) 72%,var(--ok) 28%);color:var(--ok)}
+.entry-gate-card.wrong{animation:entry-shake .3s ease}
+.entry-gate-card.wrong .entry-gate-msg{color:var(--cinnabar)}
+.entry-gate-msg{min-height:24px;margin:15px 0 0;text-align:center;color:var(--ink3);font-size:13px}
+@keyframes entry-shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+@media(max-width:360px){.entry-gate-options{gap:7px}.entry-gate-option{font-size:14px;padding:8px 5px}}
+
+/* ---------- 布局骨架 ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:10px;
+  height:50px; padding:0 12px;
+  background:color-mix(in srgb,var(--bg) 88%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px);
+  -webkit-backdrop-filter:saturate(1.6) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .back{
+  border:0;background:none;color:var(--indigo);font-size:16px;
+  padding:6px 4px;cursor:pointer;display:none;flex:0 0 auto
+}
+.topbar .back.show{display:block}
+.topbar h1{
+  flex:1 1 auto; margin:0; font-size:16px; font-weight:600; letter-spacing:.3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* ⭐ 2026-08-11 顶栏去 emoji（原 📌🔍◐）：三个宋体单字。
+   ⚠️ 主题那颗在「非跟随系统」时转靛青——这是真状态（你手动改过了），
+      不是装饰；别给另外两颗也加颜色，一排都亮就看不出哪个有状态了。 */
+.topbar .act{
+  border:0;background:none;color:var(--ink2);cursor:pointer;
+  font-family:"Songti SC","STSong","Noto Serif SC",serif;
+  font-size:16px;font-weight:500;padding:6px 7px;line-height:1
+}
+.topbar .act[data-set="1"]{color:var(--indigo)}
+
+main{padding:14px 14px calc(var(--tabh) + 26px)}
+.screen{display:none; animation:fade .18s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  height:var(--tabh); padding-bottom:env(safe-area-inset-bottom);
+  background:color-mix(in srgb,var(--bg) 94%, transparent);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+}
+/* ⭐ 2026-08-12 底栏改成色块＋字（效仿象义随身的 .bottom-nav）：
+   单字装在 30×30 的圆角块里，选中时块填靛青、字转白，块下面再压一行小标签。
+   上一版是一行纯宋体词——用户反馈「太低端」，已弃。
+   ⚠️ 别再给 button 加 letter-spacing：字装进定宽方块后，字距会把字顶偏，
+      不像上一版那样能靠 padding-left 补。 */
+.tabbar button{
+  border:0;background:none;cursor:pointer;color:var(--ink3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:color .18s
+}
+.tabbar button b{
+  width:30px;height:30px;line-height:30px;border-radius:9px;
+  font-family:"Kaiti SC","STKaiti","KaiTi","Songti SC",serif;
+  font-size:19px;font-weight:500;
+  transition:background .18s,color .18s
+}
+.tabbar button span{font-size:11px;letter-spacing:.5px}
+.tabbar button.on{color:var(--indigo)}
+.tabbar button.on b{background:var(--indigo);color:#fff}
+
+/* ---------- 通用件 ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;margin-bottom:12px;box-shadow:var(--shadow)
+}
+.card.tap{cursor:pointer;transition:transform .12s, box-shadow .12s}
+.card.tap:active{transform:scale(.985)}
+.muted{color:var(--ink3);font-size:13px}
+.row{display:flex;align-items:center;gap:10px}
+.spread{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.pill{
+  display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;
+  background:var(--indigo-soft);color:var(--indigo);border:1px solid transparent;white-space:nowrap
+}
+.pill.sel{background:var(--indigo);color:#fff}
+.pill.g{background:transparent;border-color:var(--line);color:var(--ink3)}
+.btn{
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  padding:9px 15px;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit
+}
+.btn.pri{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn:active{opacity:.8}
+.btn:disabled{opacity:.4}
+.hr{height:1px;background:var(--line);margin:14px 0;border:0}
+
+.hero{
+  background:linear-gradient(140deg,var(--indigo) 0%, #5a2b19 60%, #3b1c10 100%);
+  color:#f0e9d8;border-radius:18px;padding:20px 18px;margin-bottom:16px;
+  position:relative;overflow:hidden
+}
+.hero h2{margin:0 0 4px;font-size:22px;letter-spacing:2px;font-weight:600}
+.hero p{margin:0;font-size:13px;opacity:.85}
+.hero .stat{display:flex;gap:18px;margin-top:14px}
+.hero .stat b{display:block;font-size:19px;font-weight:600}
+.hero .stat span{font-size:11px;opacity:.75}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mode{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .12s
+}
+.mode:active{transform:scale(.97)}
+/* 首页三入口同样去掉 emoji：学／查／练三个字自己当标识，下面压一道细线。 */
+.mode b{
+  position:relative;display:block;
+  font-family:"Songti SC","STSong","Noto Serif SC",serif;
+  font-size:27px;font-weight:500;letter-spacing:.08em;color:var(--indigo);
+  padding-bottom:10px;margin-bottom:9px
+}
+.mode b::after{
+  content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:18px;height:1px;background:var(--line)
+}
+.mode span{font-size:11px;color:var(--ink3)}
+
+.bar{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--indigo);border-radius:3px;transition:width .3s}
+
+/* ---------- 正文排版（教材/笔记/题解） ---------- */
+/* 与六壬神课课程一致：手机 16px、宽屏 16.5px、行高 1.85。 v课与课堂笔记继承这里的字号，不再单独缩小正文。 */
+.doc{font-size:16px;line-height:1.85;color:var(--ink);word-break:break-word}
+@media(min-width:700px){.doc{font-size:16.5px}}
+.doc h1,.doc h2,.doc h3,.doc h4,.doc h5{
+  font-family:Georgia,"Songti SC","SimSun",serif; line-height:1.4; scroll-margin-top:60px
+}
+.doc h1{font-size:22px;margin:26px 0 12px;color:var(--indigo)}
+.doc h2{
+  font-size:19px;margin:26px 0 10px;padding-left:10px;
+  border-left:4px solid var(--indigo);color:var(--indigo)
+}
+.doc h3{font-size:17px;margin:20px 0 8px;color:var(--ink)}
+.doc h4,.doc h5{font-size:15.5px;margin:16px 0 6px;color:var(--ink2)}
+.doc p{margin:11px 0}
+.doc strong{font-weight:600;color:var(--ink)}
+.doc ul,.doc ol{padding-left:22px;margin:11px 0}
+.doc li{margin:5px 0}
+.doc hr{border:0;height:1px;background:var(--line);margin:22px 0}
+.doc a{color:var(--indigo2)}
+.doc a.wiki{
+  color:var(--indigo);text-decoration:none;
+  border-bottom:1px dashed var(--indigo);cursor:pointer
+}
+
+/* 原文引用——与我的重建必须一眼分开 */
+.doc blockquote{
+  margin:14px 0;padding:11px 14px;
+  background:var(--indigo-soft);border-left:3px solid var(--indigo);
+  border-radius:0 10px 10px 0;color:var(--ink2);font-size:15.5px
+}
+.doc blockquote p{margin:6px 0}
+.doc blockquote strong{color:var(--ink)}
+
+.doc code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;
+  background:var(--bg2);padding:1px 5px;border-radius:5px;color:var(--cinnabar)
+}
+/* 拆解里的推导流程图 */
+.doc pre{
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0
+}
+.doc pre code{
+  background:none;padding:0;color:var(--ink2);font-size:13px;line-height:1.65;
+  white-space:pre;display:block
+}
+/* 出处页码 */
+.doc .src{
+  font-size:12px;color:var(--gold);white-space:nowrap;
+  background:color-mix(in srgb,var(--gold) 12%, transparent);
+  padding:1px 7px;border-radius:5px
+}
+
+/* 正文里的四柱盘：同样吸顶，读到讲解时盘还在。
+   多个命例时后一个盘会自然接替前一个（同级 sticky 的默认行为）。 */
+.doc .ichart{
+  position:sticky; top:50px; z-index:40;
+  display:flex; align-items:center; gap:8px;
+  margin:14px -14px; padding:7px 14px;
+  background:color-mix(in srgb,var(--bg) 96%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px);
+  -webkit-backdrop-filter:saturate(1.6) blur(10px);
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+}
+.doc .ichart .lb{
+  font-size:11px; color:var(--ink2); font-weight:600;
+  writing-mode:vertical-rl; letter-spacing:1px; line-height:1; flex:0 0 auto
+}
+.doc .ichart .cols{display:flex; gap:6px; flex:0 0 auto}
+.doc .ichart .c{text-align:center; min-width:30px}
+.doc .ichart .c .p{font-size:9.5px; color:var(--ink3); line-height:1.2}
+.doc .ichart .c .a,.doc .ichart .c .b{
+  font-family:Georgia,"Songti SC",serif; font-size:19px; line-height:1.25; font-weight:600
+}
+.doc .ichart .c .a,.doc .ichart .c .b{display:block}
+
+/* 原文原话：原来靠「」标示，括号太多太吵，改用颜色区分。
+   ⚠️ <q> 会由浏览器自动补一对默认引号，只写 quotes:none 不保险，
+      必须把伪元素的 content 也清掉，否则等于把「」换成了 "" 白改一场。 */
+.doc q.yw{quotes:none; color:var(--indigo2); font-style:normal}
+.doc q.yw::before,.doc q.yw::after{content:none}
+.doc blockquote q.yw{color:inherit}      /* 引用块本身已有边界，不必再变色 */
+/* 强调短语：原来写作【劫财】，去掉括号只留底色 */
+.doc em.hl{
+  font-style:normal; font-weight:600;
+  background:color-mix(in srgb,var(--gold) 16%, transparent);
+  border-radius:4px; padding:0 3px;
+}
+/* 题号交叉引用：原来写作【21】，现在可点 */
+.doc a.qref{
+  color:var(--indigo); text-decoration:none; font-weight:600; cursor:pointer;
+  border-bottom:1px dashed var(--indigo); white-space:nowrap
+}
+
+/* 行内干支串（表格/列表里的，不提升成块级盘，只上五行色） */
+.gz-run{white-space:nowrap; font-family:Georgia,"Songti SC",serif; font-weight:600}
+.gz-run i{font-style:normal; color:var(--ink3); margin:0 3px; font-weight:400}
+.gz-run strong{font-weight:800; text-decoration:underline; text-underline-offset:3px}
+
+/* 五行本色（干支通用） */
+.w-mu{color:var(--wx-mu)}   .w-huo{color:var(--wx-huo)}  .w-tu{color:var(--wx-tu)}
+.w-jin{color:var(--wx-jin)} .w-shui{color:var(--wx-shui)}
+.doc .ichart .c.day{
+  background:var(--indigo-soft); border-radius:6px; box-shadow:0 0 0 1px var(--line)
+}
+/* 题库里由题头那条吸顶盘负责，正文的不再跟着粘，免得两条并存 */
+#s-quiz .doc .ichart{position:static; z-index:auto}
+
+.doc .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+/* ⚠️ 表格外面已由 mdlite 包了 .tw(overflow-x:auto)，但表格若 width:100%
+   就会被强制压进容器宽度——结果不是横向滚动，而是把窄列挤断行
+   （「（一）」被拆成两行，第8章制局十类整张表全中）。
+   改为 width:auto + min-width:100%：不足时撑满，超出时才滚动。 */
+.doc table{border-collapse:collapse;width:auto;min-width:100%;font-size:14.5px}
+.doc th,.doc td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+/* 短标签单元格(≤6字，由 mdlite 打 .nw)不换行；长文本单元格照常换行。
+   ⚠️ 试过 td{min-width:4.2em} 无效——table-layout:auto 下浏览器认为
+   「能换行就放得下」，仍会压缩。只有 nowrap 管用。 */
+.doc td.nw{white-space:nowrap}
+.doc th{background:var(--bg2);font-weight:600;white-space:nowrap}
+
+.doc details{
+  border:1px solid var(--line);border-radius:10px;padding:0 12px;margin:14px 0;
+  background:var(--bg2)
+}
+.doc details[open]{padding-bottom:8px}
+.doc details>summary{
+  cursor:pointer;padding:11px 0;font-weight:600;font-size:15px;color:var(--indigo);
+  list-style:none
+}
+.doc details>summary::-webkit-details-marker{display:none}
+.doc details>summary::before{content:"▸ ";transition:.2s;display:inline-block}
+.doc details[open]>summary::before{transform:rotate(90deg)}
+
+/* 教材一级标题折叠：内层的原文、提示卡、自测答案仍保持各自样式。 */
+.doc details.chapter-sec{margin:12px 0;padding:0;border:1px solid var(--line);
+  border-radius:11px;background:var(--card);overflow:clip}
+.doc details.chapter-sec[open]{padding-bottom:0}
+.doc details.chapter-sec>summary{display:flex;align-items:center;gap:8px;padding:0 13px;
+  list-style:none;background:var(--card)}
+.doc details.chapter-sec>summary::before{content:none;display:none}
+.doc details.chapter-sec>summary::after{content:"＋";flex:0 0 auto;color:var(--indigo);
+  font-size:19px;font-weight:400;line-height:1}
+.doc details.chapter-sec[open]>summary{border-bottom:1px solid var(--line);background:var(--bg2)}
+.doc details.chapter-sec[open]>summary::after{content:"－"}
+.doc details.chapter-sec>summary h2{flex:1;min-width:0;margin:0;padding:14px 0 14px 10px;
+  border-left:4px solid var(--indigo);font-size:18px}
+.chapter-sec-body{padding:1px 14px 14px}
+.chapter-sec-body>:first-child{margin-top:14px}
+
+/* ---------- 四柱盘 ---------- */
+.chart{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  margin:14px 0;text-align:center
+}
+.chart .col{
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:9px 2px
+}
+.chart .pos{font-size:11px;color:var(--ink3);margin-bottom:5px}
+.chart .g,.chart .z{
+  font-family:Georgia,"Songti SC",serif;font-size:24px;line-height:1.35;font-weight:600
+}
+.chart .g{color:var(--cinnabar)}
+.chart .z{color:var(--indigo)}
+.gender{
+  display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;
+  background:var(--bg2);color:var(--ink2);margin-bottom:2px
+}
+
+/* ---------- 吸顶四柱盘 ----------
+   讲解里满是「卯戌合」「日支巳」这类指代盘上具体字的话，盘一滚出视野
+   就得来回翻，所以把盘钉在顶栏下方，整页滚动全程可见。
+
+   ⚠️ 常驻显示，不做「滚过题头才淡入」那种开关。试过两版都不可靠：
+      IntersectionObserver 的回调在套壳 iframe 里时灵时不灵；
+      scroll 事件在 iframe 内编程滚动时压根不触发（实测 scrollEvt=0）。
+      而 position:sticky 本身一直是好的——所以干脆纯 CSS，不依赖任何事件。
+      题头因此不再单独画大盘，避免同一个盘出现两次。 */
+.sticky-chart{
+  position:sticky; top:50px; z-index:45;
+  margin:0 -14px 10px; padding:7px 14px;
+  background:color-mix(in srgb,var(--bg) 96%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px);
+  -webkit-backdrop-filter:saturate(1.6) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.sticky-chart:empty,.sticky-chart.hide{display:none}
+.sticky-chart .inner{display:flex; gap:16px; overflow-x:auto; -webkit-overflow-scrolling:touch}
+.sticky-chart .grp{display:flex; align-items:center; gap:7px; flex:0 0 auto}
+.sticky-chart .lb{
+  font-size:11px; color:var(--ink2); font-weight:600;
+  writing-mode:vertical-rl; letter-spacing:1px; line-height:1
+}
+.sticky-chart .cols{display:flex; gap:6px}
+.sticky-chart .c{text-align:center; min-width:30px}
+.sticky-chart .c .p{font-size:9.5px; color:var(--ink3); line-height:1.2}
+.sticky-chart .c .a,.sticky-chart .c .b{
+  font-family:Georgia,"Songti SC",serif; font-size:19px; line-height:1.25; font-weight:600
+}
+.sticky-chart .c .a,.sticky-chart .c .b{display:block}
+/* 日柱标出来——断命一切从日主起 */
+.sticky-chart .c.day{
+  background:var(--indigo-soft); border-radius:6px; box-shadow:0 0 0 1px var(--line)
+}
+
+/* ---------- 题目 ---------- */
+.qhead{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.qhead .no{
+  font-family:Georgia,serif;font-size:13px;color:#fff;background:var(--indigo);
+  border-radius:6px;padding:1px 8px;flex:0 0 auto
+}
+.qhead .tt{font-size:16.5px;font-weight:600;line-height:1.5}
+.layer{margin-top:12px}
+.layer>.btn{width:100%}
+.reveal{
+  margin-top:10px;padding:12px 14px;border-radius:12px;
+  background:var(--bg2);border:1px solid var(--line);
+  animation:fade .2s
+}
+.reveal.chai{border-left:3px solid var(--gold)}
+
+.qrow{
+  display:flex;align-items:center;gap:10px;padding:11px 12px;
+  border-bottom:1px solid var(--line);cursor:pointer
+}
+.qrow:last-child{border-bottom:0}
+.qrow .n{
+  font-family:Georgia,serif;font-size:12.5px;color:var(--ink3);
+  flex:0 0 34px;text-align:right
+}
+.qrow .t{flex:1;font-size:14.5px;line-height:1.5}
+.qrow .s{flex:0 0 auto;font-size:11px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot.ok{background:var(--indigo)} .dot.new{background:var(--line)}
+
+/* ---------- 搜索 ---------- */
+.searchbar{
+  display:flex;gap:8px;margin-bottom:12px;position:sticky;top:50px;z-index:40;
+  background:var(--bg);padding:8px 0
+}
+.searchbar input{
+  flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:10px 13px;font-size:15px;font-family:inherit;outline:none
+}
+.searchbar input:focus{border-color:var(--indigo)}
+.hit{padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.hit b{color:var(--indigo);font-size:14.5px}
+.hit p{margin:4px 0 0;font-size:13px;color:var(--ink2);line-height:1.6}
+.hit em{background:color-mix(in srgb,var(--gold) 28%, transparent);font-style:normal;border-radius:3px}
+
+.toc{max-height:44vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.toc a{
+  display:block;padding:7px 0;color:var(--ink2);text-decoration:none;
+  font-size:14px;border-bottom:1px solid var(--line)
+}
+.toc a.l3{padding-left:16px;font-size:13px;color:var(--ink3)}
+
+.empty{text-align:center;color:var(--ink3);padding:44px 20px;font-size:14px}
+.fab{
+  position:fixed;right:14px;bottom:calc(var(--tabh) + 18px);z-index:55;
+  width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--indigo);color:#fff;font-size:19px;box-shadow:var(--shadow)
+}
+.sheet{
+  position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.4);
+  display:none;align-items:flex-end
+}
+.sheet.on{display:flex}
+.sheet .inner{
+  background:var(--bg);width:100%;border-radius:18px 18px 0 0;padding:16px;
+  max-height:80vh;overflow:auto;-webkit-overflow-scrolling:touch;
+  animation:up .22s cubic-bezier(.2,.8,.3,1)
+}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+
+/* ---------- 搜索命中定位 ----------
+   颜色全走已有变量，四套主题块（bare / prefers-dark / [data-theme]）
+   都已定义过它们，这里不再重复声明，免得漏一处退回默认色。 */
+mark.sr-kw{
+  background:color-mix(in srgb,var(--gold) 38%, transparent);
+  color:inherit;border-radius:3px;padding:0 1px;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 55%, transparent);
+  animation:hitin 1.6s ease-out
+}
+/* 关键词被行内标签劈开时套不上 mark，退化成整段闪一下 */
+.sr-blk{
+  background:color-mix(in srgb,var(--gold) 14%, transparent);
+  border-radius:6px;box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 14%, transparent);
+  animation:hitin 1.6s ease-out
+}
+@keyframes hitin{
+  0%{background:color-mix(in srgb,var(--gold) 70%, transparent)}
+  100%{}
+}
+
+/* ---------- 底部提示条 ---------- */
+.toast{
+  position:fixed;left:12px;right:12px;bottom:calc(58px + env(safe-area-inset-bottom));
+  z-index:60;display:none;align-items:center;gap:10px;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;font-size:13px;color:var(--ink2);
+  box-shadow:0 6px 20px rgba(0,0,0,.14)
+}
+.toast.on{display:flex;animation:fade .2s ease-out}
+.toast span{flex:1;line-height:1.5}
+.toast button{
+  flex:0 0 auto;border:0;background:var(--indigo-soft);color:var(--indigo);
+  font-size:12.5px;padding:6px 11px;border-radius:8px;cursor:pointer
+}
+html.wst-frame-guard .toast{bottom:calc(58px + 12px)}
+
+/* ============ 我的笔记 ============ */
+/* 选中正文后浮出的按钮。定位用 fixed + 选区 rect，滚动即收起。 */
+.selbtn{
+  position:fixed;z-index:70;display:none;
+  padding:8px 13px;border-radius:9px;border:0;
+  background:var(--indigo);color:#fff;font-size:13px;font-family:inherit;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap
+}
+.selbtn.on{display:block;animation:fade .14s ease-out}
+
+.mncard{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px 13px;margin-bottom:10px
+}
+.mnfrom{
+  font-size:11.5px;color:var(--gold);font-weight:600;
+  display:flex;justify-content:space-between;margin-bottom:7px
+}
+.mnfrom span{color:var(--ink3);font-weight:400}
+/* 划下来的原句：左侧一道竖线，与自己的批注区分开 */
+.mntext{
+  font-size:14.5px;line-height:1.75;color:var(--ink);
+  border-left:2px solid var(--indigo);padding-left:10px;cursor:pointer
+}
+.mnmemo{
+  margin-top:8px;font-size:13px;line-height:1.7;color:var(--ink2);
+  background:color-mix(in srgb,var(--gold) 9%, transparent);
+  border-radius:8px;padding:8px 10px;cursor:pointer
+}
+.mnmemo::before{content:"批注　";color:var(--gold);font-size:11.5px}
+.mnact{display:flex;gap:8px;margin-top:10px}
+.mnact button{
+  border:1px solid var(--line);background:transparent;color:var(--ink2);
+  font-size:12px;font-family:inherit;padding:5px 10px;border-radius:7px;cursor:pointer
+}
+.mnact button.del{color:var(--cinnabar);border-color:transparent;margin-left:auto}
+
+/* ── 题库主题分组（334 题平铺一屏找不着，按主题折叠） ── */
+.qgrp{border-bottom:1px solid var(--line)}
+.qgrp:last-child{border-bottom:0}
+.qgh{all:unset;cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;
+  padding:12px 14px;box-sizing:border-box}
+.qgh:hover{background:var(--bg2)}
+.qgh:focus-visible{outline:2px solid var(--indigo);outline-offset:-2px}
+.qgh .ar{flex:0 0 auto;font-size:13px;color:var(--ink3);transition:transform .18s;display:inline-block}
+.qgrp.open .qgh .ar{transform:rotate(90deg)}
+.qgh .nm{flex:1;font-size:14.5px;font-weight:600;min-width:0}
+.qgrp.open .qgh .nm{color:var(--indigo)}
+.qgh .ct{flex:0 0 auto;font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.qgb{display:none}
+.qgrp.open .qgb{display:block}
+.qgb .qrow{padding-left:30px}
+@media (prefers-reduced-motion:reduce){.qgh .ar{transition:none}}
+
+/* 命例列表的连续序号（1…375，按组顺序排）——定宽右对齐，标题才不会参差 */
+.qrow .qn{flex:0 0 auto;min-width:2.4em;text-align:right;margin-right:8px;
+  font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+
+/* ===== 断命台：断盘时边看边勾，所以要「一眼扫得完」＋「点得准」 ===== */
+.desk-entry{border:1px solid var(--indigo);background:linear-gradient(180deg,rgba(99,102,241,.07),transparent)}
+.dstep{margin:14px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dstep>.dhd{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--card);cursor:pointer}
+.dstep .dno{flex:none;min-width:26px;height:26px;line-height:26px;text-align:center;border-radius:8px;
+  background:var(--indigo);color:#fff;font-size:13px;font-weight:700}
+.dstep .dti{flex:1;font-size:15px;font-weight:700}
+.dstep .dct{flex:none;font-size:12px;color:var(--ink3)}
+.dstep.done .dno{background:#16a34a}
+.dstep .dask{padding:9px 13px 2px;font-size:13px;color:var(--ink2);line-height:1.7}
+.dstep ul{list-style:none;margin:0;padding:6px 13px 12px}
+.dstep li{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:14px;line-height:1.75;
+  border-top:1px dashed var(--line)}
+.dstep li:first-child{border-top:0}
+.dstep li.red{background:linear-gradient(90deg,rgba(220,38,38,.09),transparent);
+  margin:0 -13px;padding:7px 13px;border-left:3px solid #dc2626}
+.dbox{flex:none;width:20px;height:20px;margin-top:2px;border:2px solid var(--ink3);border-radius:6px;
+  cursor:pointer;position:relative}
+.dbox.on{background:var(--indigo);border-color:var(--indigo)}
+.dbox.on::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+li.red .dbox.on{background:#dc2626;border-color:#dc2626}
+.dtxt{flex:1;cursor:pointer}
+.dbar{display:flex;gap:8px;align-items:center;margin:4px 0 10px}
+.dbar input{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:9px;
+  background:var(--bg2);color:var(--ink);font-size:14px}
+.dwarn{margin:12px 0;padding:11px 13px;border-radius:11px;border:1px solid #dc2626;
+  background:rgba(220,38,38,.07);font-size:13.5px;line-height:1.85}
+
+/* ===== 断命台 · 录盘：点格子选字（照象义随身的做法），盘吸顶 ===== */
+.dpan{position:sticky; top:50px; z-index:44;
+  margin:0 -14px 10px; padding:7px 14px 8px;
+  background:color-mix(in srgb,var(--bg) 96%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px); -webkit-backdrop-filter:saturate(1.6) blur(10px);
+  border-bottom:1px solid var(--line)}
+.dpan .prow{display:flex; align-items:center; gap:8px}
+.dpan .sex{flex:0 0 auto; width:26px; height:26px; line-height:24px; text-align:center;
+  border:1px solid var(--line); border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;
+  background:var(--bg2); color:var(--ink2)}
+.dpan .cols{display:flex; gap:6px; flex:1 1 auto; min-width:0}
+.dpan .col{flex:1 1 0; min-width:0; text-align:center}
+.dpan .col .p{font-size:9.5px; color:var(--ink3); line-height:1.3}
+.dpan .cell{display:block; width:100%; padding:2px 0; margin-top:1px; font-size:17px; font-weight:600;
+  border:1px dashed var(--line); border-radius:7px; background:transparent; color:var(--ink);
+  cursor:pointer; line-height:1.5; font-family:inherit}
+.dpan .cell.set{border-style:solid}
+.dpan .cell.on{border-color:var(--indigo); background:color-mix(in srgb,var(--indigo) 14%, transparent)}
+.dpan .cell.em{color:var(--ink3); font-weight:400}
+.dpan .col.day .p{color:var(--indigo); font-weight:700}
+.dpan .col.day .cell.set{border-color:var(--indigo)}
+.dpan .mini{margin-top:5px; display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink3)}
+.dpick{position:fixed; left:0; right:0; z-index:60; padding:10px 14px 12px;
+  background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow)}
+.dpick .ph{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink2); margin-bottom:8px}
+.dpick .ph b{color:var(--ink)}
+.dpick .ph .x{margin-left:auto; cursor:pointer; color:var(--ink3); font-size:16px; padding:0 4px}
+.dpick .grid{display:grid; gap:6px}
+.dpick .grid.g5{grid-template-columns:repeat(5,1fr)}
+.dpick .grid.g6{grid-template-columns:repeat(6,1fr)}
+.dpick .grid button{padding:9px 0; font-size:17px; border:1px solid var(--line); border-radius:9px;
+  background:var(--bg2); color:var(--ink); cursor:pointer; font-family:inherit}
+.dpick .grid button.on{background:var(--indigo); border-color:var(--indigo); color:#fff}
+.dpick .grid button.dim{opacity:.38}
+/* ⚠️ .dpan .cell / .dpick .grid button 自带 color:var(--ink)，选择器比单独的 .w-* 更具体，
+   不显式写这两条，加了 w-mu 也照样是白字（2026-09-01 截图才发现，肉眼盯代码看不出来）。 */
+.dpan .cell.w-mu,   .dpick .grid button.w-mu  {color:var(--wx-mu)}
+.dpan .cell.w-huo,  .dpick .grid button.w-huo {color:var(--wx-huo)}
+.dpan .cell.w-tu,   .dpick .grid button.w-tu  {color:var(--wx-tu)}
+.dpan .cell.w-jin,  .dpick .grid button.w-jin {color:var(--wx-jin)}
+.dpan .cell.w-shui, .dpick .grid button.w-shui{color:var(--wx-shui)}
+.dpick .grid button.on{color:#fff}   /* 选中态是靛蓝底，白字压过五行色 */
+.dpick .clr{margin-top:8px; width:100%; padding:8px; font-size:13px; border:1px solid var(--line);
+  border-radius:9px; background:transparent; color:var(--ink2); cursor:pointer; font-family:inherit}
+
+/* ===== v课笔记 · 听课原文 =====
+ * 源是流水稿（一讲接一讲、盘与讲解混排），所以：
+ *   列表＝卷折叠 + 讲行；阅读页＝盘吸顶 + 正文。
+ * ⚠️ 一讲常有两三个盘，吸顶条里全部放进去、横向可滑，
+ *    正文滚到哪一段就高亮对应那个（见 app.js vkeStartSpy）。
+ */
+.vvol .vlist{display:none; margin-top:10px; border-top:1px solid var(--line); padding-top:6px}
+.vvol.open .vlist{display:block}
+.vvol .vcar{color:var(--ink3); font-size:13px}
+.vrow{display:flex; align-items:baseline; gap:9px; padding:9px 2px;
+  border-bottom:1px solid color-mix(in srgb,var(--line) 55%, transparent)}
+.vrow:last-child{border-bottom:0}
+.vrow .vn{flex:0 0 auto; min-width:52px; font-size:12.5px; font-weight:700; color:var(--indigo)}
+.vrow .vs{flex:1 1 auto; min-width:0; font-size:13.5px; color:var(--ink2); line-height:1.6;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vrow .vq{flex:0 0 auto; font-size:11px; padding:1px 7px; border-radius:999px;
+  background:color-mix(in srgb,var(--indigo) 13%, transparent); color:var(--indigo)}
+.vrow .vc{flex:0 0 auto; font-size:11px; padding:1px 6px; border-radius:999px;
+  background:color-mix(in srgb,var(--ink3) 14%, transparent); color:var(--ink3)}
+.vrow .vn{text-align:right}
+
+/* 课号对照：回查原始材料时才展开 */
+.vsrc{margin-top:10px; padding-top:9px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--ink3); cursor:pointer}
+.vsrcbox{display:none; margin-top:8px}
+.vsrcbox.open{display:block}
+.vsrcit{display:inline-block; margin:0 9px 4px 0; white-space:nowrap}
+.vsrcit i{font-style:normal; opacity:.45; margin:0 2px}
+
+/* 命例分组：一个盘和它的分析包在一块，不会再被切开看 */
+.vseg{margin:16px 0; padding:12px 13px 4px; border:1px solid var(--line); border-radius:13px;
+  background:color-mix(in srgb,var(--bg2) 55%, transparent)}
+.vseg.plain{border:0; background:transparent; padding:0; margin:12px 0}
+.vsegh{font-size:11.5px; font-weight:700; color:var(--indigo); letter-spacing:.5px; margin-bottom:2px}
+.vseg .vchart{margin:6px 0 10px}
+
+/* 阅读页的盘（正文里 + 吸顶条里共用一套样式） */
+.vchart{display:inline-flex; align-items:center; gap:8px; vertical-align:top;
+  padding:7px 10px; margin:12px 8px 12px 0; border:1px solid var(--line); border-radius:11px;
+  background:var(--bg2)}
+.vchart .lb{flex:0 0 auto; font-size:11.5px; color:var(--ink3); writing-mode:vertical-rl; letter-spacing:2px}
+.vchart .cols{display:flex; gap:7px}
+.vchart .c{text-align:center; min-width:22px}
+/* 「年月日时」那一行已经去掉（四柱顺序本来就固定，日柱靠「日主」认）*/
+.vchart .a,.vchart .b{display:block; font-size:17px; font-weight:600; line-height:1.45}
+.vchart .note{flex:0 0 auto; max-width:9em; font-size:11.5px; color:var(--ink3); line-height:1.5}
+.vluck{display:flex; align-items:center; gap:8px; margin:10px 0; padding:6px 10px;
+  border:1px dashed var(--line); border-radius:10px}
+.vluck .lb{font-size:11.5px; color:var(--ink3)}
+.vluck .cols{display:flex; gap:9px}
+.vluck .c{text-align:center}
+.vluck .a,.vluck .b{display:block; font-size:14.5px; line-height:1.4}
+
+/* 吸顶条。
+   ⚠️ 用 fixed 不用 sticky：sticky 一旦粘住就会**盖住正文一行**
+   （它的原位置已滚出顶部，脱流后压在内容上）。fixed + 给正文补等高的
+   padding-top，内容位置才稳定。 */
+.vpan{position:fixed; top:50px; left:0; right:0; z-index:44; padding:5px 14px 6px;
+  background:color-mix(in srgb,var(--bg) 96%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px); -webkit-backdrop-filter:saturate(1.6) blur(10px);
+  border-bottom:1px solid var(--line)}
+.vpan.hide{display:none}
+/* 正文里那个盘还看得见时，吸顶条收起来——同一个盘不要上下各来一份 */
+.vpan{transition:opacity .16s, transform .16s}
+.vpan.off{opacity:0; pointer-events:none; transform:translateY(-8px)}
+.vpanin{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none}
+.vpanin::-webkit-scrollbar{display:none}
+/* 一组＝盘＋（大运）。整组一起淡出/点亮；组宽不超过屏宽，大运在组内自己横滑 */
+.vpg{display:flex; align-items:stretch; gap:6px; flex:0 0 auto; max-width:calc(100vw - 28px);
+  opacity:.34; transition:opacity .18s}
+.vpg.on{opacity:1}
+.vpan .vchart{margin:0; flex:0 0 auto}
+.vpan .vchart.on{border-color:var(--indigo)}
+.vpluck{display:flex; align-items:center; gap:7px; min-width:0; flex:0 1 auto;
+  padding:7px 9px; border:1px dashed var(--line); border-radius:11px; background:var(--bg2);
+  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none}
+.vpluck::-webkit-scrollbar{display:none}
+.vpluck .lb{flex:0 0 auto; font-size:11.5px; color:var(--ink3); writing-mode:vertical-rl; letter-spacing:2px}
+.vpluck .cols{display:flex; gap:7px}
+.vpluck .c{text-align:center; min-width:22px; flex:0 0 auto}
+.vpluck .a,.vpluck .b{display:block; font-size:17px; font-weight:600; line-height:1.45}
+.vpluck .ss{display:block; font-family:system-ui,-apple-system,sans-serif; font-size:9px; line-height:1.35;
+  color:var(--ink3); letter-spacing:-.2px; white-space:nowrap; min-height:12px}
+
+/* 正文 */
+.vbody .vh{margin:18px 0 6px; font-size:14px; font-weight:700; color:var(--indigo)}
+.vbody .vp{margin:7px 0; font-size:inherit; line-height:1.85; color:var(--ink)}
+.vbody .vp.star{padding-left:11px; border-left:2px solid color-mix(in srgb,var(--indigo) 45%, transparent)}
+.vqs{margin-bottom:12px}
+
+
+/* ---------- 讲解手册模式（教材 16 章） ----------
+   痛点是"从上看到下一个样，看得头晕"。所以只做一件事：把层级做出落差。
+   一级节＝带序号的深色块 + 上方分隔；二级节＝序号在左、标题在右；
+   重点/必背/注意/存疑做成小 pill；存疑那一节连正文一起缩成小字灰。 */
+.doc h2.mh{
+  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+  font-size:19.5px;margin:34px 0 14px;padding:0 0 9px;
+  border-left:0;border-bottom:2px solid var(--indigo);color:var(--indigo)
+}
+.doc h2.mh:first-child{margin-top:8px}
+.doc h3.mh{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  font-size:17px;margin:24px 0 9px;color:var(--ink)
+}
+.doc h4.mh{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.mhn{
+  flex:none;font-family:Georgia,serif;font-weight:700;font-size:13.5px;
+  color:#fff;background:var(--indigo);border-radius:7px;
+  padding:2px 8px;letter-spacing:.3px;position:relative;top:-1px
+}
+.doc h3.mh .mhn,.doc h4.mh .mhn{
+  background:none;color:var(--indigo2);padding:0;font-size:15px;
+  min-width:30px;text-align:right;top:0
+}
+.mht{flex:1 1 auto;min-width:0}
+/* 注意节：序号换成警示色，标题旁淡黄底 */
+.doc h3.mhw .mhn,.doc h4.mhw .mhn{color:var(--warn)}
+.doc h2.mhw{border-bottom-color:var(--warn);color:var(--warn)}
+.doc h2.mhw .mhn{background:var(--warn)}
+
+.mhb{
+  flex:none;font-family:system-ui,-apple-system,sans-serif;
+  font-size:11px;font-weight:600;line-height:1.6;letter-spacing:.5px;
+  padding:1px 7px;border-radius:6px;position:relative;top:-2px;
+  color:var(--indigo);background:var(--indigo-soft);
+  border:1px solid color-mix(in srgb,var(--indigo) 30%,transparent)
+}
+.mhb2{color:#fff;background:var(--cinnabar);border-color:var(--cinnabar)}
+.mhbw{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);
+      border-color:color-mix(in srgb,var(--warn) 35%,transparent)}
+.mhbm{color:var(--ink3);background:transparent;border-color:var(--line)}
+/* 出处/提示小字，跟在标题下面 */
+.mhnote{
+  font-size:12.5px;color:var(--ink3);margin:-6px 0 10px;
+  padding-left:2px;font-family:system-ui,-apple-system,sans-serif
+}
+/* 存疑·待查那一节：留着，但缩到次要位置 */
+.minorbody{
+  font-size:14px;line-height:1.75;color:var(--ink3);
+  margin:8px 0 18px;padding:2px 0 2px 12px;
+  border-left:2px dotted var(--line)
+}
+.minorbody p{margin:7px 0}
+.minorbody strong{color:var(--ink2);font-weight:600}
+.minorbody blockquote{font-size:13.5px;padding:8px 11px}
+.minorbody table{font-size:13px}
+
+/* 本章地图 */
+.cmap{
+  margin:14px 0 26px;padding:13px 15px;border-radius:12px;
+  background:var(--bg2);border:1px solid var(--line)
+}
+.cmaph{
+  font-family:Georgia,"Songti SC",serif;font-size:14px;font-weight:700;
+  color:var(--indigo);letter-spacing:1px;margin-bottom:5px
+}
+.cmapn{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.cmapn b{color:var(--cinnabar)}
+.cmapr{display:flex;gap:8px;margin-top:9px;align-items:flex-start}
+.cmapl{
+  flex:none;font-size:11px;font-weight:600;color:var(--ink3);
+  padding-top:4px;min-width:26px
+}
+.cmapr>div{display:flex;flex-wrap:wrap;gap:6px}
+.mapit{
+  font:inherit;font-size:12.5px;line-height:1.5;cursor:pointer;
+  padding:3px 9px;border-radius:14px;text-align:left;
+  background:var(--card);color:var(--ink2);border:1px solid var(--line)
+}
+.mapit:active{transform:scale(.97)}
+.mapmust{color:var(--cinnabar);border-color:color-mix(in srgb,var(--cinnabar) 35%,transparent)}
+.mapkey{color:var(--indigo);border-color:color-mix(in srgb,var(--indigo) 28%,transparent)}
+.cmapmore{font-size:11.5px;color:var(--ink3);align-self:center;padding-left:2px}
+
+/* 正文里的提示框：⚠️＝提醒，⭐＝要点。标记符号本身缩小让位给文字 */
+.doc .tip{
+  margin:13px 0;padding:9px 13px;border-radius:0 10px 10px 0;
+  border-left:3px solid var(--line);background:var(--bg2)
+}
+.doc .tip p{margin:4px 0;font-size:15.5px}
+.doc .tipw{border-left-color:var(--warn);
+  background:color-mix(in srgb,var(--warn) 8%,var(--card))}
+.doc .tipw2{border-left-color:var(--cinnabar);border-left-width:4px;
+  background:color-mix(in srgb,var(--cinnabar) 9%,var(--card))}
+.doc .tips{border-left-color:var(--indigo);background:var(--indigo-soft)}
+.doc .tips2{border-left-color:var(--gold);border-left-width:4px;
+  background:color-mix(in srgb,var(--gold) 11%,var(--card))}
+.doc .tip .mkw,.doc .tip .mks{font-size:12px;opacity:.85}
+/* 小字节里的提示框跟着降级，别在次要区里又抢眼 */
+.minorbody .tip{margin:8px 0;padding:6px 10px;background:transparent}
+.minorbody .tip p{font-size:13.5px}
+/* 待查／存疑的段落：留着，但降到次要——跟 .minorbody 一个待遇 */
+.doc .tipq{
+  border-left:2px dotted var(--line);background:transparent;
+  border-radius:0;padding:4px 0 4px 11px;margin:11px 0
+}
+.doc .tipq p{font-size:13.5px;line-height:1.75;color:var(--ink3)}
+.doc .tipq strong{color:var(--ink2);font-weight:600}
+
+/* ⚠️ 深色主题里 --indigo / --cinnabar 都是**亮色**（为了在深底上看得清），
+   白字压上去反而糊（实测对比度 2.4 / 2.8，远低于 4.5）。这两个填色小块
+   在深色下改用深色字。 */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .mhn,
+  :root:not([data-theme="light"]) .mhb2{ color:#14181b }
+}
+:root[data-theme="dark"] .mhn,
+:root[data-theme="dark"] .mhb2{ color:#14181b }
+
+}
+
+/* ---------- 课末尾补的盘 ----------
+   用户：「这里就是 v课原本的讲解加上命盘就行，讲解我会在题库里学」。
+   所以只摆盘，不搬题目的断／解／拆解。 */
+.vqbox{
+  margin:22px 0 0;padding:13px 14px;
+  background:var(--bg2);border:1px solid var(--line);border-radius:14px
+}
+.vqtt{
+  font-family:Georgia,"Songti SC",serif;font-size:13.5px;font-weight:700;
+  color:var(--indigo);letter-spacing:.8px;margin-bottom:10px
+}
+.vqpans{display:flex;flex-wrap:wrap;gap:10px}
+.vqpan{position:relative;flex:0 0 auto}
+.vqpan .vchart{margin:0}
+.vqsq{
+  display:block;text-align:center;margin-top:3px;
+  font-size:11px;color:var(--ink3);letter-spacing:.3px
+}
+.vqwhy{
+  font-family:system-ui,-apple-system,sans-serif;font-size:11.5px;
+  font-weight:400;color:var(--ink3);letter-spacing:0;margin-left:8px
+}
+
+/* 盘上的十神（天地阴阳诀定的，见 app.js 的 shiShen）*/
+.vchart .ss{
+  display:block;font-family:system-ui,-apple-system,sans-serif;
+  font-size:10px;line-height:1.5;color:var(--ink3);
+  letter-spacing:-.2px;white-space:nowrap;margin-top:1px
+}
+.vchart .ss.me{color:var(--cinnabar);font-weight:600}
+/* 吸顶条里再压一档，免得顶掉太多正文 */
+.vpanin .vchart .ss{font-size:9px;line-height:1.35}
+.vluck .ss{
+  display:block;font-family:system-ui,-apple-system,sans-serif;
+  font-size:9.5px;line-height:1.45;color:var(--ink3);
+  letter-spacing:-.3px;white-space:nowrap
+}
+
+/* ---------- 笔记里的 callout（`> [!question] …`）----------
+   以前这套 Obsidian 语法没实现，「[!question]」就裸印在页面上。
+   问＝提问，结论＝答案，两者一眼分开，笔记才读得下去。 */
+.doc .cal{
+  margin:14px 0;padding:11px 14px 4px;
+  border-radius:0 12px 12px 0;border-left:3px solid var(--line);
+  background:var(--bg2)
+}
+.doc .calh{
+  font-family:Georgia,"Songti SC",serif;font-size:13px;font-weight:700;
+  letter-spacing:.6px;color:var(--ink3);margin-bottom:4px
+}
+.doc .cal p{margin:7px 0}
+.doc .cal>:last-child{margin-bottom:8px}
+/* 我的提问 */
+.doc .cal-q{border-left-color:var(--ink3);background:transparent;
+  border:1px solid var(--line);border-left:3px solid var(--ink3);border-radius:12px}
+/* ⚠️ 标签别用 --ink3：浅底上只有 3.1。「我的问题 / 结论」是区分这两块的
+   唯一文字标识，看不清就分不出哪块是问、哪块是答。 */
+.doc .cal-q .calh{color:var(--ink2)}
+/* 结论——最该先看到的那块 */
+.doc .cal-tip{border-left-color:var(--indigo);background:var(--indigo-soft)}
+.doc .cal-tip .calh{color:var(--indigo)}
+.doc .cal-warn{border-left-color:var(--warn);
+  background:color-mix(in srgb,var(--warn) 9%,var(--card))}
+.doc .cal-warn .calh{color:var(--warn)}
+.doc .cal-note{border-left-color:var(--line)}
+
+/* 自测的答案：默认收起。摊在题目底下，自测就白做了 */
+.doc details.ans{
+  margin:16px 0;padding:0;border:1px solid var(--line);
+  border-radius:12px;background:var(--bg2);overflow:hidden
+}
+.doc details.ans>summary{
+  /* ⚠️ display:block 才真能去掉默认三角——新版 Chrome 用 ::marker，
+     光靠 list-style:none 和 -webkit-details-marker 管不住，会多出一个箭头。 */
+  display:block;cursor:pointer;list-style:none;padding:11px 15px;
+  font-family:Georgia,"Songti SC",serif;font-size:14px;font-weight:700;
+  color:var(--indigo);letter-spacing:.5px
+}
+.doc details.ans>summary::-webkit-details-marker{display:none}
+.doc details.ans>summary::marker{content:''}
+.doc details.ans>summary::after{content:' ▸';color:var(--ink3);font-weight:400}
+.doc details.ans[open]>summary::after{content:' ▾'}
+.doc details.ans[open]>summary{border-bottom:1px solid var(--line)}
+.doc details.ans>*:not(summary){margin-left:15px;margin-right:15px}
+.doc details.ans>*:last-child{margin-bottom:12px}
+
+/* ===== 课堂笔记 · 中级班讲义（挂在 v课笔记 列表最下面，与 v课 共用阅读页与吸顶条）===== */
+.ktintro{font-size:12.5px; line-height:1.8; margin:2px 0 6px}
+.ktpart{margin:14px 0 2px; font-family:Georgia,"Songti SC",serif; font-size:13px; font-weight:700;
+  color:var(--indigo); letter-spacing:1px}
+.kthead{margin:4px 0 6px; padding-bottom:10px; border-bottom:1px solid var(--line)}
+.ktkick{font-size:12px; color:var(--ink3); letter-spacing:.5px}
+.doc h1.ktt{margin:4px 0 0; font-size:21px}
+/* 讲义页码：右侧灰色小标，对照原书用，不抢眼 */
+.ktpg{display:block; width:max-content; margin:14px 0 4px auto; font-size:11px; color:var(--ink3);
+  border:1px solid var(--line); border-radius:999px; padding:0 9px; line-height:1.7; letter-spacing:.5px}
+.ktbody{font-size:inherit}
+.ktbody p{margin:7px 0; line-height:1.85}
+.ktbody ul{margin:4px 0; padding-left:20px}
+.ktbody li{margin:3px 0; line-height:1.85}
+.ktbody li::marker{color:var(--ink3)}
+.ktbody h2{margin:24px 0 10px}
+.ktbody h3{margin:20px 0 8px; color:var(--indigo)}
+.ktbody h4{margin:16px 0 6px; color:var(--ink)}
+.ktbody h5{margin:14px 0 4px; color:var(--ink2)}
+/* 课件截图转写的文字框 */
+.ktsl{margin:10px 0; padding:9px 12px 10px; border-left:3px solid var(--indigo);
+  border-radius:0 10px 10px 0; background:color-mix(in srgb,var(--indigo) 7%, transparent);
+  font-size:14px; line-height:1.8; color:var(--ink2)}
+.kttag{display:inline-block; margin:0 8px 3px 0; padding:0 8px; border-radius:5px;
+  background:var(--indigo); color:#fff; font-size:11px; font-weight:600; line-height:1.8; vertical-align:1px}
+:root[data-theme="dark"] .kttag{color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kttag{color:#111}}
+.ktsl>div:first-of-type{display:inline}
+.kttt{margin:12px 0 -6px; font-size:13px; font-weight:700; color:var(--indigo)}
+/* 作业答案 */
+.ktans{color:var(--cinnabar); text-decoration:underline; text-decoration-color:color-mix(in srgb,var(--cinnabar) 40%, transparent);
+  text-underline-offset:3px}
+/* 命例：标题＋盘＋图中红笔说明 */
+.ktcase{margin:10px 0 12px; padding:10px 12px 8px; border:1px solid var(--line); border-radius:13px;
+  background:color-mix(in srgb,var(--bg2) 55%, transparent)}
+.ktcase .vchart{margin:6px 0 4px}
+.ktpen{font-size:12px; color:var(--ink3); line-height:1.7; margin-top:2px}
+.ktchart .cg{display:block; margin-top:3px; padding-top:3px; border-top:1px dashed var(--line);
+  font-size:11.5px; line-height:1.35}
+.ktchart .cg i{display:block; font-style:normal}
+.ktchart .ag{display:block; margin-top:3px; font-size:10px; color:var(--indigo); white-space:nowrap}
+/* 断命台每步三栏：做法／特殊情况／注意点 */
+.dstep .dsec{margin:8px 13px 0;padding:3px 8px;font-size:12px;font-weight:700;letter-spacing:1px;border-radius:6px;display:inline-block}
+.dstep .dsec.s0{color:#4f46e5;background:rgba(99,102,241,.1)}
+.dstep .dsec.s1{color:#b45309;background:rgba(245,158,11,.12)}
+.dstep .dsec.s2{color:#dc2626;background:rgba(220,38,38,.09)}
+.dstep .dsec+ul{padding-top:2px}
+.dstep .dgap{margin:2px 13px 10px;padding:6px 9px;font-size:12px;color:var(--ink3);border:1px dashed var(--line);border-radius:8px;line-height:1.7}
+
+/* ===== 表格不再一字一行：width:max-content 让列按内容撑开，放不下左右滑动 ===== */
+.doc .tw table{width:max-content;min-width:100%}
+.doc .tw td:not(.nw),.doc .tw th:not(.nw){min-width:8em;max-width:26em}
+.doc .tw td:first-child:not(.nw),.doc .tw th:first-child:not(.nw){min-width:5em}
+
+/* ===== 复习卡 ===== */
+.rv-bar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:2px 0 10px;font-size:12.5px;color:var(--ink3)}
+.rv-bar button{border:1px solid var(--line);background:var(--bg2);color:var(--indigo);border-radius:14px;padding:4px 11px;font-size:12.5px;cursor:pointer}
+.rv-card{border:1px solid var(--line);border-radius:8px;margin:0 0 10px;background:var(--bg2);overflow:hidden}
+.rv-h{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 12px 4px;cursor:pointer;font-size:15px}
+.rv-q,.rv-a{display:flex;gap:8px;align-items:flex-start;padding:3px 12px 8px;font-size:14px;line-height:1.7}
+.rv-q>div,.rv-a>div{flex:1;min-width:0}
+.rv-q p,.rv-a p{margin:0}
+.rv-q i,.rv-a i{flex:0 0 auto;font-style:normal;font-size:12px;font-weight:700;border-radius:3px;padding:0 6px;line-height:20px;color:#0b0f12;background:var(--indigo)}
+.rv-a i{background:var(--gold)}
+.rv-a.hid{display:none}
+.rv-card.open .rv-a.hid{display:flex}
+.rv-b{display:none;border-top:1px dashed var(--line);padding:6px 12px 10px}
+.rv-card.open .rv-b{display:block}
+.rv-qa{margin:8px 0;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.rv-qq{display:flex;gap:8px;padding:8px 10px;cursor:pointer;font-size:13.5px;line-height:1.65}
+.rv-qq>span{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);font-size:12px;font-weight:700;text-align:center;line-height:20px}
+.rv-qq>div{flex:1;min-width:0}.rv-qq p{margin:0}
+.rv-qs{display:none;padding:2px 12px 10px 38px;font-size:13.5px;line-height:1.75;border-top:1px dotted var(--line)}
+.rv-qa.open .rv-qs{display:block}
+.rv-ex{margin:8px 0}.rv-ex>summary{cursor:pointer;font-size:13px;color:var(--indigo)}
+.rv-go{all:unset;cursor:pointer;display:block;margin-top:8px;font-size:13px;color:var(--indigo)}
+#rvq{width:100%;box-sizing:border-box;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--ink);margin:0 0 10px}
+
+/* ===== 速查表 ===== */
+.rf-bar{display:flex;justify-content:space-between;align-items:center;margin:2px 0 8px;font-size:12.5px;color:var(--ink3)}
+.rf-bar button{border:1px solid var(--line);background:var(--bg2);color:var(--indigo);border-radius:14px;padding:4px 11px;font-size:12.5px;cursor:pointer}
+#rfq{width:100%;box-sizing:border-box;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--ink);margin:0 0 10px}
+.rf-g{display:flex;gap:8px;align-items:center;margin:14px 2px 6px;font-size:13px;color:var(--ink2);font-weight:600}
+.rf-g i{font-style:normal;font-size:12px;border-radius:3px;padding:0 7px;line-height:20px;color:#0b0f12;background:var(--indigo)}
+.rf-i{border:1px solid var(--line);border-radius:6px;margin:0 0 6px;background:var(--bg2);overflow:hidden}
+.rf-h{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;padding:9px 12px;cursor:pointer;font-size:14px}
+.rf-h b{font-weight:600}.rf-h span{font-size:11.5px;color:var(--ink3);text-align:right}
+.rf-b{display:none;padding:0 10px 10px}
+.rf-i.open .rf-b{display:block}
+.rf-go{all:unset;cursor:pointer;display:block;margin-top:6px;font-size:13px;color:var(--indigo)}
+
+/* ===== 标题自适应：均衡断行；小注与标签缩小、不拆开 ===== */
+.doc h1,.doc h2,.doc h3,.doc h4{text-wrap:balance}
+.doc h2 code,.doc h3 code,.doc h4 code{font-size:.62em;white-space:nowrap;vertical-align:.15em;margin-left:.25em}
+.doc .ht{font-size:.68em;font-weight:400;color:var(--ink3);white-space:nowrap;margin-left:.3em;letter-spacing:0}
+
+/* 标题里的「重点／必背／注意」小标签：固定在标题右上，标题在自己的栏里换行，不再把标签挤到下一行 */
+.doc h2.mh,.doc h3.mh,.doc h4.mh{flex-wrap:nowrap}
+.doc h2.mh .mhb,.doc h3.mh .mhb,.doc h4.mh .mhb{align-self:flex-start;margin-top:.3em;top:0;white-space:nowrap}
+.doc h2.mh .mhn,.doc h3.mh .mhn,.doc h4.mh .mhn{align-self:flex-start}
+.mht{text-wrap:balance}
+
+/* ===== 总览导图 ===== */
+:root{--mm0:#6fa8dc;--mm1:#6cc08b;--mm2:#e0a94a;--mm3:#e07a6a;--mm4:#a78bd4}
+.rv-mm{margin:0 0 12px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg2)}
+.rv-mm>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--indigo)}
+.mm-root{margin:10px 0 8px;padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+.mm-root b{font-size:15.5px;color:var(--ink)}
+.mm-root p{margin:4px 0 0;font-size:12.5px;color:var(--ink3);line-height:1.7}
+.mm-b{margin:8px 0;border-left:4px solid var(--c);border-radius:0 6px 6px 0;background:var(--bg)}
+.mm-c0{--c:var(--mm0)}.mm-c1{--c:var(--mm1)}.mm-c2{--c:var(--mm2)}.mm-c3{--c:var(--mm3)}.mm-c4{--c:var(--mm4)}
+.mm-bh{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;padding:8px 10px;cursor:pointer}
+.mm-bh b{font-size:14.5px;color:var(--c)}.mm-bh span{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.mm-ns{display:none;padding:0 8px 8px;flex-wrap:wrap;gap:6px}
+.mm-b.open .mm-ns{display:flex}
+.mm-n{flex:0 0 auto;max-width:100%}
+.mm-nt{all:unset;cursor:pointer;display:inline-block;padding:4px 11px;border-radius:14px;border:1px solid var(--c);color:var(--c);font-size:13px}
+.mm-n.open .mm-nt{background:var(--c);color:#0b0f12}
+.mm-d{display:none;flex-basis:100%;margin:6px 0 2px;padding:7px 9px;border-radius:6px;background:var(--bg2);font-size:12.5px;line-height:1.9}
+.mm-n.open{flex-basis:100%}
+.mm-n.open .mm-d{display:block}
+.mm-d>span{display:inline-block;margin:0 6px 4px 0;padding:0 8px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--ink2)}
+.mm-go{all:unset;cursor:pointer;display:inline-block;margin:0 10px 0 0;color:var(--indigo);font-size:12.5px;font-weight:600}
+
+/* ===== 导图（图形版） ===== */
+.mm-bar{display:flex;align-items:center;gap:6px;margin:8px 0}
+.mm-bar button{all:unset;cursor:pointer;padding:3px 12px;border-radius:14px;border:1px solid var(--line);font-size:12.5px;color:var(--ink2)}
+.mm-bar button.on{background:var(--mm0);border-color:var(--mm0);color:#fff}
+.mm-bar .mm-fit{margin-left:auto}
+.mm-tip{font-size:11px;color:var(--ink3);margin-left:4px}
+.mm-view{height:68vh;min-height:360px;border:1px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none;background:var(--paper,var(--bg));cursor:grab}
+.mm-view[hidden],.mm-list[hidden]{display:none}
+.mm-svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.mm-ln{fill:none;stroke:var(--c);stroke-width:1.6;opacity:.65}
+.mm-rt{fill:var(--mm0);stroke:none}.mm-br{fill:var(--c);stroke:none}
+.mm-no{fill:var(--paper,var(--bg));stroke:var(--c);stroke-width:1.5}
+.mm-nd.on .mm-no{fill:var(--c)}.mm-nd.on .mm-t2{fill:#fff}
+.mm-kw{fill:var(--bg2,var(--surface,#f4f4f4));stroke:var(--c);stroke-width:1}
+.mm-gob{fill:var(--c);stroke:none}
+.mm-svg text{font-family:inherit;pointer-events:none}
+.mm-t0{font-size:15px;font-weight:700;fill:#fff}.mm-t1{font-size:14px;font-weight:700;fill:#fff}
+.mm-t3{font-size:10.5px;fill:var(--ink3)}.mm-t2{font-size:13px;fill:var(--ink)}
+.mm-t4{font-size:12px;fill:var(--ink)}.mm-t5{font-size:12px;fill:#fff;font-weight:600}
+
+.mm-sec{fill:var(--paper,var(--bg));stroke:var(--c);stroke-width:1.2}.mm-sec.on{fill:var(--c)}
+
+.mm-mk{fill:#fff;stroke:var(--c,var(--mm0));stroke-width:1.3}.mm-mk.on{fill:rgba(255,255,255,.9)}.mm-mkp{fill:none;stroke:var(--mm0);stroke-width:1.8;stroke-linecap:round}
+.mm-nd .mm-mk,.mm-nd .mm-mkp{--c:inherit}
+
+/* ===== 复习卡补充三组 ===== */
+.rv-g{margin:14px 0 8px}
+.rv-g>summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:8px;background:var(--indigo-soft);color:var(--indigo);font-size:14px}
+.rv-g>summary b{font-weight:700}.rv-g>summary span{font-size:12px;color:var(--ink3)}
+.rv-g[open]>summary{margin-bottom:10px}
+.rv-h em{display:block;margin-top:2px;font-style:normal;font-size:12px;color:var(--ink3)}
+.rv-pts{margin:6px 0;padding-left:1.2em;font-size:13.5px;line-height:1.75}
+.rv-pts li{margin:3px 0}
+.rv-kws{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.rv-kws span{font-size:12.5px;padding:1px 9px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--ink2)}
+
+/* 导图：搜索 / 已复习 */
+.mm-q{flex:1;min-width:0;height:28px;padding:0 10px;border:1px solid var(--line);border-radius:14px;background:var(--paper,var(--bg2));color:var(--ink);font-size:12.5px}
+.mm-prog{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.mm-nd.dim{opacity:.28}
+.mm-nd.dn .mm-no{fill:#e3f3ea;stroke:#2E7D5A}.mm-nd.dn .mm-t2{fill:#1f6b49}
+.mm-nd.dn.on .mm-no{fill:#2E7D5A}.mm-nd.dn.on .mm-t2{fill:#fff}
+.mm-donebtn{fill:transparent;stroke:#2E7D5A;stroke-width:1.2;stroke-dasharray:3 2}
+
+/* ===== 宽屏两栏（复习卡 / 速查卡） ===== */
+@media (min-width:1000px){
+  #rvList,#rfList,#rvMore .rv-g[open]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;align-items:start}
+  #rfList>.rf-g,#rvMore .rv-g[open]>summary{grid-column:1/-1}
+}
+
+/* 课程列表：初/中/高级与册名 */
+.lvh{font-size:17px;margin:20px 2px 8px;color:var(--indigo);letter-spacing:.06em}
+.lvh:first-child{margin-top:4px}
+.bkh{font-size:12.5px;color:var(--ink3);margin:12px 4px 6px;letter-spacing:.05em}
+.src-line{margin-top:8px}

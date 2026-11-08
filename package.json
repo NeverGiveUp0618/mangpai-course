@@ -1,0 +1,17 @@
+{
+  "name": "bazi-course",
+  "private": true,
+  "version": "1.0.0",
+  "description": "八字精讲 — 实用八字教材 · 笔记 · 命例题库",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "node smoke.js",
+    "audit": "python3 audit.py",
+    "audit:self": "python3 audit.py --selftest",
+    "all": "python3 build.py && node smoke.js && python3 audit.py",
+    "cite": "python3 _verify_cite.py"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}
