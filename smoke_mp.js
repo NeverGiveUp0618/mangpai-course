@@ -50,7 +50,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);
-  ok($$('.lvg').length === 3, '初/中/高三个折叠组');
+  ok($$('.lvg').length === 4, '初/中/高/专题四个折叠组');
   ok($$('.lvg.open').length === 1, '默认只展开一级');
   click($$('.lvg > .qgh')[1]); await wait(30);
   ok($$('.lvg.open').length === 2, '点击可展开另一级');
