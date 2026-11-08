@@ -10,6 +10,7 @@ import os, re, json, io, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 from proof import repair, STAT as PROOF
+from fmt import beautify
 TXT = os.path.join(ROOT, '_src', 'txt')
 OUT = os.path.join(ROOT, 'content')
 
@@ -90,11 +91,14 @@ SPEAKER = re.compile(r'^(问|答|卜文|言明|博文|梅子|闲注|注|分析|�
 
 
 def md_line(l):
-    l = l.strip()
+    l = l.strip().replace('★§', ' ')
     m = SPEAKER.match(l)
     if m:
         k = m.group(1)
-        return '**%s**：%s' % (k, l[m.end():].strip())
+        body = l[m.end():].strip()
+        return '**%s**：%s' % (k, beautify(body) if len(body) > 90 else body)
+    if len(l) > 90 and not l.startswith(('**', '#', '>', '|', '-')):
+        return beautify(l)
     return l
 
 

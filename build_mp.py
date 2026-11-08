@@ -9,6 +9,7 @@ import os, re, io, json, sys, time
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 from mdlite import md2html, strip_md, render_chart  # noqa
+from fmt import beautify, split_sent  # noqa
 
 CONTENT = os.path.join(ROOT, 'content')
 OUT = os.path.join(ROOT, 'data')
@@ -187,8 +188,45 @@ MARK = re.compile(r'(简历及解析[：:]|简历及简析[：:]|解析[：:]|�
 
 
 def para_html(text):
-    md = '\n\n'.join(l.strip() for l in text.split('\n') if l.strip())
-    return md2html(md, heading_offset=0)
+    return md2html(beautify(text), heading_offset=0)
+
+
+def quote_html(text):
+    """老师讲解：排版成短段/列表，整体放进引用块（与命理精讲的「解」同款）。"""
+    md = beautify(text)
+    if not md:
+        return ''
+    return md2html('\n'.join(('> ' + l) if l.strip() else '>' for l in md.split('\n')), heading_offset=0)
+
+
+def tidy(t):
+    """去掉混进讲解里的大运/年份表格行、占位符和「分析：」之类的标签。"""
+    t = t.replace('★§', ' ')
+    t = re.sub(r'大运[：:\s]*(?:[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥][\s、，,]*){3,}', ' ', t)
+    t = re.sub(r'\d+月\s*\d+日起运|岁数[\s\d.]+|年份[\s\d.]+|[（(]?\d+岁起运[）)]?', ' ', t)
+    t = re.sub(r'(?<![\u4e00-\u9fff])(分析|闲注|解析|简历及解析|简历及简析|断|注)[：:]', ' ', t)
+    t = re.sub(r'\s+', ' ', t).strip(' ，,；;：:')
+    return t
+
+
+def split_case(body):
+    """返回 (标签, 断/简历 文字, 解 文字)。"""
+    m = MARK.search(body)
+    pre = body[:m.start()].strip() if m else ''
+    label = '断'
+    rest = body[m.end():].strip() if m else body.strip()
+    if m and '简历' in m.group(0):
+        label = '简历'
+    if pre:
+        return label, pre, rest
+    sents = [x.strip() for x in split_sent(re.sub(r'\s+', ' ', rest)) if x.strip()]
+    if len(sents) <= 1:
+        return label, rest, ''
+    face, k = '', 0
+    while k < len(sents) and (len(face) < 28 or k == 0) and k < 2:
+        face += sents[k]
+        k += 1
+    return label, face, ''.join(sents[k:])
 
 
 def build_quiz():
@@ -221,11 +259,11 @@ def build_quiz():
                 dyl = parse_dayun(ln)
                 if dyl:
                     break
-        m = MARK.search(body)
-        pre = body[:m.start()].strip() if m else ''
-        jie = body[m.start():] if m else body
+        label, face_t, jie = split_case(body)
+        face_t, jie = tidy(face_t), tidy(jie)
         jie = re.sub(r'^(简历及解析|简历及简析|解析|分析|解)[：:]', '', jie).strip()
-        sums = re.sub(r'[\s　]+', '', jie)
+        face_src = face_t
+        sums = re.sub(r'[\s　]+', '', (face_t + ' ' + jie))
         GEN = re.compile(r'^(老师讲|分析|闲注|注|象|例|如|又如|此造|此人|该造|断|解|乾|坤|大运.*)$')
         sums2 = re.sub(r'(闲注|分析|断|解|注)[:：]', '，', sums)
         segs = [re.sub(r'^(此造是|此造为|此人是|此人为|此造|此人|该造|本造)', '', x) for x in re.split(r'[，。；：:、！？（）()\.\s]', sums2) if x]
@@ -241,11 +279,7 @@ def build_quiz():
         ss_z = ' '.join('%s%s' % (p, shishen(day, BEN[z])) for p, z in zip('年月日时', zhi))
         chai = ('<p><strong>%s日主</strong></p>' % day) + render_chart(gan, zhi, sex, dyl) + \
                '<p><strong>天干十神</strong>：%s</p><p><strong>地支（取本气）</strong>：%s</p>' % (ss_g, ss_z)
-        face = ''
-        if pre:
-            face += para_html(pre)
-        face += ('<p>先别看解：这个盘<strong>日主%s</strong>，想一想——<strong>谁和谁做功？用的是什么作用方式？</strong>'
-                 '大运怎么走？推完再点「解」对照。</p>') % day
+        face = '<p><strong>%s</strong>：</p>' % label + para_html(face_t)
         tags = tags_of(sums)
         if c.get('early'):
             tags = ['早期口径'] + tags
@@ -261,7 +295,7 @@ def build_quiz():
             'n': 0, 'title': title, 'tags': tags, 'star': 0,
             'chart': {'g': sex, 'gan': gan, 'zhi': zhi}, 'nCharts': 1,
             'charts': [dict({'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}, **({'dy': dyl} if dyl else {}))],
-            'face': face, 'jieLabel': '解', 'jie': para_html(jie), 'chai': chai, 'noAnswer': 0,
+            'face': face, 'jieLabel': '解', 'jie': (quote_html(jie) if jie else '<p class="muted">原稿对这个盘只给了上面的断语，没有再展开讲解。可点「拆解」看十神与五行。</p>'), 'chai': chai, 'noAnswer': 0,
             'text': sums[:4000], 'topic': topic, 'seq': 0,
             '_src': '%s · %s' % (c.get('book', ''), c.get('chapter', '')),
         })
@@ -270,7 +304,7 @@ def build_quiz():
     for i, it in enumerate(items, 1):
         it['n'] = i
         it['seq'] = i
-        it['jie'] += '<p class="src-line"><span class="src">出处：%s</span></p>' % it.pop('_src')
+        it['jie'] += '<p class="src-line"><span class="src">出处：%s</span></p>' % it.pop('_src').rstrip('：: ')
     topics = []
     for t in TOPIC_ORDER:
         k = sum(1 for x in items if x['topic'] == t)
