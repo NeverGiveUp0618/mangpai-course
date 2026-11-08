@@ -47,6 +47,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($$('#noteBody .pill').some(e => /相关命例/.test(e.textContent)), '有「相关命例」入口');
   click($('[data-tab="home"]')); await wait(80);
   ok(/已掌握 1 条/.test($('#gapHint').textContent), '首页卡片显示已掌握 1 条');
+  window.confirm = () => true;
+  window.localStorage.setItem('mp_course_read', '{"c1":100}'); window.localStorage.setItem('mp_course_seen', '{"3":1}');
+  click($('[data-tab="home"]')); await wait(30);
+  click($('#clearMarks')); await wait(50);
+  ok(['mp_course_read', 'mp_course_seen', 'mp_course_gap'].every(k => Object.keys(JSON.parse(window.localStorage.getItem(k) || '{}')).length === 0), '「清除全部标记」清空已读/已学/已掌握');
 
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);

@@ -4,7 +4,7 @@ import re, io, os, shutil
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, '..', 'bazi-course')
 
-for f in ('app.js', 'index.html', 'manifest.json'):
+for f in ():  # 2026-11-08 起冻结：本站 app.js/index.html 直接维护，不再从 bazi-course 复制（那边已改成 data-s 分包等）
     shutil.copy(os.path.join(SRC, f), os.path.join(ROOT, f))
 
 p = os.path.join(ROOT, 'app.js')
