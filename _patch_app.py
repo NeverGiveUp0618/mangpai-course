@@ -100,6 +100,7 @@ new_course = r"""RENDER.course = function () {
 """
 s = s[:a] + new_course + s[b:]
 s = s.replace("$('#ttl').textContent = '第' + c.n + '章 · ' + c.title;", "$('#ttl').textContent = c.title;")
+s = s.replace("/* 题库的可搜索全文。", "(function(){ var g = document.getElementById('gapCard'); if (g) g.onclick = function () { show('note', 1); }; })();\n\n/* 题库的可搜索全文。", 1)
 io.open(p, 'w', encoding='utf-8').write(s)
 
 # ───── index.html ─────
@@ -127,6 +128,16 @@ h = h.replace('theme-color" content="#1f5673"', 'theme-color" content="#2d5a4b"'
 io.open(p, 'w', encoding='utf-8').write(h)
 
 h = h.replace('学习路线与依赖图','学习路线').replace('先学哪章、后学哪章','初 → 中 → 高，按什么顺序学')
+io.open(p, 'w', encoding='utf-8').write(h)
+h = h.replace('    <div class="card" id="progCard">', '''    <div class="card tap" id="gapCard">
+      <div class="row spread">
+        <div><b style="font-size:15px">🔎 我没学过 · 对照清单</b>
+          <div class="muted" style="margin-top:2px">和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同</div></div>
+        <span style="color:var(--ink3)">&rsaquo;</span>
+      </div>
+    </div>
+
+    <div class="card" id="progCard">''',1)
 io.open(p, 'w', encoding='utf-8').write(h)
 # manifest
 p = os.path.join(ROOT, 'manifest.json')

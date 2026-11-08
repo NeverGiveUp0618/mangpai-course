@@ -36,6 +36,12 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok(!$('.desk-entry') && !$('.vke-entry'), '断命台/v课入口已去除');
   ok($$('.tabbar button').length === 4, '底栏 4 个');
 
+  console.log('我没学过');
+  ok(!!$('#gapCard'), '首页有「我没学过」入口');
+  click($('#gapCard')); await wait(200);
+  ok(/我没学过/.test($('#noteBody').textContent) && $('#noteBody').textContent.length > 3000, '点进去是对照清单');
+  click($('[data-tab="home"]')); await wait(80);
+
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);
   ok($$('.lvg').length === 3, '初/中/高三个折叠组');

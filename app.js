@@ -1985,6 +1985,8 @@ function fmtDay(t) {
 /* ---------- 搜索 ---------- */
 RENDER.search = function () { setTimeout(function () { $('#q').focus(); }, 80); };
 
+(function(){ var g = document.getElementById('gapCard'); if (g) g.onclick = function () { show('note', 1); }; })();
+
 /* 题库的可搜索全文。
  * ⚠️ data 里的 q.text 是 strip_md(b)[:600]——截断的，92 题里 80 题被砍，
  *    平均只覆盖每题六成，答案和拆解基本搜不到。
