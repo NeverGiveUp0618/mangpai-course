@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-st.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);
@@ -107,6 +107,32 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}')).length === 1, '手动点「标记为已学」才记录');
   click($('#seenToggle')); await wait(30);
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}')).length === 0, '再点取消');
+
+  ok($$('#L4 .chlink').length > 0, '命例页有「相关教材章节」');
+  click($('#btnBack')); await wait(60);
+  click($('#stEntry')); await wait(250);
+  ok($$('[data-st]').length >= 30, '章节自测列表 ≥ 30 章，实得 ' + $$('[data-st]').length);
+  click($('[data-st]')); await wait(250);
+  ok($$('.stopt').length === 4, '自测题是 4 选 1');
+  let guard = 0;
+  while ($$('.stopt').length && guard++ < 30) {
+    click($$('.stopt')[0]); await wait(20);
+    ok(true, '');
+    const go = $('#stGo'); if (!go) break;
+    pass--; // 上面那个占位 ok 不计数
+    click(go); await wait(20);
+  }
+  ok(/\d+ \/ \d+/.test($('#stBody').textContent), '做完显示成绩');
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_st') || '{}')).length === 1, '成绩按章节记录（只记最好一次）');
+  console.log('章节页附加');
+  click($('[data-tab="course"]')); await wait(120);
+  click($('[data-ch="1"]')); await wait(300);
+  ok($$('#chExtras .chlink').length > 0, '章节页有「本章相关命例」');
+  ok(!!$('#chStBtn'), '章节页有「做本章自测」按钮');
+  click($('#chStBtn')); await wait(250);
+  ok($$('.stopt').length === 4, '从章节页进入自测');
+  click($('#btnBack')); await wait(50);
+  click($('[data-tab="home"]')); await wait(60);
 
   console.log('搜索');
   click($('#btnSearch')); await wait(80);

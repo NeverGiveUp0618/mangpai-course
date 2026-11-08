@@ -110,6 +110,7 @@ setTimeout(function () {
 }, 1200);
 var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };
 var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
+var needSt = function () { return need('data-st.js', 'DATA_ST'); };
 var LVKEY = { '初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan' };
 function needBodyOf(c) { return c.raw ? needRaw() : need('data-body-' + LVKEY[c.level] + '.js', 'DATA_BODY_' + LVKEY[c.level]); }
 function needAllBodies(withRaw) {
@@ -146,7 +147,7 @@ var cur = { scr: 'home', id: null };
 var TITLES = {
   home: '盲派八字', course: '课程', chapter: '', notes: '专题与答疑',
   note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '知识点速查', qlist: '命例题库',
-  quiz: '', search: '搜索', mynotes: '我的笔记', desk: '断命台',
+  quiz: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
   vke: 'v课笔记', vkeread: ''
 };
 var ROOTS = { home: 1, course: 1, notes: 1, qlist: 1, ref: 1 };
@@ -432,7 +433,7 @@ RENDER.home = function () {
   var cmb = $('#clearMarks');
   if (cmb) cmb.onclick = function () {
     if (!window.confirm('清除全部「已读」「已学」' + (K.gap ? '「已掌握」' : '') + '标记？\n此操作不可撤销（我的笔记、阅读位置不受影响）。')) return;
-    save(K.read, {}); save(K.seen, {}); if (K.gap) save(K.gap, {});
+    save(K.read, {}); save(K.seen, {}); if (K.gap) save(K.gap, {}); save('mp_course_st', {});
     RENDER.home(); toast('已清除全部标记');
   };
   $('#hCourse').textContent = c.course || 0;
@@ -609,6 +610,7 @@ RENDER.chapter = function (n) {
     $('#nextCh').onclick = function () { show('chapter', n + 1); };
     trackRead(c.id);
     addReadToggle(c.id, '#prevCh');
+    addChapterExtras(c);
     afterDoc($('#chapterBody'), c.id);
   });
 };
@@ -1725,6 +1727,80 @@ function trackRead(id) {
 }
 
 
+
+function addChapterExtras(c) {
+  var old = $('#chExtras'); if (old) old.parentNode.removeChild(old);
+  var anchor = $('#readToggle') || $('#prevCh').parentNode;
+  var box = document.createElement('div'); box.id = 'chExtras';
+  var h = '';
+  if (c.cases && c.cases.length) {
+    h += '<div class="card" style="margin-top:22px"><b style="font-size:15px">本章相关命例</b><div style="margin-top:6px;line-height:2">' +
+      c.cases.map(function (x) { return '<a class="chlink" data-q="' + x.n + '">' + esc(x.t) + '</a>'; }).join('<br>') + '</div></div>';
+  }
+  h += '<div id="chSt"></div>';
+  box.innerHTML = h;
+  anchor.parentNode.insertBefore(box, anchor);
+  $$('#chExtras [data-q]').forEach(function (a) { a.onclick = function () { show('quiz', +a.dataset.q); }; });
+  needSt().then(function (S) {
+    var ch = S.chapters.filter(function (x) { return x.n === c.n; })[0];
+    var slot = $('#chSt'); if (!ch || !slot) return;
+    slot.innerHTML = '<div class="card tap" id="chStBtn" style="margin-top:14px"><div class="row spread"><div><b style="font-size:15px">📝 做本章自测</b><div class="muted" style="margin-top:2px">' + ch.qs.length + ' 道选择题，答完直接判对错</div></div><span style="color:var(--ink3)">›</span></div></div>';
+    $('#chStBtn').onclick = function () { show('st', c.n); };
+  }).catch(function () {});
+}
+
+/* ============ 章节自测：客观选择题，不自评 ============ */
+function stRes() { return ls('mp_course_st', {}); }
+RENDER.st = function (id) {
+  var box = $('#stBody');
+  box.innerHTML = '<div class="empty">载入中…</div>';
+  needSt().then(function (S) { if (id == null) stList(box, S); else stRun(box, S, +id); });
+};
+function stList(box, S) {
+  var res = stRes(), lv = '', h = '<div class="muted" style="margin:0 2px 10px">每章自测题都是选择题，答完立刻判对错；成绩只记「最好一次」，不会自动标记已读。</div>';
+  S.chapters.forEach(function (c) {
+    if (c.level !== lv) { lv = c.level; h += '<h3 class="lvh">' + esc(lv) + '</h3>'; }
+    var best = res[c.n];
+    h += '<div class="card tap" data-st="' + c.n + '"><div class="row spread"><div style="flex:1"><b style="font-size:15px">' + esc(c.title) + '</b><div class="muted" style="margin-top:3px">' + c.qs.length + ' 题</div></div>' +
+      (best != null ? '<span class="pill' + (best === c.qs.length ? '' : ' g') + '">最好 ' + best + '/' + c.qs.length + '</span>' : '<span style="color:var(--ink3)">›</span>') + '</div></div>';
+  });
+  box.innerHTML = h;
+  $$('[data-st]', box).forEach(function (el) { el.onclick = function () { show('st', +el.dataset.st); }; });
+}
+function stRun(box, S, n) {
+  var ch = S.chapters.filter(function (c) { return c.n === n; })[0];
+  if (!ch) { stList(box, S); return; }
+  var i = 0, ok = 0;
+  function draw() {
+    if (i >= ch.qs.length) {
+      var res = stRes(); if (res[n] == null || ok > res[n]) { res[n] = ok; save('mp_course_st', res); }
+      box.innerHTML = '<div class="card" style="text-align:center"><div class="muted">' + esc(ch.title) + ' · 自测完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">' + ok + ' / ' + ch.qs.length + '</div>' +
+        '<div class="row" style="gap:10px"><button class="btn" id="stAgain" style="flex:1">再做一遍</button><button class="btn" id="stBack" style="flex:1">回到本章</button></div></div>';
+      $('#stAgain').onclick = function () { i = 0; ok = 0; draw(); };
+      $('#stBack').onclick = function () { show('chapter', n); };
+      return;
+    }
+    var q = ch.qs[i], answered = false;
+    box.innerHTML = '<div class="muted" style="margin:0 2px 8px">' + esc(ch.title) + ' · 第 ' + (i + 1) + ' / ' + ch.qs.length + ' 题</div>' +
+      '<div class="card"><b style="font-size:15.5px;line-height:1.7">' + esc(q.q) + '</b></div>' +
+      q.opts.map(function (o, k) { return '<button class="btn stopt" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') +
+      '<div id="stNext"></div>';
+    $$('.stopt', box).forEach(function (b) {
+      b.onclick = function () {
+        if (answered) return; answered = true;
+        var k = +b.dataset.k, good = k === q.ans;
+        if (good) ok++;
+        $$('.stopt', box).forEach(function (x) { x.disabled = true; if (+x.dataset.k === q.ans) x.classList.add('stok'); });
+        if (!good) b.classList.add('stno');
+        $('#stNext').innerHTML = '<div class="muted" style="margin:6px 2px">' + (good ? '✓ 答对了' : '✗ 答错了，绿色是正确答案') + '</div><button class="btn pri" id="stGo" style="width:100%;margin-top:6px">' + (i + 1 >= ch.qs.length ? '看成绩' : '下一题 ›') + '</button>';
+        $('#stGo').onclick = function () { i++; draw(); };
+      };
+    });
+    window.scrollTo(0, 0);
+  }
+  draw();
+}
+
 function addReadToggle(id, anchor) {
   var old = $('#readToggle'); if (old) old.parentNode.removeChild(old);
   var a = $(anchor); if (!a || !a.parentNode) return;
@@ -1744,6 +1820,7 @@ var qFilter = { mode: 'all', tag: null };
 var tagsOpen = false;
 
 RENDER.qlist = function () {
+  var se = $('#stEntry'); if (se) { var sc = (META.counts && META.counts.selftest) || 0; $('#stCnt').textContent = sc + ' 道选择题 · 按章节'; se.onclick = function () { show('st', null); }; }
   var box = $('#qRows');
   box.innerHTML = '<div class="empty">载入中…</div>';
   needQuiz().then(function (Q) {
@@ -1952,13 +2029,15 @@ function navBar(it) {
     var prev = i > 0 ? Q.items[i - 1] : null;
     var next = i >= 0 && i < Q.items.length - 1 ? Q.items[i + 1] : null;
     var isSeen = !!ls(K.seen, {})[it.n];
-    $('#L4').innerHTML =
+    var relHtml = (it.rel && it.rel.length) ? '<div class="card" style="margin-top:14px"><b style="font-size:14px">相关教材章节</b><div style="margin-top:6px;line-height:2">' + it.rel.map(function (r) { return '<a class="chlink" data-ch="' + r.n + '">' + esc(r.t) + '</a>'; }).join('<br>') + '</div></div>' : '';
+    $('#L4').innerHTML = relHtml +
       '<div class="row" style="margin:18px 0 0"><button class="btn' + (isSeen ? ' pri' : '') + '" id="seenToggle" style="flex:1">' + (isSeen ? '✓ 已学（点一下取消）' : '☐ 标记为已学') + '</button></div>' +
       '<div class="row spread" id="qnav" style="gap:10px;margin:20px 0 6px">' +
       '<button class="btn" id="bPrev" style="flex:1"' + (prev ? '' : ' disabled') + '>‹ 上一题</button>' +
       '<button class="btn" id="bList" style="flex:0 0 auto">题库</button>' +
       '<button class="btn pri" id="bNext" style="flex:1"' + (next ? '' : ' disabled') + '>下一题 ›</button>' +
       '</div>';
+    $$('#L4 .chlink').forEach(function (a) { a.onclick = function () { show('chapter', +a.dataset.ch); }; });
     $('#seenToggle').onclick = function () {
       var sv = ls(K.seen, {}); if (sv[it.n]) delete sv[it.n]; else sv[it.n] = Date.now(); save(K.seen, sv);
       var on = !!sv[it.n]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';

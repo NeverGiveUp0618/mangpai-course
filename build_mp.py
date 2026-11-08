@@ -153,18 +153,21 @@ TAGKW = {'墓库': ['墓', '库'], '入墓': ['入墓'], '开库': ['开库', '�
          '连根': ['连根'], '活木': ['活木'], '死木': ['死木']}
 BASIC = {'合': r'[天地]?干?合|六合|相合|合绊|合住', '冲': r'冲', '穿': r'穿', '刑': r'刑', '破': r'破'}
 
+QA_RE = re.compile(r'(^|[\s。！？])(问|答|学员问|请问)[：:]|卜文|言明|博文|梅子|小月狐')
 TOPIC_RULES = [
     ('正局反局', r'正局|反局'), ('财运', r'财命|财富|取财|求财|财运'), ('官运', r'官命|官运|官贵|当官|军官'),
     ('婚姻', r'婚|夫妻|独身|离婚|桃花|淫乱|配偶'), ('六亲', r'父母|六亲|子女|看寿|兄弟'),
     ('学历', r'学历'), ('牢狱', r'牢狱|犯罪'), ('疾病', r'疾病|病'), ('职业', r'职业|医生|老师|会计|口才|军官|盲人'),
     ('应期', r'应期|大运'), ('象法', r'象|类象'), ('作用方式', r'合|冲|穿|刑|破|墓|制|做功|体用|宾主|虚实|互通'),
 ]
-TOPIC_ORDER = ['作用方式', '正局反局', '财运', '官运', '职业', '婚姻', '六亲', '学历', '牢狱', '疾病', '应期', '象法', '综合', '早期案例（用神口径）']
+TOPIC_ORDER = ['作用方式', '正局反局', '财运', '官运', '职业', '婚姻', '六亲', '学历', '牢狱', '疾病', '应期', '象法', '综合', '答疑讨论', '早期案例（用神口径）']
 
 
 def topic_of(c):
     if c.get('early'):
         return '早期案例（用神口径）'
+    if QA_RE.search(c.get('body', '')[:600]):
+        return '答疑讨论'
     s = (c.get('chapter', '') + c.get('sec', '') + c.get('book', ''))
     for name, pat in TOPIC_RULES:
         if re.search(pat, s):
@@ -415,6 +418,97 @@ def build_ref(courses):
     return {'sum': sums, 'kou': kous, 'tab': tabs}
 
 
+TOPIC_CHAPTERS = {
+    '作用方式': [('初级', '合（'), ('初级', '冲、穿'), ('初级', '刑、破'), ('初级', '做功方式'), ('中级', '地支作用'), ('中级', '象的应用'), ('高级', '天干五合与地支六合'), ('高级', '三合、六冲')],
+    '正局反局': [('初级', '基础问题'), ('中级', '正局与反局'), ('高级', '正局反局进阶')],
+    '财运': [('中级', '财命专辑'), ('高级', '财命的高级断法'), ('专题', '职业专题（一）')],
+    '官运': [('中级', '官命看法'), ('高级', '官命、职业与学历'), ('专题', '职业专题（二）')],
+    '职业': [('高级', '职业象法'), ('专题', '职业专题')],
+    '婚姻': [('初级', '婚姻与看寿'), ('中级', '婚姻专辑'), ('高级', '婚姻宫'), ('高级', '男命多婚'), ('高级', '女命多婚'), ('高级', '婚外情'), ('高级', '包局婚姻'),
+           ('高级', '配偶情况'), ('高级', '伤克配偶'), ('高级', '独身组合'), ('高级', '差婚姻'), ('专题', '婚姻问答')],
+    '六亲': [('高级', '父母死亡'), ('高级', '父母离异'), ('专题', '伤官、六亲')],
+    '学历': [('中级', '学历与牢狱')],
+    '牢狱': [('中级', '学历与牢狱')],
+    '疾病': [('专题', '疾病专题')],
+    '应期': [('初级', '应期入门'), ('中级', '应期'), ('高级', '大运流年与应期'), ('专题', '应期与墓穿')],
+    '象法': [('初级', '十神类象'), ('初级', '宫位取象'), ('中级', '干支类象'), ('中级', '宫位类象'), ('中级', '十天干象义'), ('中级', '十二地支象义'), ('初级', '十天干'), ('初级', '干支配置'), ('中级', '干支关系'), ('中级', '干支虚实'), ('专题', '象法与象的应用')],
+    '综合': [('初级', '盲派体系总览'), ('初级', '入手方法')],
+}
+
+
+def chapters_of(courses, topic):
+    out = []
+    for lv, pre in TOPIC_CHAPTERS.get(topic, []):
+        for c in courses:
+            if not c['raw'] and c['level'] == lv and c['title'].startswith(pre) and c not in out:
+                out.append(c)
+    return out
+
+
+def link_related(courses, quiz):
+    """命例 → 相关教材章节（rel）；教材章节 → 相关命例（cases，≤8，优先带大运、讲解长的）。"""
+    items = quiz['items']
+    bytopic = {}
+    for it in items:
+        bytopic.setdefault(it['topic'], []).append(it)
+    for t, its in bytopic.items():
+        chs = chapters_of(courses, t)[:4]
+        for it in its:
+            it['rel'] = [{'n': c['n'], 't': c['title']} for c in chs]
+    score = lambda it: (1 if it['charts'][0].get('dy') else 0, len(it['text']))
+    for c in courses:
+        if c['raw']:
+            continue
+        pool = []
+        for t in TOPIC_CHAPTERS:
+            if c in chapters_of(courses, t):
+                pool.extend(bytopic.get(t, []))
+        pool = sorted({id(x): x for x in pool}.values(), key=score, reverse=True)[:8]
+        c['cases'] = [{'n': x['n'], 't': x['title']} for x in pool]
+
+
+ST_RE = re.compile(r'(?:^|\n)\s*(?:\d+|[①②③④⑤⑥⑦⑧⑨⑩])[\.、．]?\s*(.+?)\n\s*<details>\s*<summary>[^<]*</summary>(.*?)</details>', re.S)
+
+
+def build_selftest(courses):
+    """把每章「自测」题＋折叠答案做成客观选择题：正确答案＋同章/同级其他题的答案作干扰项。"""
+    import random
+    chs = []
+    for c in courses:
+        if c['raw'] or c['id'] not in PATHS:
+            continue
+        md = read(PATHS[c['id']])
+        qs = []
+        for m in ST_RE.finditer(md):
+            q = strip_md(m.group(1)).strip()
+            a = strip_md(m.group(2)).strip()
+            if 6 <= len(q) <= 120 and 6 <= len(a) <= 260:
+                qs.append({'q': q, 'a': a})
+        if qs:
+            chs.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'qs': qs})
+    lv_answers = {}
+    for ch in chs:
+        lv_answers.setdefault(ch['level'], []).extend(x['a'] for x in ch['qs'])
+    for ch in chs:
+        answers = [x['a'] for x in ch['qs']]
+        for k, x in enumerate(ch['qs']):
+            rnd = random.Random('%s-%d' % (ch['n'], k))
+            own = [a for j, a in enumerate(answers) if j != k]
+            rnd.shuffle(own)
+            pool = own[:3]
+            if len(pool) < 3:
+                more = [a for a in lv_answers[ch['level']] if a != x['a'] and a not in pool]
+                rnd.shuffle(more)
+                pool += more[:3 - len(pool)]
+            opts = pool + [x['a']]
+            rnd.shuffle(opts)
+            x['opts'] = opts
+            x['ans'] = opts.index(x['a'])
+            del x['a']
+            x['exp'] = opts[x['ans']]
+    return {'chapters': chs}
+
+
 def build_outline(courses, notes, quiz):
     def find(lv, prefixes):
         out = []
@@ -448,14 +542,16 @@ def main():
     courses = build_courses()
     notes = build_notes()
     quiz = build_quiz()
+    link_related(courses, quiz)
+    ref = build_ref(courses)
+    st = build_selftest(courses)
     meta = {
         'name': '盲派八字', 'built': time.strftime('%Y-%m-%d %H:%M'),
-        'counts': {'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
+        'counts': {'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
                    'quizChart': len(quiz['items']), 'quizChai': len(quiz['items'])},
         'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
     }
-    ref = build_ref(courses)
     raw = {c['id']: {'html': c['html'], 'text': c['text']} for c in courses if c['raw']}
     LVK = {'初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan'}
     bodies = {k: {} for k in LVK.values()}
@@ -472,6 +568,7 @@ def main():
     ] + [('data-body-%s.js' % k, write_js('data-body-%s.js' % k, 'DATA_BODY_%s' % k, v)) for k, v in bodies.items()] + [
         ('data-course.js', write_js('data-course.js', 'DATA_COURSE', courses)),
         ('data-ref.js', write_js('data-ref.js', 'DATA_REF', ref)),
+        ('data-st.js', write_js('data-st.js', 'DATA_ST', st)),
         ('data-notes.js', write_js('data-notes.js', 'DATA_NOTES', notes)),
         ('data-quiz.js', write_js('data-quiz.js', 'DATA_QUIZ', quiz)),
         ('data-meta.js', write_js('data-meta.js', 'DATA_META', meta)),

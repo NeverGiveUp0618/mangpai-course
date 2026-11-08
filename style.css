@@ -1158,3 +1158,8 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .doc .ichart .dys .lb,.sticky-chart .dys .lb2{flex:0 0 auto; font-size:11px; color:var(--ink3); font-weight:600; letter-spacing:1px; writing-mode:horizontal-tb}
 .doc .ichart .dys .c,.sticky-chart .dys .c{flex:0 0 auto; text-align:center; min-width:26px}
 .doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:25px; height:25px; line-height:25px; font-size:14px; border-radius:7px}
+
+/* 章节自测选项 */
+.stopt{display:block;width:100%;text-align:left;white-space:normal;line-height:1.7;margin:0 0 9px;padding:12px 14px;font-size:14px}
+.stopt.stok{border-color:var(--ok);background:color-mix(in srgb,var(--card) 80%,var(--ok) 20%);color:var(--ink)}
+.stopt.stno{border-color:var(--cinnabar);background:color-mix(in srgb,var(--card) 82%,var(--cinnabar) 18%);color:var(--ink)}
