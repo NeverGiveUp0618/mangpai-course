@@ -182,7 +182,7 @@ main{padding:14px 14px calc(var(--tabh) + 26px)}
 .hero .stat b{display:block;font-size:19px;font-weight:600}
 .hero .stat span{font-size:11px;opacity:.75}
 
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
 .mode{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow);
