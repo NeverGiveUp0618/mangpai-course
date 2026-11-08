@@ -1147,3 +1147,6 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .lvg>.qgb{padding:4px 12px 12px}
 .lvg .card{margin:8px 0 0; box-shadow:none}
 .rawg{margin-top:12px; border-top:1px dashed var(--line); border-bottom:0}
+
+.chlink{color:var(--indigo);cursor:pointer;border-bottom:1px dashed var(--indigo);font-size:13px;line-height:1.9;white-space:normal}
+.doc td{vertical-align:top}

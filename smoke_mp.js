@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);
@@ -40,7 +40,13 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok(!!$('#gapCard'), '首页有「我没学过」入口');
   click($('#gapCard')); await wait(200);
   ok(/我没学过/.test($('#noteBody').textContent) && $('#noteBody').textContent.length > 3000, '点进去是对照清单');
+  const gp = $$('#noteBody .pill').filter(e => /标记为已掌握/.test(e.textContent));
+  ok(gp.length >= 10, '每个缺口条目有「标记为已掌握」，实得 ' + gp.length);
+  click(gp[0]); await wait(30);
+  ok(/已掌握/.test(gp[0].textContent) && JSON.parse(window.localStorage.getItem('mp_course_gap') || '{}')[0] === 1, '点击后保存掌握状态');
+  ok($$('#noteBody .pill').some(e => /相关命例/.test(e.textContent)), '有「相关命例」入口');
   click($('[data-tab="home"]')); await wait(80);
+  ok(/已掌握 1 条/.test($('#gapHint').textContent), '首页卡片显示已掌握 1 条');
 
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);
@@ -56,6 +62,12 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($$('#chapterBody .ichart').length > 0 || true, '章内排盘（如有）');
   click($('#nextCh')); await wait(100);
   ok($('#s-chapter').classList.contains('active'), '下一章可翻');
+
+  const rawCard = $('.rawg [data-ch]');
+  ok(!!rawCard, '有原稿讲义卡片');
+  click(rawCard); await wait(250);
+  ok($('#chapterBody').textContent.length > 1500, '原稿章节按需加载后有正文');
+  click($('#btnBack')); await wait(50);
 
   console.log('专题');
   click($('[data-tab="notes"]')); await wait(120);

@@ -37,6 +37,7 @@ var K = {
   // 看板那边不该再把 16/14/92 写死在字符串里
   counts: 'mp_course_counts',
   lvopen: 'mp_course_lvopen',
+  gap: 'mp_course_gap',
   // 我的笔记：用户自己划的句子。⚠️ 与内容里那 14 篇「笔记」是两回事，
   // UI 上一律叫「我的笔记」，别混。
   notes: 'mp_course_mynotes',
@@ -86,6 +87,8 @@ function need(file, globalName) {
   });
 }
 var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };
+var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
+function fillRaw(list, R) { list.forEach(function (c) { if (c.raw && !c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }
 var needNotes  = function () { return need('data-notes.js', 'DATA_NOTES'); };
 var needQuiz   = function () { return need('data-quiz.js', 'DATA_QUIZ'); };
 // 问题清单 70KB，只有点进「四张索引表」才要，不进首屏包
@@ -425,6 +428,8 @@ RENDER.home = function () {
     '<span class="pill g">专题 ' + ntDone + '/' + (c.notes || 14) + '</span>' +
     '<span class="pill g">命例 ' + qDone + '/' + (c.quiz || 92) + '</span>';
 
+  var gd = Object.keys(ls(K.gap, {})).length, gh = $('#gapHint');
+  if (gh) gh.textContent = gd ? ('已掌握 ' + gd + ' 条 · 和你之前学的对照：哪些没讲过、在哪章读') : '和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同';
   var mn = myNotes().length;
   var hint = $('#myNoteHint');
   if (hint) hint.textContent = mn ? ('已存 ' + mn + ' 条') : '选中正文任意一句，即可存进来';
@@ -544,6 +549,11 @@ RENDER.chapter = function (n) {
   needCourse().then(function (list) {
     var c = list.filter(function (x) { return x.n === n; })[0];
     if (!c) return;
+    if (c.raw && !c.html) {
+      $('#chapterBody').innerHTML = '<div class="empty">载入原稿…</div>';
+      needRaw().then(function (R) { fillRaw(list, R); RENDER.chapter(n); });
+      return;
+    }
     curDoc = c;
     $('#ttl').textContent = c.title;
     $('#chapterBody').innerHTML = '<h1>' + esc(c.title) + '</h1>' + chapterMap(c) + c.html;
@@ -651,6 +661,7 @@ RENDER.note = function (n) {
 
     trackRead(c.id);
     afterDoc($('#noteBody'), c.id);
+    if (n === 1) decorateGap();
   });
 };
 
@@ -1527,6 +1538,7 @@ function drawRef(all) {
 RENDER.outline = function () {
   $('#outlineBody').innerHTML = META.outline || '';
   bindDoc($('#outlineBody'));
+  $$('#outlineBody .chlink').forEach(function (a) { a.onclick = function () { show('chapter', +a.dataset.ch); }; });
 };
 
 /* 文内跳转：[[wiki]] 与题号引用（原文里写作【21】） */
@@ -1983,9 +1995,34 @@ function fmtDay(t) {
 }
 
 /* ---------- 搜索 ---------- */
-RENDER.search = function () { setTimeout(function () { $('#q').focus(); }, 80); };
+RENDER.search = function () { searchRaw = false; setTimeout(function () { $('#q').focus(); }, 80); };
 
 (function(){ var g = document.getElementById('gapCard'); if (g) g.onclick = function () { show('note', 1); }; })();
+
+
+var GAP_TAGS = ['应期','应期','体用','桃花','墓库','墓库','穿','','体用','反局','体用','桃花'];
+function decorateGap() {
+  var done = ls(K.gap, {});
+  var hs = $$('#noteBody h3').filter(function (h) { return /^\d+\./.test(h.textContent.trim()); });
+  hs.forEach(function (h, i) {
+    var wrap = document.createElement('div');
+    wrap.className = 'row wrap'; wrap.style.cssText = 'gap:8px;margin:2px 0 10px';
+    var b = document.createElement('span'); b.className = 'pill ' + (done[i] ? '' : 'g'); b.style.cursor = 'pointer';
+    b.textContent = done[i] ? '✓ 我已掌握' : '☐ 标记为已掌握';
+    b.onclick = function () {
+      var d = ls(K.gap, {}); if (d[i]) delete d[i]; else d[i] = 1; save(K.gap, d);
+      b.className = 'pill ' + (d[i] ? '' : 'g'); b.textContent = d[i] ? '✓ 我已掌握' : '☐ 标记为已掌握';
+    };
+    wrap.appendChild(b);
+    if (GAP_TAGS[i]) {
+      var q = document.createElement('span'); q.className = 'pill g'; q.style.cursor = 'pointer';
+      q.textContent = '相关命例（' + GAP_TAGS[i] + '）›';
+      q.onclick = function () { qFilter.tag = GAP_TAGS[i]; qFilter.mode = 'all'; show('qlist', null); };
+      wrap.appendChild(q);
+    }
+    h.parentNode.insertBefore(wrap, h.nextSibling);
+  });
+}
 
 /* 题库的可搜索全文。
  * ⚠️ data 里的 q.text 是 strip_md(b)[:600]——截断的，92 题里 80 题被砍，
@@ -2007,6 +2044,7 @@ function quizTexts(Q) {
 var PER_DOC = 4;      // 同一篇最多列几条，免得一章刷满整屏
 var MAX_HITS = 260;
 
+var searchRaw = false;
 function doSearch() {
   var kw = $('#q').value.trim();
   var box = $('#hits');
@@ -2018,7 +2056,8 @@ function doSearch() {
   var main = terms[0];
   var rest = terms.slice(1);
 
-  Promise.all([needCourse(), needNotes(), needQuiz()]).then(function (r) {
+  Promise.all([needCourse(), needNotes(), needQuiz(), searchRaw ? needRaw() : Promise.resolve(null)]).then(function (r) {
+    if (r[3]) fillRaw(r[0], r[3]);
     var hits = [], total = 0, capped = false;
 
     // 一篇文档里的每一处命中都列出来（上限 PER_DOC），并记下是第几处，
@@ -2072,17 +2111,23 @@ function doSearch() {
       return out;
     }
 
-    r[0].forEach(function (c) { scan(c.text, '第' + c.n + '章 · ' + c.title, 'chapter', c.n); });
+    r[0].forEach(function (c) {
+      if (c.raw && !searchRaw) return;
+      scan(c.text, (c.raw ? '原稿 · ' : '') + c.title, 'chapter', c.n);
+    });
     r[1].forEach(function (c) { scan(c.text, '笔记 · ' + c.title, 'note', c.n); });
     var qt = quizTexts(r[2]);
     r[2].items.forEach(function (q, i) {
       scan(qt[i], q.title, 'quiz', q.n);
     });
 
+    var rawHint = !searchRaw ? '<div class="hit" id="rawHit"><b>也搜原稿讲义？</b><p>默认只搜教材与专题（原稿是逐字整理、与教材重叠）。点这里连原稿讲义一起搜（会多加载约 3MB）。</p></div>' : '';
+    function bindRaw() { var e = $('#rawHit'); if (e) e.onclick = function () { searchRaw = true; doSearch(); }; }
     if (!hits.length) {
       box.innerHTML = '<div class="empty">没找到' +
         (rest.length ? '同时含「' + terms.map(esc).join('」「') + '」的地方'
-                     : '「' + esc(kw) + '」') + '</div>';
+                     : '「' + esc(kw) + '」') + '</div>' + rawHint;
+      bindRaw();
       return;
     }
     box.innerHTML =
@@ -2096,7 +2141,8 @@ function doSearch() {
           (h.more ? '<span class="pill g" style="margin-left:6px;font-size:10px">本篇另有 ' +
                     h.more + ' 处</span>' : '') +
           '<p>' + h.snip + '</p></div>';
-      }).join('');
+      }).join('') + rawHint;
+    bindRaw();
     $$('[data-h]', box).forEach(function (el) {
       el.onclick = function () {
         var h = hits[+el.dataset.h];

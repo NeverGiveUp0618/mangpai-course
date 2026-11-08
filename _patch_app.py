@@ -101,6 +101,64 @@ new_course = r"""RENDER.course = function () {
 s = s[:a] + new_course + s[b:]
 s = s.replace("$('#ttl').textContent = '第' + c.n + '章 · ' + c.title;", "$('#ttl').textContent = c.title;")
 s = s.replace("/* 题库的可搜索全文。", "(function(){ var g = document.getElementById('gapCard'); if (g) g.onclick = function () { show('note', 1); }; })();\n\n/* 题库的可搜索全文。", 1)
+# ---- 搜索：默认只搜教材与专题；原稿讲义按需加载 ----
+old = "    r[0].forEach(function (c) { scan(c.text, '第' + c.n + '章 · ' + c.title, 'chapter', c.n); });"
+new = """    r[0].forEach(function (c) {
+      if (c.raw && !searchRaw) return;
+      scan(c.text, (c.raw ? '原稿 · ' : '') + c.title, 'chapter', c.n);
+    });"""
+assert old in s
+s = s.replace(old, new, 1)
+s = s.replace("function doSearch() {", "var searchRaw = false;\nfunction doSearch() {", 1)
+s = s.replace("Promise.all([needCourse(), needNotes(), needQuiz()]).then(function (r) {",
+              "Promise.all([needCourse(), needNotes(), needQuiz(), searchRaw ? needRaw() : Promise.resolve(null)]).then(function (r) {\n    if (r[3]) fillRaw(r[0], r[3]);", 1)
+hint = """    var rawHint = !searchRaw ? '<div class="hit" id="rawHit"><b>也搜原稿讲义？</b><p>默认只搜教材与专题（原稿是逐字整理、与教材重叠）。点这里连原稿讲义一起搜（会多加载约 3MB）。</p></div>' : '';
+    function bindRaw() { var e = $('#rawHit'); if (e) e.onclick = function () { searchRaw = true; doSearch(); }; }
+"""
+s = s.replace("    if (!hits.length) {\n      box.innerHTML = '<div class=\"empty\">没找到'", hint + "    if (!hits.length) {\n      box.innerHTML = '<div class=\"empty\">没找到'", 1)
+s = s.replace("                     : '「' + esc(kw) + '」') + '</div>';\n      return;", "                     : '「' + esc(kw) + '」') + '</div>' + rawHint;\n      bindRaw();\n      return;", 1)
+s = s.replace("          '<p>' + h.snip + '</p></div>';\n      }).join('');", "          '<p>' + h.snip + '</p></div>';\n      }).join('') + rawHint;\n    bindRaw();", 1)
+s = s.replace('RENDER.search = function () {', 'RENDER.search = function () { searchRaw = false;', 1)
+# ---- 原稿正文懒加载 ----
+s = s.replace("var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };",
+              "var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };\nvar needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };\nfunction fillRaw(list, R) { list.forEach(function (c) { if (c.raw && !c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }", 1)
+old = "RENDER.chapter = function (n) {\n  needCourse().then(function (list) {\n    var c = list.filter(function (x) { return x.n === n; })[0];\n    if (!c) return;"
+new = "RENDER.chapter = function (n) {\n  needCourse().then(function (list) {\n    var c = list.filter(function (x) { return x.n === n; })[0];\n    if (!c) return;\n    if (c.raw && !c.html) {\n      $('#chapterBody').innerHTML = '<div class=\"empty\">载入原稿…</div>';\n      needRaw().then(function (R) { fillRaw(list, R); RENDER.chapter(n); });\n      return;\n    }"
+assert old in s
+s = s.replace(old, new, 1)
+# ---- 「我没学过」：掌握勾选 + 相关命例 ----
+s = s.replace("  lvopen: 'mp_course_lvopen',", "  lvopen: 'mp_course_lvopen',\n  gap: 'mp_course_gap',", 1)
+GAPTAGS = "['应期','应期','体用','桃花','墓库','墓库','穿','','体用','反局','体用','桃花']"
+dec = """
+var GAP_TAGS = %s;
+function decorateGap() {
+  var done = ls(K.gap, {});
+  var hs = $$('#noteBody h3').filter(function (h) { return /^\\d+\\./.test(h.textContent.trim()); });
+  hs.forEach(function (h, i) {
+    var wrap = document.createElement('div');
+    wrap.className = 'row wrap'; wrap.style.cssText = 'gap:8px;margin:2px 0 10px';
+    var b = document.createElement('span'); b.className = 'pill ' + (done[i] ? '' : 'g'); b.style.cursor = 'pointer';
+    b.textContent = done[i] ? '✓ 我已掌握' : '☐ 标记为已掌握';
+    b.onclick = function () {
+      var d = ls(K.gap, {}); if (d[i]) delete d[i]; else d[i] = 1; save(K.gap, d);
+      b.className = 'pill ' + (d[i] ? '' : 'g'); b.textContent = d[i] ? '✓ 我已掌握' : '☐ 标记为已掌握';
+    };
+    wrap.appendChild(b);
+    if (GAP_TAGS[i]) {
+      var q = document.createElement('span'); q.className = 'pill g'; q.style.cursor = 'pointer';
+      q.textContent = '相关命例（' + GAP_TAGS[i] + '）›';
+      q.onclick = function () { qFilter.tag = GAP_TAGS[i]; qFilter.mode = 'all'; show('qlist', null); };
+      wrap.appendChild(q);
+    }
+    h.parentNode.insertBefore(wrap, h.nextSibling);
+  });
+}
+""" % GAPTAGS
+s = s.replace("/* 题库的可搜索全文。", dec + "\n/* 题库的可搜索全文。", 1)
+s = s.replace("    trackRead(c.id);\n    afterDoc($('#noteBody'), c.id);", "    trackRead(c.id);\n    afterDoc($('#noteBody'), c.id);\n    if (n === 1) decorateGap();", 1)
+# 首页入口卡显示进度
+s = s.replace("  var mn = myNotes().length;", "  var gd = Object.keys(ls(K.gap, {})).length, gh = $('#gapHint');\n  if (gh) gh.textContent = gd ? ('已掌握 ' + gd + ' 条 · 和你之前学的对照：哪些没讲过、在哪章读') : '和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同';\n  var mn = myNotes().length;", 1)
+s = s.replace("  $('#outlineBody').innerHTML = META.outline || '';\n  bindDoc($('#outlineBody'));", "  $('#outlineBody').innerHTML = META.outline || '';\n  bindDoc($('#outlineBody'));\n  $$('#outlineBody .chlink').forEach(function (a) { a.onclick = function () { show('chapter', +a.dataset.ch); }; });", 1)
 io.open(p, 'w', encoding='utf-8').write(s)
 
 # ───── index.html ─────
@@ -132,7 +190,7 @@ io.open(p, 'w', encoding='utf-8').write(h)
 h = h.replace('    <div class="card" id="progCard">', '''    <div class="card tap" id="gapCard">
       <div class="row spread">
         <div><b style="font-size:15px">🔎 我没学过 · 对照清单</b>
-          <div class="muted" style="margin-top:2px">和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同</div></div>
+          <div class="muted" style="margin-top:2px" id="gapHint">和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同</div></div>
         <span style="color:var(--ink3)">&rsaquo;</span>
       </div>
     </div>
