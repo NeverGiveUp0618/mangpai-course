@@ -16,6 +16,7 @@ LEVELS = ['初级', '中级', '高级']
 
 GAN = '甲乙丙丁戊己庚辛壬癸'
 ZHI = '子丑寅卯辰巳午未申酉戌亥'
+WXC = {**{c: 'mu' for c in '甲乙寅卯'}, **{c: 'huo' for c in '丙丁巳午'}, **{c: 'tu' for c in '戊己辰戌丑未'}, **{c: 'jin' for c in '庚辛申酉'}, **{c: 'shui' for c in '壬癸亥子'}}
 WX = {'甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'}
 YY = {g: (i % 2 == 0) for i, g in enumerate(GAN)}
 BEN = dict(zip(ZHI, '癸己甲乙戊丙丁己庚辛戊壬'))
@@ -37,6 +38,27 @@ def shishen(day, g):
     return '偏印' if same else '正印'
 
 
+def parse_dayun(text):
+    """从「大运：甲辰 乙巳 …」里取出合法的干支对（阴阳同性），连续 ≥3 个才算。"""
+    ps = re.findall(r'([%s])([%s])' % (GAN, ZHI), text)
+    out = [g + z for g, z in ps if (GAN.index(g) - ZHI.index(z)) % 2 == 0]
+    return out[:12] if len(out) >= 3 else None
+
+
+def merge_dayun(html):
+    """把盘后紧跟的「大运：…」段落并进盘里（色牌一行）。"""
+    pat = re.compile(r'(<div class="ichart">(?:(?!<div class="ichart">).)*?</div></div>)\s*<p>(?:<strong>)?大运[：:](.*?)</p>', re.S)
+
+    def rep(m):
+        dy = parse_dayun(re.sub(r'<[^>]+>', '', m.group(2)))
+        if not dy:
+            return m.group(0)
+        chips = ''.join('<div class="c"><span class="a w-%s">%s</span><span class="b w-%s">%s</span></div>' % (
+            WXC[x[0]], x[0], WXC[x[1]], x[1]) for x in dy)
+        return m.group(1)[:-6] + '<div class="dys"><span class="lb">运</span>%s</div></div>' % chips
+    return pat.sub(rep, html)
+
+
 def write_js(name, var, obj):
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, name)
@@ -54,7 +76,7 @@ def build_doc(path, ident, n, title, extra):
     s = read(path)
     s = re.sub(r'^#\s+.*?\n', '', s, count=1)
     heads = []
-    html = md2html(s, heading_offset=0, collect_headings=heads, manual=False)
+    html = merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=False))
     d = {
         'id': ident, 'n': n, 'title': title, 'html': html,
         'toc': [{'lv': lv, 't': t, 'a': a, 'st': 0, 'm': 0} for lv, t, a in heads if lv <= 3],
@@ -189,6 +211,12 @@ def build_quiz():
     for c in uniq:
         gan, zhi, sex, body = list(c['gan']), list(c['zhi']), c['sex'], c['body']
         day = gan[2]
+        dyl = None
+        for ln in ((c.get('dayun') or '') + '\n' + body).split('\n'):
+            if ln.strip().startswith('大运'):
+                dyl = parse_dayun(ln)
+                if dyl:
+                    break
         m = MARK.search(body)
         pre = body[:m.start()].strip() if m else ''
         jie = body[m.start():] if m else body
@@ -207,7 +235,7 @@ def build_quiz():
         title = '%s造 %s%s日 · %s' % (sex, day, zhi[2], brief)
         ss_g = ' '.join('%s%s' % (p, shishen(day, g)) for p, g in zip('年月时', [gan[0], gan[1], gan[3]]))
         ss_z = ' '.join('%s%s' % (p, shishen(day, BEN[z])) for p, z in zip('年月日时', zhi))
-        chai = ('<p><strong>%s日主</strong></p>' % day) + render_chart(gan, zhi, sex) + \
+        chai = ('<p><strong>%s日主</strong></p>' % day) + render_chart(gan, zhi, sex, dyl) + \
                '<p><strong>天干十神</strong>：%s</p><p><strong>地支（取本气）</strong>：%s</p>' % (ss_g, ss_z)
         face = ''
         if pre:
@@ -228,7 +256,7 @@ def build_quiz():
         items.append({
             'n': 0, 'title': title, 'tags': tags, 'star': 0,
             'chart': {'g': sex, 'gan': gan, 'zhi': zhi}, 'nCharts': 1,
-            'charts': [{'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}],
+            'charts': [dict({'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}, **({'dy': dyl} if dyl else {}))],
             'face': face, 'jieLabel': '解', 'jie': para_html(jie), 'chai': chai, 'noAnswer': 0,
             'text': sums[:4000], 'topic': topic, 'seq': 0,
             '_src': '%s · %s' % (c.get('book', ''), c.get('chapter', '')),

@@ -191,6 +191,10 @@ function addReadToggle(id, anchor) {
 s = s.replace("/* ---------- 题库 ---------- */", fn + "\n/* ---------- 题库 ---------- */", 1)
 s = s.replace("    trackRead(c.id);\n    afterDoc($('#chapterBody'), c.id);", "    trackRead(c.id);\n    addReadToggle(c.id, '#prevCh');\n    afterDoc($('#chapterBody'), c.id);", 1)
 s = s.replace("    trackRead(c.id);\n    afterDoc($('#noteBody'), c.id);", "    trackRead(c.id);\n    addReadToggle(c.id, '#prevNt');\n    afterDoc($('#noteBody'), c.id);", 1)
+old = "          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';\n      }).join('') + '</div></div>';"
+new = "          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';\n      }).join('') + '</div>' +\n      (c.dy ? '<div class=\"dys\"><span class=\"lb2\">运</span>' + c.dy.map(function (x) { return '<div class=\"c\">' + gz(x.charAt(0), 'a') + gz(x.charAt(1), 'b') + '</div>'; }).join('') + '</div>' : '') + '</div>';"
+assert old in s, 'sticky pattern'
+s = s.replace(old, new, 1)
 io.open(p, 'w', encoding='utf-8').write(s)
 
 # ───── index.html ─────

@@ -1139,7 +1139,7 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .doc .ichart .c .a.w-tu,.doc .ichart .c .b.w-tu,.sticky-chart .c .w-tu{background:color-mix(in srgb,var(--wx-tu) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-tu) 45%,transparent)}
 .doc .ichart .c .a.w-jin,.doc .ichart .c .b.w-jin,.sticky-chart .c .w-jin{background:color-mix(in srgb,var(--wx-jin) 18%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-jin) 50%,transparent)}
 .doc .ichart .c .a.w-shui,.doc .ichart .c .b.w-shui,.sticky-chart .c .w-shui{background:color-mix(in srgb,var(--wx-shui) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-shui) 45%,transparent)}
-.doc .ichart .c.day,.sticky-chart .c.day{background:none; box-shadow:none; border-radius:10px; outline:2px solid var(--indigo2); outline-offset:1px}
+.doc .ichart .c.day,.sticky-chart .c.day{background:none; box-shadow:none; outline:none}
 .doc .ichart,.sticky-chart{box-shadow:0 4px 12px rgba(0,0,0,.08)}
 /* 课程列表：级别折叠组 */
 .lvg{background:var(--card); border:1px solid var(--line); border-radius:14px; margin:0 0 12px; overflow:hidden}
@@ -1150,3 +1150,11 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 
 .chlink{color:var(--indigo);cursor:pointer;border-bottom:1px dashed var(--indigo);font-size:13px;line-height:1.9;white-space:normal}
 .doc td{vertical-align:top}
+
+/* 大运行：盘下面一排色牌，可横滑 */
+.doc .ichart{flex-wrap:wrap}
+.doc .ichart .dys,.sticky-chart .dys{flex:1 0 100%; display:flex; align-items:center; gap:5px; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:5px; padding-top:5px; border-top:1px dashed var(--line)}
+.sticky-chart .grp{flex-wrap:wrap}
+.doc .ichart .dys .lb,.sticky-chart .dys .lb2{flex:0 0 auto; font-size:11px; color:var(--ink3); font-weight:600; letter-spacing:1px; writing-mode:horizontal-tb}
+.doc .ichart .dys .c,.sticky-chart .dys .c{flex:0 0 auto; text-align:center; min-width:26px}
+.doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:25px; height:25px; line-height:25px; font-size:14px; border-radius:7px}

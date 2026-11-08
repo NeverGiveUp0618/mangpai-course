@@ -308,14 +308,18 @@ def _four_pillar(head, body):
     return render_chart(gan, zhi, label)
 
 
-def render_chart(gan, zhi, label=''):
-    """四柱盘的统一 HTML。app.js 里的吸顶条用同一套结构与 class。"""
+def render_chart(gan, zhi, label='', dayun=None):
+    """四柱盘的统一 HTML。app.js 里的吸顶条用同一套结构与 class。dayun＝['甲辰','乙巳',…] 时下面加一行大运色牌。"""
     cols = ''.join(
         '<div class="c%s"><div class="p">%s</div>%s%s</div>'
         % (' day' if k == 2 else '', p, gz_span(gan[k], 'a'), gz_span(zhi[k], 'b'))
         for k, p in enumerate(_PILLARS))
     lb = ('<span class="lb">%s造</span>' % _html.escape(label)) if label else ''
-    return '<div class="ichart">%s<div class="cols">%s</div></div>' % (lb, cols)
+    dy = ''
+    if dayun:
+        dy = '<div class="dys"><span class="lb">运</span>%s</div>' % ''.join(
+            '<div class="c">%s%s</div>' % (gz_span(x[0], 'a'), gz_span(x[1], 'b')) for x in dayun)
+    return '<div class="ichart">%s<div class="cols">%s</div>%s</div>' % (lb, cols, dy)
 
 
 _GAN = '甲乙丙丁戊己庚辛壬癸'

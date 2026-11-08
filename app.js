@@ -1830,7 +1830,8 @@ function setupSticky(it) {
         return '<div class="c' + (i === 2 ? ' day' : '') + '">' +
           '<div class="p">' + p + '</div>' +
           gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';
-      }).join('') + '</div></div>';
+      }).join('') + '</div>' +
+      (c.dy ? '<div class="dys"><span class="lb2">运</span>' + c.dy.map(function (x) { return '<div class="c">' + gz(x.charAt(0), 'a') + gz(x.charAt(1), 'b') + '</div>'; }).join('') + '</div>' : '') + '</div>';
   }).join('');
 
 }
