@@ -333,7 +333,7 @@ def build_ref(courses):
                     j += 1
                 body = '\n'.join(lines[i + 1:j]).strip()
                 body = re.sub(r'<details>.*?</details>', '', body, flags=re.S)
-                body = re.split(r'^#{2,4}\s*自测.*$', body, flags=re.M)[0].strip()
+                body = re.split(r'^(?:#{2,4}\s*|\*\*|\d+[.、]\s*\*\*)?(?:本章)?自测.*$', body, flags=re.M)[0].strip()
                 if len(body) > 40:
                     sums.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'html': merge_dayun(md2html(body)), 'text': strip_md(body)})
                 break
