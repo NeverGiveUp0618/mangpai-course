@@ -64,23 +64,44 @@ def build_doc(path, ident, n, title, extra):
     return d
 
 
+def tb_key(fn):
+    m = re.match(r'^(\d+)-(.*)$', fn)
+    num = int(m.group(1)) if m else 0
+    rest = m.group(2) if m else fn
+    order = '上一二三四五六七八九十下'
+    k = re.search(r'[（(]([上下一二三四五六七八九十])[）)]', rest)
+    return (num, order.index(k.group(1)) if k else -1, rest)
+
+
 def build_courses():
     books = json.load(io.open(os.path.join(ROOT, '_src', 'books.json'), encoding='utf-8'))
     bymap = {(b['level'], b['n']): b['book'] for b in books}
     docs, n = [], 1
+
+    def add(path, title, lv, book, raw):
+        nonlocal n
+        docs.append(build_doc(path, 'c%d' % n, n, title, {'level': lv, 'book': book, 'raw': raw}))
+        n += 1
+
+    def first_title(path, fallback):
+        return read(path).split('\n', 1)[0].lstrip('# ').strip() or fallback
+
     for lv in LEVELS:
+        # 教材（改写稿）
+        d = os.path.join(CONTENT, '教材', lv)
+        if os.path.isdir(d):
+            for fn in sorted(os.listdir(d), key=tb_key):
+                m = re.match(r'^(\d+)-(.+)\.md$', fn)
+                if m:
+                    add(os.path.join(d, fn), first_title(os.path.join(d, fn), m.group(2)), lv, '教材', False)
+        # 原稿（逐字整理）
         d = os.path.join(CONTENT, lv)
-        if not os.path.isdir(d):
-            continue
-        for fn in sorted(os.listdir(d)):
-            m = re.match(r'^(\d+)-(.+)\.md$', fn)
-            if not m:
-                continue
-            seq, title = int(m.group(1)), m.group(2)
-            title = read(os.path.join(d, fn)).split('\n', 1)[0].lstrip('# ').strip() or title
-            docs.append(build_doc(os.path.join(d, fn), 'c%d' % n, n, title,
-                                  {'level': lv, 'book': bymap.get((lv, seq), '')}))
-            n += 1
+        if os.path.isdir(d):
+            for fn in sorted(os.listdir(d)):
+                m = re.match(r'^(\d+)-(.+)\.md$', fn)
+                if m:
+                    add(os.path.join(d, fn), first_title(os.path.join(d, fn), m.group(2)), lv,
+                        bymap.get((lv, int(m.group(1))), ''), True)
     return docs
 
 
@@ -232,7 +253,7 @@ def build_outline(courses, notes, quiz):
          '<p><strong>收录范围</strong>：只收盲派体系<strong>成熟期</strong>的资料（初级、中级、高级班讲义与面授笔记）；'
          '早期仍用用神的口径不收。</p>']
     for lv in LEVELS:
-        cs = [c for c in courses if c['level'] == lv]
+        cs = [c for c in courses if c['level'] == lv and not c['raw']]
         if not cs:
             continue
         h.append('<h2 id="lv-%s">%s · %d 章</h2><ul>' % (lv, lv, len(cs)))
@@ -248,9 +269,9 @@ def main():
     quiz = build_quiz()
     meta = {
         'name': '盲派八字', 'built': time.strftime('%Y-%m-%d %H:%M'),
-        'counts': {'course': len(courses), 'notes': len(notes), 'quiz': len(quiz['items']),
+        'counts': {'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
                    'quizChart': len(quiz['items']), 'quizChai': len(quiz['items'])},
-        'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv)} for lv in LEVELS],
+        'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
     }
     sizes = [

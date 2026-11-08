@@ -1,9 +1,9 @@
-/* 盲派八字 — 宣纸赭墨 */
+/* 盲派八字 — 松烟墨绿 */
 
 :root{
-  --bg:#f2ede0; --bg2:#e8e1d0; --card:#fdfbf5; --line:#ddd4c0;
-  --ink:#2b2b28; --ink2:#5c5850; --ink3:#8b857a;
-  --indigo:#7a3b22; --indigo2:#a0522d; --indigo-soft:#f1e4da;
+  --bg:#f3f1ea; --bg2:#e8e5da; --card:#fbfaf6; --line:#d8d4c4;
+  --ink:#232826; --ink2:#55605b; --ink3:#87908b;
+  --indigo:#2d5a4b; --indigo2:#3f7b67; --indigo-soft:#e1ece6;
   --cinnabar:#b8482e; --gold:#a8802a;
   --ok:#3f7a4d; --warn:#b0741e;
   --shadow:0 1px 3px rgba(60,50,30,.10), 0 6px 18px rgba(60,50,30,.06);
@@ -12,41 +12,41 @@
 
   /* 五行本色。⚠️ 金的白、水的黑在浅底上都不可读，按传统意象取变体：
      金→暗金褐，水→玄（深蓝黑）。深色主题里再各自提亮。 */
-  --wx-mu:#2e7d5b;    /* 木 · 青 */
-  --wx-huo:#c0392b;   /* 火 · 赤 */
-  --wx-tu:#7a4a24;    /* 土 · 棕 */
-  --wx-jin:#a06d1f;   /* 金 · 金黄 */
-  --wx-shui:#1f4e79;  /* 水 · 玄 */
+  --wx-mu:#3f8a2f;    /* 木 · 青 */
+  --wx-huo:#d6452a;   /* 火 · 赤 */
+  --wx-tu:#8c5a2b;    /* 土 · 棕 */
+  --wx-jin:#b88a10;   /* 金 · 金黄 */
+  --wx-shui:#2a5f9e;  /* 水 · 玄 */
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#16191c; --bg2:#1b1f23; --card:#212629; --line:#333a3f;
-    --ink:#dfe3e6; --ink2:#a8b0b6; --ink3:#79838a;
-    --indigo:#e0976c; --indigo2:#eeb08a; --indigo-soft:#33231b;
+    --bg:#111614; --bg2:#161c19; --card:#1b2220; --line:#2c3632;
+    --ink:#e2e8e4; --ink2:#a8b4ad; --ink3:#78867f;
+    --indigo:#7fc3a8; --indigo2:#9bd4bd; --indigo-soft:#1a2b25;
     --cinnabar:#e08066; --gold:#d0a54e;
     --ok:#6fbe84; --warn:#d9a24e;
-    --wx-mu:#5fbf8f; --wx-huo:#e8705f; --wx-tu:#b07d54;
-    --wx-jin:#d9a94e; --wx-shui:#6fa8dc;
+    --wx-mu:#7bd16a; --wx-huo:#ff7a5c; --wx-tu:#d19a62;
+    --wx-jin:#f0c24b; --wx-shui:#78b4ee;
     --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
   }
 }
 :root[data-theme="light"]{
-  --bg:#f2ede0; --bg2:#e8e1d0; --card:#fdfbf5; --line:#ddd4c0;
-  --ink:#2b2b28; --ink2:#5c5850; --ink3:#8b857a;
-  --indigo:#7a3b22; --indigo2:#a0522d; --indigo-soft:#f1e4da;
+  --bg:#f3f1ea; --bg2:#e8e5da; --card:#fbfaf6; --line:#d8d4c4;
+  --ink:#232826; --ink2:#55605b; --ink3:#87908b;
+  --indigo:#2d5a4b; --indigo2:#3f7b67; --indigo-soft:#e1ece6;
   --cinnabar:#b8482e; --gold:#a8802a; --ok:#3f7a4d; --warn:#b0741e;
   --shadow:0 1px 3px rgba(60,50,30,.10), 0 6px 18px rgba(60,50,30,.06);
-  --wx-mu:#2e7d5b; --wx-huo:#c0392b; --wx-tu:#7a4a24;
-  --wx-jin:#a06d1f; --wx-shui:#1f4e79;
+  --wx-mu:#3f8a2f; --wx-huo:#d6452a; --wx-tu:#8c5a2b;
+  --wx-jin:#b88a10; --wx-shui:#2a5f9e;
 }
 :root[data-theme="dark"]{
-  --bg:#16191c; --bg2:#1b1f23; --card:#212629; --line:#333a3f;
-  --ink:#dfe3e6; --ink2:#a8b0b6; --ink3:#79838a;
-  --indigo:#e0976c; --indigo2:#eeb08a; --indigo-soft:#33231b;
+  --bg:#111614; --bg2:#161c19; --card:#1b2220; --line:#2c3632;
+  --ink:#e2e8e4; --ink2:#a8b4ad; --ink3:#78867f;
+  --indigo:#7fc3a8; --indigo2:#9bd4bd; --indigo-soft:#1a2b25;
   --cinnabar:#e08066; --gold:#d0a54e; --ok:#6fbe84; --warn:#d9a24e;
   --shadow:0 1px 3px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
-  --wx-mu:#5fbf8f; --wx-huo:#e8705f; --wx-tu:#b07d54;
-  --wx-jin:#d9a94e; --wx-shui:#6fa8dc;
+  --wx-mu:#7bd16a; --wx-huo:#ff7a5c; --wx-tu:#d19a62;
+  --wx-jin:#f0c24b; --wx-shui:#78b4ee;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -172,7 +172,7 @@ main{padding:14px 14px calc(var(--tabh) + 26px)}
 .hr{height:1px;background:var(--line);margin:14px 0;border:0}
 
 .hero{
-  background:linear-gradient(140deg,var(--indigo) 0%, #5a2b19 60%, #3b1c10 100%);
+  background:linear-gradient(140deg,var(--indigo) 0%, #1f4237 60%, #14302a 100%);
   color:#f0e9d8;border-radius:18px;padding:20px 18px;margin-bottom:16px;
   position:relative;overflow:hidden
 }
@@ -564,12 +564,12 @@ html.wst-frame-guard .toast{bottom:calc(58px + 12px)}
 .qgh:hover{background:var(--bg2)}
 .qgh:focus-visible{outline:2px solid var(--indigo);outline-offset:-2px}
 .qgh .ar{flex:0 0 auto;font-size:13px;color:var(--ink3);transition:transform .18s;display:inline-block}
-.qgrp.open .qgh .ar{transform:rotate(90deg)}
+.qgrp.open>.qgh .ar{transform:rotate(90deg)}
 .qgh .nm{flex:1;font-size:14.5px;font-weight:600;min-width:0}
-.qgrp.open .qgh .nm{color:var(--indigo)}
+.qgrp.open>.qgh .nm{color:var(--indigo)}
 .qgh .ct{flex:0 0 auto;font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
 .qgb{display:none}
-.qgrp.open .qgb{display:block}
+.qgrp.open>.qgb{display:block}
 .qgb .qrow{padding-left:30px}
 @media (prefers-reduced-motion:reduce){.qgh .ar{transition:none}}
 
@@ -1128,3 +1128,22 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .lvh:first-child{margin-top:4px}
 .bkh{font-size:12.5px;color:var(--ink3);margin:12px 4px 6px;letter-spacing:.05em}
 .src-line{margin-top:8px}
+
+/* ===== 四柱盘重设计：五行色牌 ===== */
+.doc .ichart .c .a,.doc .ichart .c .b,.sticky-chart .c .a,.sticky-chart .c .b{
+  display:block; margin:2px auto 0; width:30px; line-height:30px; height:30px; border-radius:8px;
+  text-align:center; font-size:18px; font-weight:700; background:var(--bg2); box-shadow:inset 0 0 0 1px var(--line);
+}
+.doc .ichart .c .a.w-mu,.doc .ichart .c .b.w-mu,.sticky-chart .c .w-mu{background:color-mix(in srgb,var(--wx-mu) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-mu) 45%,transparent)}
+.doc .ichart .c .a.w-huo,.doc .ichart .c .b.w-huo,.sticky-chart .c .w-huo{background:color-mix(in srgb,var(--wx-huo) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-huo) 45%,transparent)}
+.doc .ichart .c .a.w-tu,.doc .ichart .c .b.w-tu,.sticky-chart .c .w-tu{background:color-mix(in srgb,var(--wx-tu) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-tu) 45%,transparent)}
+.doc .ichart .c .a.w-jin,.doc .ichart .c .b.w-jin,.sticky-chart .c .w-jin{background:color-mix(in srgb,var(--wx-jin) 18%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-jin) 50%,transparent)}
+.doc .ichart .c .a.w-shui,.doc .ichart .c .b.w-shui,.sticky-chart .c .w-shui{background:color-mix(in srgb,var(--wx-shui) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-shui) 45%,transparent)}
+.doc .ichart .c.day,.sticky-chart .c.day{background:none; box-shadow:none; border-radius:10px; outline:2px solid var(--indigo2); outline-offset:1px}
+.doc .ichart,.sticky-chart{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+/* 课程列表：级别折叠组 */
+.lvg{background:var(--card); border:1px solid var(--line); border-radius:14px; margin:0 0 12px; overflow:hidden}
+.lvg>.qgh .nm{font-size:16.5px; letter-spacing:.06em}
+.lvg>.qgb{padding:4px 12px 12px}
+.lvg .card{margin:8px 0 0; box-shadow:none}
+.rawg{margin-top:12px; border-top:1px dashed var(--line); border-bottom:0}

@@ -32,14 +32,19 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($('#entryGate') === null, '入站自检已移除');
   ok(/盲派八字/.test($('#ttl').textContent), '标题是盲派八字');
   const M = window.DATA_META;
-  ok(M.counts.course >= 60 && M.counts.quiz >= 500, `数据量：课程${M.counts.course} 专题${M.counts.notes} 命例${M.counts.quiz}`);
+  ok((M.counts.course + M.counts.rawCourse) >= 60 && M.counts.quiz >= 500, `数据量：课程${M.counts.course} 专题${M.counts.notes} 命例${M.counts.quiz}`);
   ok(!$('.desk-entry') && !$('.vke-entry'), '断命台/v课入口已去除');
   ok($$('.tabbar button').length === 4, '底栏 4 个');
 
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);
-  ok($$('.lvh').length === 3, '初/中/高三级标题');
-  ok($$('[data-ch]').length === M.counts.course, '课程卡片数=' + M.counts.course);
+  ok($$('.lvg').length === 3, '初/中/高三个折叠组');
+  ok($$('.lvg.open').length === 1, '默认只展开一级');
+  click($$('.lvg > .qgh')[1]); await wait(30);
+  ok($$('.lvg.open').length === 2, '点击可展开另一级');
+  click($$('.lvg > .qgh')[1]); await wait(30);
+  ok($$('.lvg.open').length === 1, '再点折叠');
+  ok($$('[data-ch]').length === M.counts.course + M.counts.rawCourse, '课程卡片数（含原稿）');
   click($('[data-ch="1"]')); await wait(150);
   ok($('#chapterBody').textContent.length > 2000, '第1章有正文');
   ok($$('#chapterBody .ichart').length > 0 || true, '章内排盘（如有）');

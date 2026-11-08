@@ -17,6 +17,7 @@ s = s[:a] + s[b:]
 
 # 2) 存储键换前缀，避免与同域的命理精讲串数据
 s = s.replace('bazi_course_', 'mp_course_')
+s = s.replace("counts: 'mp_course_counts',", "counts: 'mp_course_counts',\n  lvopen: 'mp_course_lvopen',")
 
 # 3) 文案
 s = s.replace('/* 命理精讲 — app.js', '/* 盲派八字 — app.js')
@@ -42,17 +43,16 @@ new_course = r"""RENDER.course = function () {
   box.innerHTML = '<div class="empty">载入中…</div>';
   needCourse().then(function (list) {
     var read = ls(K.read, {});
-    var html = '', lv = '', bk = '';
-    list.forEach(function (c) {
-      if (c.level !== lv) {
-        lv = c.level; bk = '';
-        var cnt = list.filter(function (x) { return x.level === lv; });
-        var dn = cnt.filter(function (x) { return (read[x.id] || 0) >= 90; }).length;
-        html += '<h3 class="lvh">' + esc(lv) + '<span class="muted"> · ' + dn + '/' + cnt.length + '</span></h3>';
-      }
-      if (c.book !== bk) { bk = c.book; html += '<div class="bkh">' + esc(bk) + '</div>'; }
+    var open = ls(K.lvopen, null);
+    var last = ls(K.last, null);
+    if (!open) {
+      open = {};
+      var cur = last && last.scr === 'chapter' ? list.filter(function (x) { return x.n === +last.id; })[0] : null;
+      open[cur ? cur.level : '初级'] = 1;
+    }
+    function card(c) {
       var p = read[c.id] || 0;
-      html += '<div class="card tap" data-ch="' + c.n + '">' +
+      return '<div class="card tap" data-ch="' + c.n + '">' +
         '<div class="row spread"><div style="flex:1">' +
         '<b style="font-size:15.5px">' + esc(c.title) + '</b>' +
         '<div class="muted" style="margin-top:3px">' + Math.round(c.chars / 100) / 10 + ' 千字 · ' +
@@ -61,8 +61,36 @@ new_course = r"""RENDER.course = function () {
           '<span class="pill g">' + p + '%</span>' : '<span style="color:var(--ink3)">›</span>') +
         '</div>' + (p > 0 && p < 90 ? '<div class="bar"><i style="width:' + p + '%"></i></div>' : '') +
         '</div>';
+    }
+    var html = '';
+    (META.levels || []).forEach(function (L) {
+      var lv = L.name;
+      var tb = list.filter(function (x) { return x.level === lv && !x.raw; });
+      var raw = list.filter(function (x) { return x.level === lv && x.raw; });
+      var all = tb.concat(raw);
+      if (!all.length) return;
+      var dn = all.filter(function (x) { return (read[x.id] || 0) >= 90; }).length;
+      var rawOpen = !!open[lv + '#raw'];
+      html += '<div class="qgrp lvg' + (open[lv] ? ' open' : '') + '" data-g="' + esc(lv) + '">' +
+        '<button class="qgh"><span class="ar">›</span><span class="nm">' + esc(lv) + '教材</span>' +
+        '<span class="ct">' + dn + '/' + all.length + '</span></button><div class="qgb">' +
+        (tb.length ? tb.map(card).join('') : '<div class="muted" style="padding:6px 14px">教材整理中</div>') +
+        (raw.length ? '<div class="qgrp rawg' + (rawOpen ? ' open' : '') + '" data-g="' + esc(lv) + '#raw">' +
+          '<button class="qgh"><span class="ar">›</span><span class="nm" style="font-weight:500;font-size:13px">原稿讲义（逐字整理，供查对）</span>' +
+          '<span class="ct">' + raw.length + '</span></button><div class="qgb">' + raw.map(card).join('') + '</div></div>' : '') +
+        '</div></div>';
     });
     box.innerHTML = html;
+    $$('.qgh', box).forEach(function (b) {
+      b.onclick = function (ev) {
+        var g = b.parentNode, name = g.dataset.g;
+        g.classList.toggle('open');
+        var o = ls(K.lvopen, {}) || {};
+        if (g.classList.contains('open')) o[name] = 1; else delete o[name];
+        save(K.lvopen, o);
+        ev.stopPropagation();
+      };
+    });
     $$('[data-ch]', box).forEach(function (el) {
       el.onclick = function () { show('chapter', +el.dataset.ch); };
     });
@@ -95,13 +123,13 @@ h = h.replace('<script async src="https://nevergiveup0618.github.io/all-project/
 # 底栏：去掉「速」
 h = re.sub(r'\s*<button data-tab="ref">.*?</button>', '', h)
 h = h.replace('<span>教材</span>', '<span>课程</span>').replace('<span>笔记</span></button>', '<span>专题</span></button>')
-h = h.replace('theme-color" content="#1f5673"', 'theme-color" content="#5b3a29"')
+h = h.replace('theme-color" content="#1f5673"', 'theme-color" content="#2d5a4b"')
 io.open(p, 'w', encoding='utf-8').write(h)
 
 h = h.replace('学习路线与依赖图','学习路线').replace('先学哪章、后学哪章','初 → 中 → 高，按什么顺序学')
 io.open(p, 'w', encoding='utf-8').write(h)
 # manifest
 p = os.path.join(ROOT, 'manifest.json')
-m = io.open(p, encoding='utf-8').read().replace('命理精讲', '盲派八字').replace('#1f5673', '#5b3a29')
+m = io.open(p, encoding='utf-8').read().replace('命理精讲', '盲派八字').replace('#1f5673', '#2d5a4b')
 io.open(p, 'w', encoding='utf-8').write(m)
 print('patched')
