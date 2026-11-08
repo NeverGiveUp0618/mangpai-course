@@ -49,16 +49,7 @@ var K = {
 
 /* 命例停留满 5 分钟才记为看过；误触进入、立刻返回和快速翻题不打点。 */
 var seenTimer = null;
-function markSeenLater(n) {
-  clearTimeout(seenTimer);
-  var delay = Number(window.__READ_DELAY_MS) || 5 * 60 * 1000;
-  seenTimer = setTimeout(function () {
-    seenTimer = null;
-    if (cur.scr !== 'quiz' || String(cur.id) !== String(n) || document.hidden) return;
-    var s = ls(K.seen, {});
-    if (!s[n]) { s[n] = Date.now(); save(K.seen, s); }
-  }, delay);
-}
+function markSeenLater(n) { clearTimeout(seenTimer); /* 学习标记由用户在命例页手动打，不再自动记 */ }
 function ls(k, d) {
   try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }
   catch (e) { return d; }
@@ -1636,7 +1627,7 @@ RENDER.qlist = function () {
 
     var modes = [
       ['all', '全部 ' + Q.items.length],
-      ['new', '没看过'],
+      ['new', '未标记已学'],
       ['star', '精读 ' + Q.items.filter(function (x) { return x.star > 0; }).length],
       ['chart', '有完整盘']
     ];
@@ -1835,12 +1826,18 @@ function navBar(it) {
     for (var k = 0; k < Q.items.length; k++) if (Q.items[k].n === it.n) { i = k; break; }
     var prev = i > 0 ? Q.items[i - 1] : null;
     var next = i >= 0 && i < Q.items.length - 1 ? Q.items[i + 1] : null;
+    var isSeen = !!ls(K.seen, {})[it.n];
     $('#L4').innerHTML =
+      '<div class="row" style="margin:18px 0 0"><button class="btn' + (isSeen ? ' pri' : '') + '" id="seenToggle" style="flex:1">' + (isSeen ? '✓ 已学（点一下取消）' : '☐ 标记为已学') + '</button></div>' +
       '<div class="row spread" id="qnav" style="gap:10px;margin:20px 0 6px">' +
       '<button class="btn" id="bPrev" style="flex:1"' + (prev ? '' : ' disabled') + '>‹ 上一题</button>' +
       '<button class="btn" id="bList" style="flex:0 0 auto">题库</button>' +
       '<button class="btn pri" id="bNext" style="flex:1"' + (next ? '' : ' disabled') + '>下一题 ›</button>' +
       '</div>';
+    $('#seenToggle').onclick = function () {
+      var sv = ls(K.seen, {}); if (sv[it.n]) delete sv[it.n]; else sv[it.n] = Date.now(); save(K.seen, sv);
+      var on = !!sv[it.n]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';
+    };
     $('#bList').onclick = function () { show('qlist', null); };
     if (prev) $('#bPrev').onclick = function () { show('quiz', prev.n); };
     if (next) $('#bNext').onclick = function () { show('quiz', next.n); };

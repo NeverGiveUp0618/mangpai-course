@@ -81,6 +81,12 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click(row); await wait(150);
   ok($('#quizBody').innerHTML.length > 300 && /(日主|造)/.test($('#quizBody').textContent), '命例页有内容');
   ok($('#stickyChart') && !$('#stickyChart').classList.contains('hide'), '吸顶盘显示');
+  await wait(300);
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}')).length === 0, '打开命例不会自动标记已学');
+  click($('#seenToggle')); await wait(30);
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}')).length === 1, '手动点「标记为已学」才记录');
+  click($('#seenToggle')); await wait(30);
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}')).length === 0, '再点取消');
 
   console.log('搜索');
   click($('#btnSearch')); await wait(80);
