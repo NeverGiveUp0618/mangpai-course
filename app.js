@@ -564,6 +564,7 @@ RENDER.chapter = function (n) {
     $('#prevCh').onclick = function () { show('chapter', n - 1); };
     $('#nextCh').onclick = function () { show('chapter', n + 1); };
     trackRead(c.id);
+    addReadToggle(c.id, '#prevCh');
     afterDoc($('#chapterBody'), c.id);
   });
 };
@@ -651,6 +652,7 @@ RENDER.note = function (n) {
     $('#nextNt').onclick = next ? function () { show('note', next.n); } : null;
 
     trackRead(c.id);
+    addReadToggle(c.id, '#prevNt');
     afterDoc($('#noteBody'), c.id);
     if (n === 1) decorateGap();
   });
@@ -1609,10 +1611,23 @@ function trackRead(id) {
     var h = document.documentElement;
     var max = h.scrollHeight - h.clientHeight;
     var p = max <= 0 ? 100 : Math.min(100, Math.round((h.scrollTop / max) * 100));
-    var read = ls(K.read, {});
-    if (p > (read[id] || 0)) { read[id] = p; save(K.read, read); }
-    savePos(id);   // 百分比只够列表显示，回来接着读要的是实际位置
+    savePos(id);   // 已读与否由用户手动标记，这里只记位置   // 百分比只够列表显示，回来接着读要的是实际位置
   }, 1500);
+}
+
+
+function addReadToggle(id, anchor) {
+  var old = $('#readToggle'); if (old) old.parentNode.removeChild(old);
+  var a = $(anchor); if (!a || !a.parentNode) return;
+  var on = (ls(K.read, {})[id] || 0) >= 90;
+  var b = document.createElement('button');
+  b.id = 'readToggle'; b.className = 'btn' + (on ? ' pri' : ''); b.style.cssText = 'width:100%;margin:22px 0 0';
+  b.textContent = on ? '✓ 已读（点一下取消）' : '☐ 标记为已读';
+  b.onclick = function () {
+    var r = ls(K.read, {}); if ((r[id] || 0) >= 90) delete r[id]; else r[id] = 100; save(K.read, r);
+    var now = (r[id] || 0) >= 90; b.className = 'btn' + (now ? ' pri' : ''); b.textContent = now ? '✓ 已读（点一下取消）' : '☐ 标记为已读';
+  };
+  a.parentNode.parentNode.insertBefore(b, a.parentNode);
 }
 
 /* ---------- 题库 ---------- */

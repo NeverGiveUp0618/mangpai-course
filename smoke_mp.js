@@ -62,6 +62,12 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($$('#chapterBody .ichart').length > 0 || true, '章内排盘（如有）');
   click($('#nextCh')); await wait(100);
   ok($('#s-chapter').classList.contains('active'), '下一章可翻');
+  await wait(1900);
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}')).length === 0, '读章节不会自动记已读');
+  click($('#readToggle')); await wait(30);
+  ok(Object.values(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}'))[0] >= 90, '手动「标记为已读」才记录');
+  click($('#readToggle')); await wait(30);
+  ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}')).length === 0, '再点取消');
 
   const rawCard = $('.rawg [data-ch]');
   ok(!!rawCard, '有原稿讲义卡片');
