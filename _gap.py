@@ -36,6 +36,22 @@ def loc(term):
     return '；'.join('%s（%d 处）' % (t, c) for c, t in h) if h else '—'
 
 
+RAW = {}
+for _p in glob.glob(ROOT + '/content/初级/*.md') + glob.glob(ROOT + '/content/中级/*.md') + glob.glob(ROOT + '/content/高级/*.md'):
+    RAW[_p] = io.open(_p, encoding='utf-8').read()
+
+
+def locr(term, n=2):
+    """原稿讲义里提到该词最多的章（供查原话）。"""
+    hits = []
+    for p, t in RAW.items():
+        c = t.count(term)
+        if c:
+            hits.append((c, os.path.basename(os.path.dirname(p)) + ' · ' + t.split('\n', 1)[0].lstrip('# ').strip()))
+    hits.sort(reverse=True)
+    return '；'.join('%s（%d 处）' % (t, c) for c, t in hits[:n]) if hits else '—'
+
+
 # 一、成熟期资料里有、你站里查不到的（人工核对过原文）
 GAPS = [
     ('交脱诀与大限叠加', '交脱诀',
@@ -95,6 +111,7 @@ for i, (name, kw, desc) in enumerate(GAPS, 1):
     L.append('### %d. %s\n' % (i, name))
     L.append(desc + '\n')
     L.append('**去哪读**：' + loc(kw) + '\n')
+    L.append('**原稿出处**：' + locr(kw) + '\n')
 L.append('## 二、需要你来裁定的口径差异\n')
 L.append('| 问题 | 你站里的说法 | 盲派资料 | 说明 |\n|---|---|---|---|\n'
          '| 库要不要开 | 日主坐库无刑冲则不吉，四库必须坏 | 晚期：辰戌气库不必开，丑未形墓必须开 | 两说并存，待裁定 |\n'

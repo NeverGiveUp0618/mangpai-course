@@ -139,6 +139,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   $('#q').value = '墓库'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(400);
   ok($$('#hits > *').length > 0, '搜“墓库”有结果：' + $$('#hits > *').length);
 
+  ok($$('#hits [data-sc]').length >= 3, '搜索结果有范围筛选（全部/教材/速查/命例/专题）');
+  const scq = $$('#hits [data-sc]').find(e => e.dataset.sc === 'quiz');
+  if (scq) { click(scq); await wait(30); ok($$('#hits .hit').length > 0 && $$('#hits [data-sc].sel').length === 1, '点「命例」只看命例结果'); }
+  $('#q').value = '八字盘'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(1800);
+  ok(/没有「八字盘」，已改搜「命局」/.test($('#hits').textContent), '别名：搜「八字盘」自动改搜「命局」并提示');
   console.log('隔离');
   const keys = Object.keys(window.localStorage);
   ok(keys.every(k => !/^bazi_/.test(k)), '没有写 bazi_ 前缀的键：' + keys.join(','));

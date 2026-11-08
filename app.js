@@ -2196,7 +2196,7 @@ function fmtDay(t) {
 }
 
 /* ---------- 搜索 ---------- */
-RENDER.search = function () { searchRaw = false; setTimeout(function () { $('#q').focus(); }, 80); };
+RENDER.search = function () { searchRaw = false; searchScope = 'all'; setTimeout(function () { $('#q').focus(); }, 80); };
 
 (function(){ var g = document.getElementById('gapCard'); if (g) g.onclick = function () { show('note', 1); }; })();
 
@@ -2245,9 +2245,11 @@ function quizTexts(Q) {
 var PER_DOC = 4;      // 同一篇最多列几条，免得一章刷满整屏
 var MAX_HITS = 260;
 
-var searchRaw = false;
+var searchRaw = false, searchScope = 'all', searchAltFrom = null;
+var SEARCH_ALIAS = { '主宾': '宾主', '作功': '做功', '三合': '三合局', '透干': '虚透', '原神': '原身', '阳刃': '羊刃', '年上': '年柱', '日干': '日主', '八字盘': '命局', '命盘': '命局', '排盘': '命局', '宾主': '主宾', '做功': '作功', '原身': '原神', '羊刃': '阳刃' };
 function doSearch() {
   var kw = $('#q').value.trim();
+  var altNote = searchAltFrom; searchAltFrom = null;
   var box = $('#hits');
   if (kw.length < 1) { box.innerHTML = '<div class="empty">输入关键词开始搜索</div>'; return; }
   box.innerHTML = '<div class="empty">搜索中…（首次搜索要加载全部教材，稍候）</div>';
@@ -2257,8 +2259,9 @@ function doSearch() {
   var main = terms[0];
   var rest = terms.slice(1);
 
-  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw)]).then(function (r) {
+  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw), needRef().catch(function () { return null; })]).then(function (r) {
     if (r[3]) fillRaw(r[0], r[3]);
+    var curCat = 'chapter';
     var hits = [], total = 0, capped = false;
 
     // 一篇文档里的每一处命中都列出来（上限 PER_DOC），并记下是第几处，
@@ -2291,6 +2294,7 @@ function doSearch() {
           var s = Math.max(0, sp.at - 28);
           var tail = text.slice(sp.at + main.length, sp.at + main.length + 56);
           hits.push({
+            cat: curCat,
             label: label + (sp.occ ? ' · 第' + (sp.occ + 1) + '处' : ''),
             scr: scr, id: id, occ: sp.occ,
             snip: (s > 0 ? '…' : '') + esc(text.slice(s, sp.at)) +
@@ -2316,7 +2320,14 @@ function doSearch() {
       if (c.raw && !searchRaw) return;
       scan(c.text, (c.raw ? '原稿 · ' : '') + c.title, 'chapter', c.n);
     });
-    r[1].forEach(function (c) { scan(c.text, '笔记 · ' + c.title, 'note', c.n); });
+    curCat = 'ref';
+    if (r[4]) {
+      r[4].kou.forEach(function (k) { scan(k.text, '口诀 · ' + k.chapter, 'chapter', k.n); });
+      r[4].sum.forEach(function (k) { scan(k.text, '小结 · ' + k.title, 'chapter', k.n); });
+    }
+    curCat = 'note';
+    r[1].forEach(function (c) { scan(c.text, '专题问答 · ' + c.title, 'note', c.n); });
+    curCat = 'quiz';
     var qt = quizTexts(r[2]);
     r[2].items.forEach(function (q, i) {
       scan(qt[i], q.title, 'quiz', q.n);
@@ -2324,6 +2335,13 @@ function doSearch() {
 
     var rawHint = !searchRaw ? '<div class="hit" id="rawHit"><b>也搜原稿讲义？</b><p>默认只搜教材与专题（原稿是逐字整理、与教材重叠）。点这里连原稿讲义一起搜（会多加载约 3MB）。</p></div>' : '';
     function bindRaw() { var e = $('#rawHit'); if (e) e.onclick = function () { searchRaw = true; doSearch(); }; }
+    var alias = SEARCH_ALIAS[main];
+    if (!hits.length && alias && searchAltFrom === null && !altNote) {
+      searchAltFrom = main;
+      $('#q').value = kw.replace(main, alias);
+      doSearch();
+      return;
+    }
     if (!hits.length) {
       box.innerHTML = '<div class="empty">没找到' +
         (rest.length ? '同时含「' + terms.map(esc).join('」「') + '」的地方'
@@ -2331,26 +2349,39 @@ function doSearch() {
       bindRaw();
       return;
     }
-    box.innerHTML =
-      '<div class="muted" style="margin-bottom:8px">' +
-        (rest.length ? '同时含「' + terms.map(esc).join('」「') + '」：' : '') +
-        '共 ' + total + ' 处' +
-        (hits.length < total ? '，列出 ' + hits.length + ' 条' : '') +
-        (capped ? '（已达上限，缩小关键词看更全）' : '') + '</div>' +
-      hits.map(function (h, i) {
-        return '<div class="hit" data-h="' + i + '"><b>' + esc(h.label) + '</b>' +
-          (h.more ? '<span class="pill g" style="margin-left:6px;font-size:10px">本篇另有 ' +
-                    h.more + ' 处</span>' : '') +
-          '<p>' + h.snip + '</p></div>';
-      }).join('') + rawHint;
-    bindRaw();
-    $$('[data-h]', box).forEach(function (el) {
-      el.onclick = function () {
-        var h = hits[+el.dataset.h];
-        // 定位用第一个词——整串（含空格）在正文里不存在，传过去必然找不到
-        show(h.scr, h.id, { kw: main, occ: h.occ });
-      };
-    });
+    var CATS = [['all', '全部'], ['chapter', '教材'], ['ref', '速查'], ['quiz', '命例'], ['note', '专题']];
+    function paintHits() {
+      var cnt = { all: hits.length };
+      hits.forEach(function (h) { cnt[h.cat] = (cnt[h.cat] || 0) + 1; });
+      if (searchScope !== 'all' && !cnt[searchScope]) searchScope = 'all';
+      var shown = hits.filter(function (h) { return searchScope === 'all' || h.cat === searchScope; });
+      box.innerHTML =
+        '<div class="row wrap" style="gap:6px;margin-bottom:8px">' + CATS.filter(function (c) { return c[0] === 'all' || cnt[c[0]]; }).map(function (c) {
+          return '<span class="pill' + (searchScope === c[0] ? ' sel' : ' g') + '" data-sc="' + c[0] + '">' + c[1] + ' ' + (cnt[c[0]] || 0) + '</span>';
+        }).join('') + '</div>' +
+        '<div class="muted" style="margin-bottom:8px">' +
+          (altNote ? '没有「' + esc(altNote) + '」，已改搜「' + esc(main) + '」。' : '') +
+          (rest.length ? '同时含「' + terms.map(esc).join('」「') + '」：' : '') +
+          '共 ' + total + ' 处' +
+          (hits.length < total ? '，列出 ' + hits.length + ' 条' : '') +
+          (capped ? '（已达上限，缩小关键词看更全）' : '') + '</div>' +
+        shown.map(function (h) {
+          return '<div class="hit" data-h="' + hits.indexOf(h) + '"><b>' + esc(h.label) + '</b>' +
+            (h.more ? '<span class="pill g" style="margin-left:6px;font-size:10px">本篇另有 ' +
+                      h.more + ' 处</span>' : '') +
+            '<p>' + h.snip + '</p></div>';
+        }).join('') + rawHint;
+      bindRaw();
+      $$('[data-sc]', box).forEach(function (el) { el.onclick = function () { searchScope = el.dataset.sc; paintHits(); }; });
+      $$('[data-h]', box).forEach(function (el) {
+        el.onclick = function () {
+          var h = hits[+el.dataset.h];
+          // 定位用第一个词——整串（含空格）在正文里不存在，传过去必然找不到
+          show(h.scr, h.id, { kw: main, occ: h.occ });
+        };
+      });
+    }
+    paintHits();
   });
 }
 

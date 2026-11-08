@@ -539,6 +539,11 @@ def build_outline(courses, notes, quiz):
 
 
 def main():
+    # 「我没学过」对照页随教材自动更新（读 ../bazi-course 只读）
+    import subprocess
+    g = os.path.join(ROOT, '_gap.py')
+    if os.path.exists(g):
+        subprocess.run([sys.executable, g], stdout=subprocess.DEVNULL, check=False)
     courses = build_courses()
     notes = build_notes()
     quiz = build_quiz()
