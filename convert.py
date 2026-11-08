@@ -8,6 +8,8 @@
 import os, re, json, io, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, ROOT)
+from proof import repair, STAT as PROOF
 TXT = os.path.join(ROOT, '_src', 'txt')
 OUT = os.path.join(ROOT, 'content')
 
@@ -115,10 +117,21 @@ def convert_chunk(lines, h2, h3, h4=None, cases=None, ctx=''):
         if p:
             flush()
             sex, gan, zhi, used, rest = p
+            og, oz = gan, zhi
+            gan, zhi, stt = repair(gan, zhi)
+            if stt == 'ok':
+                PROOF['ok'] += 1
+            elif stt == 'fixed':
+                PROOF['fixed'].append((ctx, og + '/' + oz, gan + '/' + zhi))
+            else:
+                PROOF['bad'].append((ctx, og + '/' + oz))
             md.append('')
             md.append(pan_md(sex, gan, zhi))
+            if stt == 'bad':
+                md.append('')
+                md.append('> ⚠️ 此盘干支组合不合历法（疑识别或原稿笔误），待对照原件校对。')
             md.append('')
-            cur = {'sex': sex, 'gan': gan, 'zhi': zhi, 'body': [], 'sec': sec}
+            cur = {'sex': sex, 'gan': gan, 'zhi': zhi, 'body': [], 'sec': sec, 'bad': stt == 'bad'}
             if rest:
                 md.append(md_line(rest)); cur['body'].append(rest)
             i += used
@@ -320,6 +333,62 @@ def run():
     book('高级', '武当山六亲班', None, SEC1, None, H_NUM2, prefix='六亲班·婚姻·', tf=tf_sec, min_body=200, lines=ql[first_start:cut])
     book('高级', '武当山六亲班', None, SEC1, None, H_NUM2, prefix='六亲班·父母·', tf=tf_sec, min_body=200, lines=ql[cut:])
 
+    # —— 扫描件（Vision OCR → fixocr.py → S_*.txt）——
+    OCRNOTE = '【扫描件 OCR 转录，个别字词待校对】'
+    # 干支奥义（中级）：50 节，标题按位置给定（OCR 标题有误字）
+    GZT = ['天道的启迪', '阴阳之道', '阴阳象义', '五行象义', '五行生克', '形与气', '体与用', '命理之理', '隐性因果', '十干之位',
+           '干支之性', '天干五合象义', '十神释义', '十神社会学内涵', '十神与六亲', '四柱宫位'] + \
+          ['十天干之' + g for g in GAN] + ['干支关系', '五行生死之一', '五行生死之二', '地支遁藏', '地支之合', '地支六冲', '地支六穿',
+           '地支三合局', '地支刑破', '地支之墓'] + ['十二地支之' + z for z in ZHI] + ['干支虚实关系', '干支自合']
+    gl = read_lines('S_干支奥义')
+    firsts = [k for k, l in enumerate(gl) if re.match(r'^第一节', l)]
+    st = firsts[-1]
+    idx = [k for k in range(st, len(gl)) if re.match(r'^第[一二三四五六七八九十]+节', gl[k]) and len(gl[k]) <= 12]
+    secs = []
+    for j, k in enumerate(idx[:50]):
+        e = idx[j + 1] if j + 1 < len(idx) else len(gl)
+        body = gl[k + 1:e]
+        if body and len(body[0]) <= 18:
+            body = body[1:]
+        secs.append((GZT[j] if j < len(GZT) else '第%d节' % (j + 1), j + 1, body))
+    GRP = [('干支奥义·总论（天道、阴阳、五行、体用）', 1, 9), ('干支奥义·十神与宫位', 10, 16), ('干支奥义·十天干', 17, 26),
+           ('干支奥义·干支关系与五行生死', 27, 29), ('干支奥义·地支作用（遁藏、合冲穿、三合、刑破、墓）', 30, 36),
+           ('干支奥义·十二地支', 37, 48), ('干支奥义·虚实与自合', 49, 50)]
+    out = []
+    for title, a, b in GRP:
+        ls = [OCRNOTE]
+        for t, n, body in secs:
+            if a <= n <= b:
+                ls.append('§§第%d节 %s' % (n, t)); ls.extend(body)
+        out.append((title, ls))
+    emit('中级', '干支奥义', out, lambda l: (l[2:] if l.startswith('§§') else None), H_NUM2, '')
+
+    # 职业象法新解（高级）
+    xl = read_lines('S_职业象法新解')
+    body_start = next(k for k, l in enumerate(xl) if l == '前言' and k > 20)
+    ch_idx = [k for k in range(body_start, len(xl)) if re.match(r'^第.{1,2}章$', xl[k])]
+    XFT = ['干支象法基础', '生意人', '老师', '公务员', '部队军官', '会计', '技术人员', '银行工作人员', '地产商与建筑商']
+    chunks = []
+    for j, k in enumerate(ch_idx[:9]):
+        e = ch_idx[j + 1] if j + 1 < len(ch_idx) else len(xl)
+        body = xl[k + 1:e]
+        if body and len(body[0]) <= 10 and not re.match(r'^[一二三四五六七八九十]、', body[0]):
+            body = body[1:]
+        if body and body[0].startswith('做生意发财'):
+            pass
+        chunks.append(('职业象法新解·第%s章 %s' % (NUMZH[j], XFT[j]), [OCRNOTE] + body))
+    H_CASE = lambda l: (l if re.match(r'^例\s*\d+[-－—]\d+[：:]', l) and len(l) < 34 else None)
+    emit('高级', '职业象法新解', chunks, lambda l: H_CASE(l) or H_SEC2(l), H_NUM2, '')
+
+    # 济南 2010 面授班教材（高级）：手写批注混杂，质量一般
+    jl = read_lines('S_济南面授班教材')
+    JC = re.compile(r'^第[%s]+章[：:、．. \s]*(.*)$' % NUMZH)
+    jchunks = split_chunks(jl, JC, min_body=150, title_fn=lambda l, m: re.sub(r'^第[%s]+章[：:、．. \s]*' % NUMZH, '', l) or l)
+    JT = ['应期', '象法', '财命专辑', '官命看法', '婚姻专辑', '学历专辑', '六亲（父母）']
+    jchunks = [(JT[k] if k < len(JT) else t, b) for k, (t, b) in enumerate(jchunks)]
+    jchunks = [('济南面授班教材·' + t, [OCRNOTE + '（原稿夹有手写批注，识别杂字较多）'] + b) for t, b in jchunks]
+    emit('高级', '济南2010面授班教材', jchunks, H_SEC2, H_NUM2, '')
+
     # —— 专题（小文档）——
     SMALL = [
         ('体用', '体用'), ('宾主作用', '宾主作用'), ('应期', '应期'), ('墓  穿', '墓与穿'),
@@ -374,6 +443,14 @@ def run():
     for s in stat:
         print(s)
     print('cases raw:', len(allcases))
+    with io.open(os.path.join(ROOT, '_src', 'proof_report.txt'), 'w', encoding='utf-8') as f:
+        f.write('盘面校验：通过 %d，自动订正 %d，存疑 %d\n\n[自动订正]\n' % (PROOF['ok'], len(PROOF['fixed']), len(PROOF['bad'])))
+        for c, a, b in PROOF['fixed']:
+            f.write('%s  %s → %s\n' % (c, a, b))
+        f.write('\n[存疑]\n')
+        for c, a in PROOF['bad']:
+            f.write('%s  %s\n' % (c, a))
+    print('校验：通过', PROOF['ok'], '订正', len(PROOF['fixed']), '存疑', len(PROOF['bad']))
 
 
 if __name__ == '__main__':

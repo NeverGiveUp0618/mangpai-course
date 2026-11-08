@@ -134,7 +134,7 @@ def tags_of(text):
     return out[:8]
 
 
-MARK = re.compile(r'(分析[：:]|闲注[：:]|断[：:]|解[：:])')
+MARK = re.compile(r'(简历及解析[：:]|简历及简析[：:]|解析[：:]|分析[：:]|闲注[：:]|断[：:]|解[：:])')
 
 
 def para_html(text):
@@ -165,7 +165,7 @@ def build_quiz():
         m = MARK.search(body)
         pre = body[:m.start()].strip() if m else ''
         jie = body[m.start():] if m else body
-        jie = re.sub(r'^(分析|解)[：:]', '', jie).strip()
+        jie = re.sub(r'^(简历及解析|简历及简析|解析|分析|解)[：:]', '', jie).strip()
         sums = re.sub(r'[\s　]+', '', jie)
         segs = [x for x in re.split(r'[，。；：、！？]', sums) if x]
         brief = ''
@@ -185,6 +185,9 @@ def build_quiz():
         face += ('<p>先别看解：这个盘<strong>日主%s</strong>，想一想——<strong>谁和谁做功？用的是什么作用方式？</strong>'
                  '大运怎么走？推完再点「解」对照。</p>') % day
         tags = tags_of(sums)
+        if c.get('bad'):
+            tags = ['待校对'] + tags
+            face += '<p><span class="pill g">⚠️ 此盘干支组合不合历法，疑识别或原稿笔误，待对照原件校对</span></p>'
         for t in tags:
             tagcount[t] = tagcount.get(t, 0) + 1
         topic = topic_of(c)
