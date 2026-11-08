@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);

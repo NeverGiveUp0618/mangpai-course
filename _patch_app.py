@@ -121,7 +121,7 @@ s = s.replace("          '<p>' + h.snip + '</p></div>';\n      }).join('');", " 
 s = s.replace('RENDER.search = function () {', 'RENDER.search = function () { searchRaw = false;', 1)
 # ---- 原稿正文懒加载 ----
 s = s.replace("var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };",
-              "var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };\nvar needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };\nfunction fillRaw(list, R) { list.forEach(function (c) { if (c.raw && !c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }", 1)
+              "var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };\nvar needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };\nfunction fillRaw(list, R) { list.forEach(function (c) { if (!c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }", 1)
 old = "RENDER.chapter = function (n) {\n  needCourse().then(function (list) {\n    var c = list.filter(function (x) { return x.n === n; })[0];\n    if (!c) return;"
 new = "RENDER.chapter = function (n) {\n  needCourse().then(function (list) {\n    var c = list.filter(function (x) { return x.n === n; })[0];\n    if (!c) return;\n    if (c.raw && !c.html) {\n      $('#chapterBody').innerHTML = '<div class=\"empty\">载入原稿…</div>';\n      needRaw().then(function (R) { fillRaw(list, R); RENDER.chapter(n); });\n      return;\n    }"
 assert old in s
@@ -195,6 +195,29 @@ old = "          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';\n      }).joi
 new = "          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';\n      }).join('') + '</div>' +\n      (c.dy ? '<div class=\"dys\"><span class=\"lb2\">运</span>' + c.dy.map(function (x) { return '<div class=\"c\">' + gz(x.charAt(0), 'a') + gz(x.charAt(1), 'b') + '</div>'; }).join('') + '</div>' : '') + '</div>';"
 assert old in s, 'sticky pattern'
 s = s.replace(old, new, 1)
+# ---- 课程正文按级别拆包：先显示列表（秒开），点章节才拉该级别正文 ----
+old = "var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };"
+new = """var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
+var LVKEY = { '初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan' };
+function needBodyOf(c) { return c.raw ? needRaw() : need('data-body-' + LVKEY[c.level] + '.js', 'DATA_BODY_' + LVKEY[c.level]); }
+function needAllBodies(withRaw) {
+  var ps = Object.keys(LVKEY).map(function (k) { return need('data-body-' + LVKEY[k] + '.js', 'DATA_BODY_' + LVKEY[k]); });
+  if (withRaw) ps.push(needRaw());
+  return Promise.all(ps).then(function (rs) { var m = {}; rs.forEach(function (R) { for (var k in R) m[k] = R[k]; }); return m; });
+}"""
+assert old in s
+s = s.replace(old, new, 1)
+# 章节渲染：无正文则按级别加载
+old = "    if (c.raw && !c.html) {\n      $('#chapterBody').innerHTML = '<div class=\"empty\">载入原稿…</div>';\n      needRaw().then(function (R) { fillRaw(list, R); RENDER.chapter(n); });\n      return;\n    }"
+new = "    if (!c.html) {\n      $('#chapterBody').innerHTML = '<div class=\"empty\">载入中…</div>';\n      needBodyOf(c).then(function (R) { fillRaw(list, R); RENDER.chapter(n); });\n      return;\n    }"
+assert old in s
+s = s.replace(old, new, 1)
+# 搜索：需要全部正文
+old = "Promise.all([needCourse(), needNotes(), needQuiz(), searchRaw ? needRaw() : Promise.resolve(null)]).then(function (r) {\n    if (r[3]) fillRaw(r[0], r[3]);"
+new = "Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw)]).then(function (r) {\n    if (r[3]) fillRaw(r[0], r[3]);"
+assert old in s
+s = s.replace(old, new, 1)
+s = s.replace("  box.innerHTML = '<div class=\"empty\">搜索中…</div>';", "  box.innerHTML = '<div class=\"empty\">搜索中…（首次搜索要加载全部教材，稍候）</div>';", 1)
 io.open(p, 'w', encoding='utf-8').write(s)
 
 # ───── index.html ─────

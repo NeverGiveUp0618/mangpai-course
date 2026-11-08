@@ -110,7 +110,14 @@ setTimeout(function () {
 }, 1200);
 var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };
 var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
-function fillRaw(list, R) { list.forEach(function (c) { if (c.raw && !c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }
+var LVKEY = { '初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan' };
+function needBodyOf(c) { return c.raw ? needRaw() : need('data-body-' + LVKEY[c.level] + '.js', 'DATA_BODY_' + LVKEY[c.level]); }
+function needAllBodies(withRaw) {
+  var ps = Object.keys(LVKEY).map(function (k) { return need('data-body-' + LVKEY[k] + '.js', 'DATA_BODY_' + LVKEY[k]); });
+  if (withRaw) ps.push(needRaw());
+  return Promise.all(ps).then(function (rs) { var m = {}; rs.forEach(function (R) { for (var k in R) m[k] = R[k]; }); return m; });
+}
+function fillRaw(list, R) { list.forEach(function (c) { if (!c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }
 var needNotes  = function () { return need('data-notes.js', 'DATA_NOTES'); };
 var needQuiz   = function () { return need('data-quiz.js', 'DATA_QUIZ'); };
 // 问题清单 70KB，只有点进「四张索引表」才要，不进首屏包
@@ -571,9 +578,9 @@ RENDER.chapter = function (n) {
   needCourse().then(function (list) {
     var c = list.filter(function (x) { return x.n === n; })[0];
     if (!c) return;
-    if (c.raw && !c.html) {
-      $('#chapterBody').innerHTML = '<div class="empty">载入原稿…</div>';
-      needRaw().then(function (R) { fillRaw(list, R); RENDER.chapter(n); });
+    if (!c.html) {
+      $('#chapterBody').innerHTML = '<div class="empty">载入中…</div>';
+      needBodyOf(c).then(function (R) { fillRaw(list, R); RENDER.chapter(n); });
       return;
     }
     curDoc = c;
@@ -2093,14 +2100,14 @@ function doSearch() {
   var kw = $('#q').value.trim();
   var box = $('#hits');
   if (kw.length < 1) { box.innerHTML = '<div class="empty">输入关键词开始搜索</div>'; return; }
-  box.innerHTML = '<div class="empty">搜索中…</div>';
+  box.innerHTML = '<div class="empty">搜索中…（首次搜索要加载全部教材，稍候）</div>';
   // 空格分词：「墓库 冲开」＝两个词都要出现的地方。
   // 以前整串 indexOf，这么搜恒定 0 条。
   var terms = kw.split(/\s+/).filter(Boolean);
   var main = terms[0];
   var rest = terms.slice(1);
 
-  Promise.all([needCourse(), needNotes(), needQuiz(), searchRaw ? needRaw() : Promise.resolve(null)]).then(function (r) {
+  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw)]).then(function (r) {
     if (r[3]) fillRaw(r[0], r[3]);
     var hits = [], total = 0, capped = false;
 

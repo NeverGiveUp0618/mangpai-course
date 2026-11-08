@@ -337,12 +337,19 @@ def main():
         'outline': build_outline(courses, notes, quiz),
     }
     raw = {c['id']: {'html': c['html'], 'text': c['text']} for c in courses if c['raw']}
+    LVK = {'初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan'}
+    bodies = {k: {} for k in LVK.values()}
     for c in courses:
         if c['raw']:
             c['html'] = ''
             c['text'] = ''
+        else:
+            bodies[LVK[c['level']]][c['id']] = {'html': c['html'], 'text': c['text']}
+            c['html'] = ''
+            c['text'] = ''
     sizes = [
         ('data-raw.js', write_js('data-raw.js', 'DATA_RAW', raw)),
+    ] + [('data-body-%s.js' % k, write_js('data-body-%s.js' % k, 'DATA_BODY_%s' % k, v)) for k, v in bodies.items()] + [
         ('data-course.js', write_js('data-course.js', 'DATA_COURSE', courses)),
         ('data-notes.js', write_js('data-notes.js', 'DATA_NOTES', notes)),
         ('data-quiz.js', write_js('data-quiz.js', 'DATA_QUIZ', quiz)),
