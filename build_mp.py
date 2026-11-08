@@ -111,10 +111,12 @@ TOPIC_RULES = [
     ('学历', r'学历'), ('牢狱', r'牢狱|犯罪'), ('疾病', r'疾病|病'), ('职业', r'职业|医生|老师|会计|口才|军官|盲人'),
     ('应期', r'应期|大运'), ('象法', r'象|类象'), ('作用方式', r'合|冲|穿|刑|破|墓|制|做功|体用|宾主|虚实|互通'),
 ]
-TOPIC_ORDER = ['作用方式', '正局反局', '财运', '官运', '职业', '婚姻', '六亲', '学历', '牢狱', '疾病', '应期', '象法', '综合']
+TOPIC_ORDER = ['作用方式', '正局反局', '财运', '官运', '职业', '婚姻', '六亲', '学历', '牢狱', '疾病', '应期', '象法', '综合', '早期案例（用神口径）']
 
 
 def topic_of(c):
+    if c.get('early'):
+        return '早期案例（用神口径）'
     s = (c.get('chapter', '') + c.get('sec', '') + c.get('book', ''))
     for name, pat in TOPIC_RULES:
         if re.search(pat, s):
@@ -154,7 +156,9 @@ def build_quiz():
             continue
         key = (c['sex'], gan, zhi)
         c['body'] = body
-        if key not in best or len(body) > len(best[key]['body']):
+        old = best.get(key)
+        if old is None or (old.get('early') and not c.get('early')) or \
+                (bool(old.get('early')) == bool(c.get('early')) and len(body) > len(old['body'])):
             best[key] = c
     uniq = list(best.values())
     items = []
@@ -174,6 +178,7 @@ def build_quiz():
             if len(brief) >= 7:
                 break
         brief = (brief[:16] or '命例')
+        brief = re.sub(r'^[乾坤][：:造]*', '', brief)
         title = '%s造 %s%s日 · %s' % (sex, day, zhi[2], brief)
         ss_g = ' '.join('%s%s' % (p, shishen(day, g)) for p, g in zip('年月时', [gan[0], gan[1], gan[3]]))
         ss_z = ' '.join('%s%s' % (p, shishen(day, BEN[z])) for p, z in zip('年月日时', zhi))
@@ -185,6 +190,10 @@ def build_quiz():
         face += ('<p>先别看解：这个盘<strong>日主%s</strong>，想一想——<strong>谁和谁做功？用的是什么作用方式？</strong>'
                  '大运怎么走？推完再点「解」对照。</p>') % day
         tags = tags_of(sums)
+        if c.get('early'):
+            tags = ['早期口径'] + tags
+            face = ('<p><span class="pill g">⚠️ 早期口径：出自《盲派批命案例集》，仍以用神、旺衰为核心，与成熟体系不同，对照阅读</span></p>' +
+                    ('<p>' + c['dayun'] + '</p>' if c.get('dayun') else '')) + face
         if c.get('bad'):
             tags = ['待校对'] + tags
             face += '<p><span class="pill g">⚠️ 此盘干支组合不合历法，疑识别或原稿笔误，待对照原件校对</span></p>'

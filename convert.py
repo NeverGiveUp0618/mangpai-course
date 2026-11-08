@@ -380,14 +380,56 @@ def run():
     H_CASE = lambda l: (l if re.match(r'^例\s*\d+[-－—]\d+[：:]', l) and len(l) < 34 else None)
     emit('高级', '职业象法新解', chunks, lambda l: H_CASE(l) or H_SEC2(l), H_NUM2, '')
 
-    # 济南 2010 面授班教材（高级）：手写批注混杂，质量一般
-    jl = read_lines('S_济南面授班教材')
-    JC = re.compile(r'^第[%s]+章[：:、．. \s]*(.*)$' % NUMZH)
-    jchunks = split_chunks(jl, JC, min_body=150, title_fn=lambda l, m: re.sub(r'^第[%s]+章[：:、．. \s]*' % NUMZH, '', l) or l)
-    JT = ['应期', '象法', '财命专辑', '官命看法', '婚姻专辑', '学历专辑', '六亲（父母）']
-    jchunks = [(JT[k] if k < len(JT) else t, b) for k, (t, b) in enumerate(jchunks)]
-    jchunks = [('济南面授班教材·' + t, [OCRNOTE + '（原稿夹有手写批注，识别杂字较多）'] + b) for t, b in jchunks]
-    emit('高级', '济南2010面授班教材', jchunks, H_SEC2, H_NUM2, '')
+    # 济南 2010 面授班教材：印刷体与「高级班讲义」同源已收录，其余为手写批注（用户要求不进站）→ 不单独收录
+
+    # —— 《盲派批命案例集》（263 例，早期口径：以用神为核心）——
+    el = read_lines('S_案例集')
+    GA = set(GAN) | set('已内两王康戍成巳戌')
+    ZA = set(ZHI) | set('已卵末展牛玄西戍成戊己')
+    hdr = [k for k, l in enumerate(el) if re.match(r'^例\s*\d+', l) and len(l) <= 40]
+    early = []
+    for j, k in enumerate(hdr):
+        e = hdr[j + 1] if j + 1 < len(hdr) else len(el)
+        blk = el[k:e]
+        head = re.sub(r'^例\s*\d+', '', blk[0])
+        rows = ([head] if head.strip(' ：:') else []) + blk[1:]
+        sex = next((x for x in ('乾', '坤') if x in ' '.join(rows[:3])), '命')
+        gi = zi = None
+        for a, l in enumerate(rows[:8]):
+            t = re.sub(r'^[^甲乙丙丁戊己庚辛壬癸已内两王康]*', '', l)
+            t = re.sub(r'[\s　]', '', t)
+            if gi is None and len(t) >= 4 and all(c in GA for c in t[:4]) and sum(c in GAN for c in t[:4]) >= 2:
+                gi = (a, t[:4]); continue
+            if gi is not None and zi is None and not l.startswith('大运'):
+                t2 = re.sub(r'[\s　]', '', l)
+                if len(t2) >= 4 and all(c in ZA for c in t2[:4]) and sum(c in ZHI for c in t2[:4]) >= 2:
+                    zi = (a, t2[:4]); break
+        if not (gi and zi):
+            continue
+        gan, zhi, stt = repair(gi[1], zi[1])
+        if stt == 'ok':
+            PROOF['ok'] += 1
+        elif stt == 'fixed':
+            PROOF['fixed'].append(('案例集 例%d' % (j + 1), gi[1] + '/' + zi[1], gan + '/' + zhi))
+        else:
+            PROOF['bad'].append(('案例集 例%d' % (j + 1), gi[1] + '/' + zi[1]))
+        rest = [x for n, x in enumerate(rows) if n not in (gi[0], zi[0])]
+        dy = [x for x in rest if x.startswith('大运')]
+        GZC = r'[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥已内两王康戍成末卵展牛玄西日\\s　]{2,14}'
+        extra = [x for x in rest if not x.startswith('大运') and re.fullmatch(GZC, x)]
+        dy = dy + extra
+        body = [x.replace('已印', '己印') for x in rest if not x.startswith('大运') and x not in extra
+                and not re.fullmatch(r'[乾坤][造：:]*', x.strip())]
+        early.append({'sex': sex, 'gan': gan, 'zhi': zhi, 'body': '\n'.join(body).strip(), 'sec': '案例集', 'chapter': '盲派批命案例集',
+                      'book': '案例集（早期口径）', 'level': '专题', 'early': True, 'bad': stt == 'bad', 'dayun': ' '.join(dy)})
+    allcases.extend(early)
+    print('早期案例集命例：', len(early), '/ 例头', len(hdr))
+    # 说明页（专题）：理论纲要部分
+    intro = el[:hdr[0]] if hdr else []
+    intro = [l for l in intro if not re.search(r'豆丁|docin|doc in|alpha|下载器|特别说明', l)]
+    note = ['> ⚠️ **早期口径**：本资料成于段盲派理论成熟之前，仍以**用神、忌神、日主旺衰**为核心；与初、中、高级课程里「不论旺衰、不取用神」的成熟体系**口径不同**。收入仅作对照阅读，命例已在命例库标「早期口径」。', '',
+            '> 【扫描件 OCR 转录，个别字词待校对】', ''] + [md_line(l) for l in intro]
+    EARLY_NOTE = note
 
     # —— 专题（小文档）——
     SMALL = [
@@ -436,6 +478,8 @@ def run():
         stat.append(('专题', seq, title, sum(len(x) for x in md), len(cases), dropped))
         seq += 1
 
+    write_doc('专题', seq, '案例集（早期口径）说明', EARLY_NOTE)
+    stat.append(('专题', seq, '案例集（早期口径）说明', 0, 0, 0))
     with io.open(os.path.join(ROOT, '_src', 'cases.json'), 'w', encoding='utf-8') as f:
         json.dump(allcases, f, ensure_ascii=False)
     with io.open(os.path.join(ROOT, '_src', 'books.json'), 'w', encoding='utf-8') as f:
