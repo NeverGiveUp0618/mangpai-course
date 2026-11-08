@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);
@@ -81,7 +81,16 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click($('#btnBack')); await wait(50);
 
   console.log('专题');
-  click($('[data-tab="notes"]')); await wait(120);
+  click($('[data-tab="ref"]')); await wait(200);
+  ok($$('#refSegs .pill').length >= 4, '查：速查页有 小结/口诀/速查表/原文问答 四个入口');
+  ok($$('#rfList .rf-i').length >= 30, '章节小结卡 ≥ 30 张，实得 ' + $$('#rfList .rf-i').length);
+  click($$('#refSegs [data-seg]')[1]); await wait(60);
+  ok($$('#rfList .rf-i').length >= 100, '口诀 ≥ 100 条，实得 ' + $$('#rfList .rf-i').length);
+  click($$('#refSegs [data-seg]')[2]); await wait(60);
+  ok($$('#rfList .rf-i').length >= 100, '速查表 ≥ 100 张，实得 ' + $$('#rfList .rf-i').length);
+  $('#rfq').value = '墓库'; $('#rfq').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(400);
+  ok($$('#rfList .rf-i').length > 0 && $$('#rfList .rf-i').length < 100, '搜「墓库」能筛速查表');
+  click($('#refNotes')); await wait(150);
   ok($$('#noteList .card, #noteList [data-nt]').length >= 10, '专题列表');
 
   console.log('命例库');

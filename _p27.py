@@ -1,7 +1,0 @@
-p='build_mp.py'; b=open(p).read()
-b=b.replace("    h.append('<h2 id=\"顺序\">建议顺序</h2>","    zt = [c for c in courses if c['level'] == '专题' and not c['raw']]\n    if zt:\n        h.append('<h2 id=\"专题\">专题（问答改写，按需查读）</h2><p>由论坛答疑、断例整理而成的补充专题，不在主线里；学到对应主题、或遇到具体问题时再读。</p><ul>' + ''.join('<li><a class=\"chlink\" data-ch=\"%d\">%s</a></li>' % (c['n'], c['title']) for c in zt) + '</ul>')\n    h.append('<h2 id=\"顺序\">建议顺序</h2>",1)
-b=b.replace("；18–28 章是由专题答疑改写的补充专题，遇到具体问题时按主题查读。","；「专题」组是答疑改写的补充，遇到具体问题时再查读。")
-open(p,'w').write(b)
-t=open('smoke_mp.js').read()
-t=t.replace("ok($$('.lvg').length === 3, '初/中/高三个折叠组');","ok($$('.lvg').length === 4, '初/中/高/专题四个折叠组');")
-open('smoke_mp.js','w').write(t)

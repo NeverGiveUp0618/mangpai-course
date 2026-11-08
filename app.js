@@ -145,7 +145,7 @@ var cur = { scr: 'home', id: null };
 
 var TITLES = {
   home: '盲派八字', course: '课程', chapter: '', notes: '专题与答疑',
-  note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '速查表', qlist: '命例题库',
+  note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '知识点速查', qlist: '命例题库',
   quiz: '', search: '搜索', mynotes: '我的笔记', desk: '断命台',
   vke: 'v课笔记', vkeread: ''
 };
@@ -1570,6 +1570,71 @@ function drawRef(all) {
     d.querySelector('.rf-h').onclick = function () { d.classList.toggle('open'); };
     d.querySelector('.rf-go').onclick = function () { show('chapter', +this.dataset.n); };
   });
+}
+
+
+/* ============ 知识点速查（查）：小结 / 口诀 / 表格 / 原文问答 ============ */
+var refSeg = 'sum', refKw = '';
+RENDER.ref = function () {
+  var box = $('#refBody');
+  box.innerHTML = '<div class="empty">载入中…</div>';
+  needRef().then(function (R) { paintRef2(box, R || { sum: [], kou: [], tab: [] }); });
+};
+function paintRef2(box, R) {
+  var nNotes = (META.counts && META.counts.notes) || 0;
+  var segs = [['sum', '章节小结 ' + R.sum.length], ['kou', '口诀 ' + R.kou.length], ['tab', '速查表 ' + R.tab.length]];
+  box.innerHTML = '<div class="row wrap" style="gap:6px;margin-bottom:10px" id="refSegs">' +
+    segs.map(function (g) { return '<span class="pill' + (refSeg === g[0] ? ' sel' : ' g') + '" data-seg="' + g[0] + '">' + g[1] + '</span>'; }).join('') +
+    '<span class="pill g" id="refNotes">原文问答 ' + nNotes + ' 篇 ›</span></div>' +
+    '<input id="rfq" type="search" placeholder="搜小结、口诀、表里的字，如：墓库 合绊 应期" autocomplete="off" value="' + esc(refKw) + '">' +
+    '<div class="rf-bar"><span id="rfCnt"></span><button id="rfAll">全部展开</button></div><div id="rfList"></div>';
+  $$('[data-seg]', box).forEach(function (el) {
+    el.onclick = function () { refSeg = el.dataset.seg; paintRef2(box, R); };
+  });
+  $('#refNotes').onclick = function () { show('notes', null); };
+  $('#rfq').oninput = function () { clearTimeout(box._t); box._t = setTimeout(function () { refKw = $('#rfq').value.trim(); drawRef2(R); }, 150); };
+  $('#rfAll').onclick = function () {
+    var open = this.textContent === '全部展开';
+    $$('.rf-i', box).forEach(function (d) { d.classList.toggle('open', open); });
+    this.textContent = open ? '全部收起' : '全部展开';
+  };
+  drawRef2(R);
+}
+function drawRef2(R) {
+  var words = refKw.split(/\s+/).filter(Boolean), html = '', n = 0, cur = '';
+  function hit(t) { return words.every(function (w) { return t.indexOf(w) >= 0; }); }
+  if (refSeg === 'sum') {
+    R.sum.forEach(function (r) {
+      if (!hit(r.title + r.text)) return;
+      n++;
+      if (r.level !== cur) { cur = r.level; html += '<div class="rf-g"><span>' + esc(cur) + '</span></div>'; }
+      html += '<div class="rf-i"><button class="rf-h"><b>' + esc(r.title) + '</b><span>小结</span></button>' +
+        '<div class="rf-b doc">' + r.html + '<button class="rf-go" data-n="' + r.n + '">到本章看上下文 ›</button></div></div>';
+    });
+  } else if (refSeg === 'kou') {
+    R.kou.forEach(function (r) {
+      if (!hit(r.chapter + r.text)) return;
+      n++;
+      if (r.chapter !== cur) { cur = r.chapter; html += '<div class="rf-g"><span>' + esc(r.level + ' · ' + cur) + '</span></div>'; }
+      html += '<div class="rf-i open"><div class="rf-b doc" style="display:block;padding:9px 11px"><p style="margin:0">' + esc(r.text) +
+        '</p><button class="rf-go" data-n="' + r.n + '">到本章 ›</button></div></div>';
+    });
+  } else {
+    R.tab.forEach(function (r) {
+      if (!hit(r.name + r.sec + r.chapter + r.text)) return;
+      n++;
+      if (r.chapter !== cur) { cur = r.chapter; html += '<div class="rf-g"><span>' + esc(r.level + ' · ' + cur) + '</span></div>'; }
+      html += '<div class="rf-i"><button class="rf-h"><b>' + esc(r.name) + '</b><span>' + esc(r.sec === r.name ? '' : r.sec) + '</span></button>' +
+        '<div class="rf-b doc">' + r.html + '<button class="rf-go" data-n="' + r.n + '">到本章看上下文 ›</button></div></div>';
+    });
+  }
+  $('#rfCnt').textContent = n + ' 条';
+  $('#rfList').innerHTML = html || '<p class="muted">没找到。换个词试试。</p>';
+  $$('.rf-i', $('#rfList')).forEach(function (d) {
+    var h = d.querySelector('.rf-h');
+    if (h) h.onclick = function () { d.classList.toggle('open'); };
+  });
+  $$('.rf-go', $('#rfList')).forEach(function (b) { b.onclick = function () { show('chapter', +b.dataset.n); }; });
 }
 
 RENDER.outline = function () {

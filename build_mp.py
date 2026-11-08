@@ -95,6 +95,9 @@ def tb_key(fn):
     return (num, order.index(k.group(1)) if k else -1, rest)
 
 
+PATHS = {}
+
+
 def build_courses():
     books = json.load(io.open(os.path.join(ROOT, '_src', 'books.json'), encoding='utf-8'))
     bymap = {(b['level'], b['n']): b['book'] for b in books}
@@ -102,6 +105,7 @@ def build_courses():
 
     def add(path, title, lv, book, raw):
         nonlocal n
+        PATHS['c%d' % n] = path
         docs.append(build_doc(path, 'c%d' % n, n, title, {'level': lv, 'book': book, 'raw': raw}))
         n += 1
 
@@ -296,6 +300,87 @@ THEMES = [
 ]
 
 
+def _ref_clean(t):
+    t = re.sub(r'[*`⭐⚠️💡]+', '', t or '').strip()
+    t = re.sub(r'^[一二三四五六七八九十〇\d]+\s*[、.．·]\s*', '', t)
+    head = re.split(r'[：:（(]', t)[0].strip()
+    if len(head) >= 3:
+        t = head
+    return t.strip('　 ·—-')
+
+
+def _is_pan_table(block):
+    head = re.sub(r'[*\s]', '', block[0])
+    cells = [c for c in head.split('|') if c]
+    return all(x in cells for x in ('年', '月', '日', '时')) or any(c in ('年柱', '月柱', '日柱', '时柱') for c in cells)
+
+
+def build_ref(courses):
+    """速查：每章小结卡 + 口诀集 + 教材里的表格（非命盘）。内容源仍只有教材一处。"""
+    sums, kous, tabs = [], [], []
+    seen_k = set()
+    for c in courses:
+        if c['raw'] or c['id'] not in PATHS:
+            continue
+        md = read(PATHS[c['id']])
+        lines = md.split('\n')
+        # 小结：标题含「小结」的 ## 节，到下一个 ## 为止
+        i = 0
+        while i < len(lines):
+            if re.match(r'^##\s+.*小结', lines[i]) and not lines[i].startswith('###'):
+                j = i + 1
+                while j < len(lines) and not (lines[j].startswith('## ') and not lines[j].startswith('###')):
+                    j += 1
+                body = '\n'.join(lines[i + 1:j]).strip()
+                body = re.sub(r'<details>.*?</details>', '', body, flags=re.S)
+                body = re.split(r'^#{2,4}\s*自测.*$', body, flags=re.M)[0].strip()
+                if len(body) > 40:
+                    sums.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'html': merge_dayun(md2html(body)), 'text': strip_md(body)})
+                break
+            i += 1
+        # 口诀
+        for ln in lines:
+            m = re.match(r'^>?\s*\**口诀\**[：:]\s*\**(.+?)\**\s*$', ln.strip())
+            if m:
+                t = strip_md(m.group(1)).strip('「」 ')
+                if len(t) >= 6 and t not in seen_k:
+                    seen_k.add(t)
+                    kous.append({'n': c['n'], 'level': c['level'], 'chapter': c['title'], 'text': t})
+        # 表格
+        h2 = h3 = ''
+        i = 0
+        while i < len(lines):
+            ln = lines[i]
+            mm = re.match(r'^##\s+(.*)$', ln)
+            if mm and not ln.startswith('###'):
+                h2, h3 = _ref_clean(mm.group(1)), ''
+            mm = re.match(r'^###\s+(.*)$', ln)
+            if mm:
+                h3 = _ref_clean(mm.group(1))
+            if ln.startswith('|'):
+                st = i
+                while i < len(lines) and lines[i].startswith('|'):
+                    i += 1
+                blk = lines[st:i]
+                if len(blk) < 3 or _is_pan_table(blk):
+                    continue
+                lead = ''
+                for j in range(st - 1, max(-1, st - 3), -1):
+                    tt = lines[j].strip()
+                    if not tt:
+                        continue
+                    if len(tt) <= 40 and not tt.startswith(('|', '>', '-', '#', '`', '<')):
+                        lead = _ref_clean(tt)
+                    break
+                name = lead if 2 <= len(lead) <= 14 else (h3 or h2 or lead or c['title'])
+                name = name if len(name) <= 28 else name[:27] + '…'
+                tabs.append({'n': c['n'], 'level': c['level'], 'chapter': c['title'], 'sec': h3 or h2, 'name': name,
+                             'html': md2html('\n'.join(blk)), 'text': strip_md('\n'.join(blk))})
+                continue
+            i += 1
+    return {'sum': sums, 'kou': kous, 'tab': tabs}
+
+
 def build_outline(courses, notes, quiz):
     def find(lv, prefixes):
         out = []
@@ -336,6 +421,7 @@ def main():
         'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
     }
+    ref = build_ref(courses)
     raw = {c['id']: {'html': c['html'], 'text': c['text']} for c in courses if c['raw']}
     LVK = {'初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan'}
     bodies = {k: {} for k in LVK.values()}
@@ -351,6 +437,7 @@ def main():
         ('data-raw.js', write_js('data-raw.js', 'DATA_RAW', raw)),
     ] + [('data-body-%s.js' % k, write_js('data-body-%s.js' % k, 'DATA_BODY_%s' % k, v)) for k, v in bodies.items()] + [
         ('data-course.js', write_js('data-course.js', 'DATA_COURSE', courses)),
+        ('data-ref.js', write_js('data-ref.js', 'DATA_REF', ref)),
         ('data-notes.js', write_js('data-notes.js', 'DATA_NOTES', notes)),
         ('data-quiz.js', write_js('data-quiz.js', 'DATA_QUIZ', quiz)),
         ('data-meta.js', write_js('data-meta.js', 'DATA_META', meta)),

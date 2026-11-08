@@ -1,5 +1,0 @@
-p='verify_textbook.py'; s=open(p).read()
-s=s.replace("rawpans = set(","""NORM = re.sub(r'[^\\u4e00-\\u9fff]', '', ''.join(rd(f) for f in glob.glob(os.path.join(ROOT, '_src', 'txt', '*.txt'))))
-rawpans = set(""",1)
-s=s.replace("            if k not in rawpans:","            if k not in rawpans and (m.group(1) + m.group(2)) not in NORM:",1)
-open(p,'w').write(s)
