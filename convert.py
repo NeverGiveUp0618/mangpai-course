@@ -125,12 +125,10 @@ def convert_chunk(lines, h2, h3, h4=None, cases=None, ctx=''):
                 PROOF['fixed'].append((ctx, og + '/' + oz, gan + '/' + zhi))
             else:
                 PROOF['bad'].append((ctx, og + '/' + oz))
-            md.append('')
-            md.append(pan_md(sex, gan, zhi))
-            if stt == 'bad':
+            if stt != 'bad':          # 存疑盘（不合历法）不进站
                 md.append('')
-                md.append('> ⚠️ 此盘干支组合不合历法（疑识别或原稿笔误），待对照原件校对。')
-            md.append('')
+                md.append(pan_md(sex, gan, zhi))
+                md.append('')
             cur = {'sex': sex, 'gan': gan, 'zhi': zhi, 'body': [], 'sec': sec, 'bad': stt == 'bad'}
             if rest:
                 md.append(md_line(rest)); cur['body'].append(rest)

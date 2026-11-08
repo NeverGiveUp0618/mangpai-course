@@ -175,6 +175,8 @@ def build_quiz():
         gan, zhi = c['gan'], c['zhi']
         if len(gan) != 4 or len(zhi) != 4 or any(x not in GAN for x in gan) or any(x not in ZHI for x in zhi):
             continue
+        if c.get('bad'):   # skip_bad：存疑盘不收
+            continue
         key = (c['sex'], gan, zhi)
         c['body'] = body
         old = best.get(key)
