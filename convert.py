@@ -5,7 +5,7 @@
 扫描 PDF（OCR 错字多）不收，见 README。
 内容源 = _src/txt（不进 git）；产物 content/*.md 是 build_mp.py 的输入。
 """
-import os, re, json, io, sys
+import os, re, json, io, sys, subprocess
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
@@ -199,10 +199,41 @@ def presplit(text):
     return text
 
 
+T2S = os.path.join(ROOT, '_tools_t2s')
+
+
+def _gb(ch):
+    try:
+        ch.encode('gb2312')
+        return True
+    except UnicodeEncodeError:
+        return False
+
+
+def simp(text):
+    """繁体→简体（macOS ICU）。两道保护：①乾造的「乾」不是干；②只转换「简体字集(GB2312)里没有」的字——
+    俱／份／著／沈／砂 这些在简体里本来就是合法字，ICU 会误转（俱→具、份→分、著→着），一律不动。"""
+    if not os.path.exists(T2S):
+        return text
+    t = text.replace('乾', '\ue001')
+    r = subprocess.run([T2S], input=t, capture_output=True, text=True)
+    b = r.stdout if r.returncode == 0 and r.stdout else t
+    if len(b) != len(t):
+        return text
+    out = []
+    for x, y in zip(t, b):
+        out.append(y if (x != y and (not _gb(x) or x in '於後')) else x)
+    r2 = ''.join(out).replace('\ue001', '乾')
+    for a, b in (('丄', '上'), ('朮', '术'), ('敎', '教'), ('郞', '郎'), ('彊', '强'), ('劵', '券')):
+        r2 = r2.replace(a, b)
+    return r2
+
+
 def read_lines(name, pre=False):
+    raw = simp(io.open(os.path.join(TXT, name + '.txt'), encoding='utf-8').read())
     if pre:
-        return clean_lines(presplit(io.open(os.path.join(TXT, name + '.txt'), encoding='utf-8').read()))
-    return clean_lines(io.open(os.path.join(TXT, name + '.txt'), encoding='utf-8').read())
+        return clean_lines(presplit(raw))
+    return clean_lines(raw)
 
 
 def split_chunks(lines, pat, min_body=150, title_fn=None):
