@@ -287,7 +287,7 @@ def build_quiz():
         GEN = re.compile(r'^(老师讲|分析|闲注|注|象|例|如|又如|此造|此人|该造|断|解|乾|坤|大运.*)$')
         sums2 = re.sub(r'(闲注|分析|断|解|注)[:：]', '，', sums)
         segs = [re.sub(r'^(此造是|此造为|此人是|此人为|此造|此人|该造|本造)', '', x) for x in re.split(r'[，。；：:、！？（）()\.\s]', sums2) if x]
-        segs = [x for x in segs if sum(c in GAN + ZHI for c in x) <= len(x) * 0.4]
+        segs = [x for x in segs if sum(c in GAN + ZHI or c.isdigit() for c in x) <= len(x) * 0.4]
         segs = [x for x in segs if len(x) >= 5 and not GEN.match(x)]
         brief = segs[0] if segs else ''
         if len(brief) < 8 and len(segs) > 1:

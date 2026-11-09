@@ -16,7 +16,7 @@ OUT = os.path.join(ROOT, 'content')
 
 GAN = '甲乙丙丁戊己庚辛壬癸'
 ZHI = '子丑寅卯辰巳午未申酉戌亥'
-NOISE = re.compile(r'HYPERLINK|PAGEREF|INCLUDEPICTURE|MERGEFORMAT|TOC \\o|\[replyview\]|bolead\.com')
+NOISE = re.compile(r'HYPERLINK|PAGEREF|INCLUDEPICTURE|MERGEFORMAT|TOC \\o|\[replyview\]|bolead\.com|^书名：段氏命理|^出版社：时轮|^地址：15 P|国际书号|^作者：段建业 言明|\[/replyview\]')
 NUMZH = '一二三四五六七八九十'
 # 本站不收奇门／六爻等无关术数的段落（原资料里只是拿来类比的几句）
 OFFTOPIC = re.compile(r'六爻|奇门|梅花易|八字卦')
@@ -476,6 +476,47 @@ def run():
     seq = 1
     for src, title in SMALL:
         lines = read_lines(src, pre=True)
+        if title.startswith('命术轶闻'):
+            # PDF 是逐字加空格的 OCR；末尾还附了论坛转帖（与命例无关，已存 _archive/）
+            _cut = next((i for i, l in enumerate(lines) if '公开盲师秘而不宣的衣钵论命法' in l.replace(' ', '')), None)
+            if _cut is not None:
+                lines = lines[:_cut]
+            _C = '一-鿿，。：；、！？“”‘’（）《》'
+            _pat = re.compile(r'(?:[%s] ){8,}[%s]' % (_C, _C))
+            _sp = re.compile(r'(?<=[%s]) +(?=[%s])' % (_C, _C))
+            _GZ = set('甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥')
+            def _despace(l):
+                t = re.sub(r'[\s0-9]', '', l)
+                if '、' in l and t and all(ch in _GZ or ch in '、，' for ch in t):
+                    return re.sub(r'\s+', '', l)           # 「辛 卯 、 辛 丑…」单独成行的四柱
+                if t and re.search(r'(?<=[%s]) (?=[%s])' % (_C, _C), l) and sum(c not in _GZ for c in t) / len(t) > 0.4:
+                    return _sp.sub('', l)
+                return l
+            lines = [_despace(l).replace('邢解：', '解：') for l in lines]
+            # 盘是两行（天干行带「大运：01 乙 11 丙…」，地支行带运支）→ 规整成「坤造：干 支」＋「大运：乙亥 丙子…」
+            _G, _Z = '甲乙丙丁戊己庚辛壬癸', '子丑寅卯辰巳午未申酉戌亥'
+            _o = []
+            _i = 0
+            while _i < len(lines):
+                _a = re.sub(r'[\s　]', '', lines[_i])
+                _m = re.match(r'^([乾坤])造[：:]([%s]{4})大运[：:]((?:\d+[%s])+)$' % (_G, _G), _a)
+                if _m and _i + 1 < len(lines):
+                    _b = re.sub(r'[\s　]', '', lines[_i + 1])
+                    _st = re.findall(r'\d+([%s])' % _G, _m.group(3))
+                    if re.fullmatch('[%s]+' % _Z, _b) and len(_b) == 4 + len(_st):
+                        _o.append('%s造：%s %s' % (_m.group(1), ' '.join(_m.group(2)), ' '.join(_b[:4])))
+                        _o.append('大运：' + ' '.join(s + z for s, z in zip(_st, _b[4:])))
+                        _i += 2
+                        continue
+                _o.append(lines[_i]); _i += 1
+            lines = _o
+            # 「老姑娘」一节：故事在前、盘在后，盘会把故事划给上一个命例 → 把盘挪到故事前面
+            _nz = lambda s: re.sub(r'[\s　]', '', s)
+            _h = next((i for i, l in enumerate(lines) if _nz(l) == '老姑娘'), None)
+            _p = next((i for i, l in enumerate(lines) if _nz(l).startswith('坤造：辛辛丙甲')), None)
+            if _h is not None and _p is not None and _p > _h:
+                _e = next((i for i in range(_p + 1, len(lines)) if _nz(lines[i]).startswith(('邢解', '解：'))), _p + 1)
+                lines = lines[:_h] + lines[_p:_e] + lines[_h:_p] + lines[_e:]
         # ★ 分条，丢掉与本站无关的条目
         items, curi = [], []
         for l in lines:
