@@ -1,5 +1,5 @@
 /* 网络优先——微信 X5 缓存顽固，保持与其余站一致。 */
-var C = 'mangpai-course-v32';
+var C = 'mangpai-course-v33';
 var CORE = ['./', 'index.html', 'style.css', 'app.js', 'data/data-meta.js', 'data/data-course.js', 'data/data-notes.js'];
 self.addEventListener('install', function (e) {
   self.skipWaiting();

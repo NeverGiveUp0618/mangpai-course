@@ -141,7 +141,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   console.log('笔记（我的提问）');
   ok($$('.tabbar button').length === 5, '底栏 5 个菜单');
   click($('[data-tab="qna"]')); await wait(150);
-  ok(/还没有笔记/.test($('#qnaList').textContent), '笔记页：当前没有内容，显示占位提示');
+  ok(/还没有笔记|死活木/.test($('#qnaList').textContent), '笔记页：有笔记则列出，没有则显示占位提示');
   window.DATA_QNA = [{ id: 'q1', n: 1, title: '测试笔记', html: '<p>原问与解答</p>', toc: [], text: '原问与解答 墓库', chars: 20 },
                      { id: 'q2', n: 2, title: '第二篇', html: '<p>第二篇正文</p>', toc: [], text: '第二篇正文', chars: 20 }];
   click($('[data-tab="home"]')); await wait(40);
