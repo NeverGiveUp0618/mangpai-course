@@ -121,7 +121,20 @@ function needAllBodies(withRaw) {
 }
 function fillRaw(list, R) { list.forEach(function (c) { if (!c.html && R[c.id]) { c.html = R[c.id].html; c.text = R[c.id].text; } }); }
 var needNotes  = function () { return need('data-notes.js', 'DATA_NOTES'); };
-var needQuiz   = function () { return need('data-quiz.js', 'DATA_QUIZ'); };
+// 命例学习标记：按「性别+八字」固定 id 存，不随数据重排错位；旧版按编号存的一次性迁过来
+function qk(it) { return it.id || String(it.n); }
+function migrateSeen(Q) {
+  try {
+    if (localStorage.getItem('mp_course_seen_ids')) return;
+    var seen = ls(K.seen, {}), out = {}, leg = Q.legacy || {};
+    Object.keys(seen).forEach(function (k) {
+      if (/^\d+$/.test(k)) { if (leg[k]) out[leg[k]] = seen[k]; } else out[k] = seen[k];
+    });
+    save(K.seen, out);
+    localStorage.setItem('mp_course_seen_ids', '1');
+  } catch (e) {}
+}
+var needQuiz   = function () { return need('data-quiz.js', 'DATA_QUIZ').then(function (Q) { migrateSeen(Q); return Q; }); };
 // 问题清单 70KB，只有点进「四张索引表」才要，不进首屏包
 var needIndex  = function () { return need('data-index.js', 'DATA_INDEX'); };
 // 断命台 8KB，只有点进「断命台」才要
@@ -1913,7 +1926,7 @@ RENDER.qlist = function () {
     var list = Q.items.filter(function (it) {
       if (qFilter.tag && it.tags.indexOf(qFilter.tag) < 0) return false;
       switch (qFilter.mode) {
-        case 'new': return !seen[it.n];
+        case 'new': return !seen[qk(it)];
         case 'star': return it.star > 0;
         case 'chart': return it.nCharts > 0;
       }
@@ -1934,7 +1947,7 @@ RENDER.qlist = function () {
       var its = byTopic[tp.name] || [];
       if (!its.length) return '';
       var isOpen = filtering || !!open[tp.name];
-      var done = its.filter(function (it) { return seen[it.n]; }).length;
+      var done = its.filter(function (it) { return seen[qk(it)]; }).length;
       return '<div class="qgrp' + (isOpen ? ' open' : '') + '" data-g="' + esc(tp.name) + '">' +
         '<button class="qgh"><span class="ar">›</span>' +
         '<span class="nm">' + esc(tp.name) + '</span>' +
@@ -1946,7 +1959,7 @@ RENDER.qlist = function () {
             '<span class="qn">' + it.seq + '</span>' +
             '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(it.title) +
             (it.noAnswer ? ' <span class="pill g" style="font-size:10px">反推</span>' : '') + '</span>' +
-            '<span class="s"><i class="dot ' + (seen[it.n] ? 'ok' : 'new') + '"></i></span></div>';
+            '<span class="s"><i class="dot ' + (seen[qk(it)] ? 'ok' : 'new') + '"></i></span></div>';
         }).join('') + '</div></div>';
     }).join('');
 
@@ -2071,7 +2084,7 @@ function navBar(it) {
     for (var k = 0; k < Q.items.length; k++) if (Q.items[k].n === it.n) { i = k; break; }
     var prev = i > 0 ? Q.items[i - 1] : null;
     var next = i >= 0 && i < Q.items.length - 1 ? Q.items[i + 1] : null;
-    var isSeen = !!ls(K.seen, {})[it.n];
+    var isSeen = !!ls(K.seen, {})[qk(it)];
     var relHtml = (it.rel && it.rel.length) ? '<div class="card" style="margin-top:14px"><b style="font-size:14px">相关教材章节</b><div style="margin-top:6px;line-height:2">' + it.rel.map(function (r) { return '<a class="chlink" data-ch="' + r.n + '">' + esc(r.t) + '</a>'; }).join('<br>') + '</div></div>' : '';
     $('#L4').innerHTML = relHtml +
       '<div class="row" style="margin:18px 0 0"><button class="btn' + (isSeen ? ' pri' : '') + '" id="seenToggle" style="flex:1">' + (isSeen ? '✓ 已学（点一下取消）' : '☐ 标记为已学') + '</button></div>' +
@@ -2082,7 +2095,7 @@ function navBar(it) {
       '</div>';
     $$('#L4 .chlink').forEach(function (a) { a.onclick = function () { show('chapter', +a.dataset.ch); }; });
     $('#seenToggle').onclick = function () {
-      var sv = ls(K.seen, {}); if (sv[it.n]) delete sv[it.n]; else sv[it.n] = Date.now(); save(K.seen, sv);
+      var sv = ls(K.seen, {}); if (sv[qk(it)]) delete sv[qk(it)]; else sv[qk(it)] = Date.now(); save(K.seen, sv);
       var on = !!sv[it.n]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';
     };
     $('#bList').onclick = function () { show('qlist', null); };

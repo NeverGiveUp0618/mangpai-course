@@ -225,7 +225,7 @@ def tidy(t):
     t = re.sub(r'大运[：:\s]*(?:[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥][\s、，,]*){3,}', ' ', t)
     t = re.sub(r'\d+月\s*\d+日起运|岁数[\s\d.]+|年份[\s\d.]+|[（(]?\d+岁起运[）)]?', ' ', t)
     t = re.sub(r'(?<![\u4e00-\u9fff])(分析|闲注|解析|简历及解析|简历及简析|断|注)[：:]', ' ', t)
-    t = re.sub(r'\s+', ' ', t).strip(' ，,；;：:')
+    t = re.sub(r'\s+', ' ', t).strip(' ，,；;：:。')
     t = re.sub(r'^(?:运|岁|年)[，,]\s*', '', t)
     return t
 
@@ -258,14 +258,59 @@ def _pairs_ok(stems, branches):
     return out if len(out) == min(len(stems), len(branches)) and len(out) >= 3 else None
 
 
+def _loose(text):
+    """从零散的干支字符里还原大运：「全部干 + 全部支」或「干支交错」，容忍 巳/己、戍/戌 的 OCR 混淆。"""
+    ch = re.findall('[%s%s戍已]' % (GAN, ZHI), re.sub(r'[\d\s]', '', text))
+    n = len(ch) // 2
+    if len(ch) < 6 or len(ch) % 2:
+        return None
+    fix_s = lambda c: {'巳': '己', '已': '己'}.get(c, c)
+    fix_z = lambda c: {'戍': '戌', '已': '巳'}.get(c, c)
+    st = [fix_s(c) for c in ch[:n]]; br = [fix_z(c) for c in ch[n:]]
+    if all(c in GAN for c in st) and all(c in ZHI for c in br):
+        r = _pairs_ok(st, br)
+        if r:
+            return r
+    pr = [(fix_s(ch[i]), fix_z(ch[i + 1])) for i in range(0, len(ch), 2)]
+    if all(a in GAN and b in ZHI for a, b in pr):
+        return _pairs_ok([a for a, b in pr], [b for a, b in pr])
+    return None
+
+
+def _dy_fit(dy, gan, zhi):
+    """大运必须是月柱的顺/逆排下一步、且一路连续；对不上就宁可不画（多半是识别错或取到别的盘的大运）。"""
+    def idx(g, z):
+        for k in range(60):
+            if GAN[k % 10] == g and ZHI[k % 12] == z:
+                return k
+    try:
+        m = idx(gan[1], zhi[1]); ks = [idx(x[0], x[1]) for x in dy]
+    except Exception:
+        return False
+    if m is None or None in ks or len(ks) < 2:
+        return False
+    step = (ks[1] - ks[0]) % 60
+    return step in (1, 59) and (ks[0] - m) % 60 == step and all((ks[i + 1] - ks[i]) % 60 == step for i in range(len(ks) - 1))
+
+
+TITLE_FIX = {'坤辛辛丙甲卯丑辰午': '财官都入库的老姑娘，63岁行未运冲库才有婚姻'}
+
+
 def strip_dayun(body):
     """去掉混进命例正文里的大运/起运年份/岁数残行；能还原成干支对的返回 dayun 列表，供画进盘里。"""
     G, Z = '[%s]' % GAN, '[%s]' % ZHI
     body = body.replace(chr(0x2028), '\n')
+    caps = []
+
+    def _grab(m):
+        r = _loose(m.group(0))
+        if r:
+            caps.append(r)
+        return ' '
     # 文中任意位置的残留：年份串、「N岁运：6戊16丁…」、「大运：戊子 丁亥 …」、散开的单字干支串
     body = re.sub(r'(?:(?:1[89]|20)\d\d[\s\u00a0]*){3,}', ' ', body)
-    body = re.sub(r'\d{1,2}岁(?:大)?运[：:]?[\s\u00a0]*(?:\d{1,3}[%s][\s\u00a0]*){3,}' % GAN, ' ', body)
-    body = re.sub(r'(?:\d{1,2}岁(?:大)?运[：:]?)?(?:大运[：:；;]?)?(?:\d{1,3}\s*[%s]\s*){3,}(?:[%s戍]\s*){0,12}' % (GAN, ZHI), ' ', body)
+    body = re.sub(r'\d{1,2}岁(?:大)?运[：:]?[\s\u00a0]*(?:\d{1,3}[%s][\s\u00a0]*){3,}' % GAN, _grab, body)
+    body = re.sub(r'(?:\d{1,2}岁(?:大)?运[：:]?)?(?:大运[：:；;]?)?(?:\d{1,3}\s*[%s]\s*){3,}(?:[%s戍]\s*){0,12}' % (GAN, ZHI), _grab, body)
     body = re.sub(r'(?:\d{1,3}岁\s*){4,}(?:止于[：:]?)?', ' ', body)
     body = re.sub(r'[\x00-\x08\x0b-\x1f]', '', body)
     body = re.sub(r'(?:始于|止于)[：:]', ' ', body)
@@ -273,8 +318,9 @@ def strip_dayun(body):
     body = re.sub(r'=\s*\d+\s*\\\*\s*GB\d\s*[⑴-⒇①-⑩]?', ' ', body)
     body = re.sub(r'\d*\s*月\s*\d*\s*日起运|\d+岁\d*年?起运', ' ', body)
     body = re.sub(r'大运[：:；;]?(?:[\s\u00a0•·：:、，,\d%s%s戍]|日(?=[\s\d]))+' % (GAN, ZHI),
-                  lambda m: ' ' if len(re.findall('[%s%s戍]' % (GAN, ZHI), m.group(0))) >= 6 else m.group(0), body)
+                  lambda m: _grab(m) if len(re.findall('[%s%s戍]' % (GAN, ZHI), m.group(0))) >= 6 else m.group(0), body)
     body = re.sub(r'(?:^|(?<=[\s：:]))(?:[乾坤][\s\u00a0]+)?(?:[%s%s戍][\s\u00a0]+){4,}[%s%s戍]?(?=[\s\u4e00-\u9fff]|$)' % (GAN, ZHI, GAN, ZHI), ' ', body, flags=re.M)
+    body = re.sub(r'(?:(?<=[\s：:，。])[\u4e00-\u9fffX×]\s){4,}', ' ', body)
     lines = body.split('\n')
     out, dy, i = [], None, 0
     nz = lambda x: re.sub(_W, '', x)
@@ -337,7 +383,7 @@ def strip_dayun(body):
         if re.match(r'^(?:%s){5,}$' % G, t) or re.match(r'^(?:%s){5,}$' % Z, t):
             i += 1; continue
         out.append(ln); i += 1
-    return '\n'.join(out), dy
+    return '\n'.join(out), (caps[0] if caps else dy)
 
 
 def build_quiz():
@@ -380,8 +426,17 @@ def build_quiz():
         dyl = dyl or _dy2
         if not dyl and c.get('dayun'):
             dyl = strip_dayun(c['dayun'])[1]
+        if dyl and not _dy_fit(dyl, gan, zhi):
+            dyl = None
         label, face_t, jie = split_case(body)
         face_t, jie = tidy(face_t), tidy(jie)
+        if label == '断' and len(face_t) > 300 and len(jie) < len(face_t):    # 题面是一大段故事：头两三句留作题面，其余并入解
+            _fs = [x.strip() for x in split_sent(re.sub(r'\s+', ' ', face_t)) if x.strip()]
+            _k, _acc = 0, ''
+            while _k < len(_fs) - 1 and len(_acc) < 100:
+                _acc += _fs[_k]; _k += 1
+            if _k < len(_fs):
+                face_t, jie = _acc, ''.join(_fs[_k:]) + ('\n\n' + jie if jie else '')
         if len(re.sub(r'\s', '', face_t + jie)) < 20:      # 清完只剩残渣，没有可读内容 → 不收
             continue
         if len(re.sub(r'\s', '', face_t)) < 4 and jie:      # 题面只剩标签：拿解的头一两句当题面
@@ -401,6 +456,7 @@ def build_quiz():
             brief = brief + '，' + segs[1]
         brief = (brief[:20] or '命例')
         brief = re.sub(r'^[乾坤][：:造]*', '', brief)
+        brief = TITLE_FIX.get(sex + ''.join(gan) + ''.join(zhi), brief)
         title = '%s造 %s%s日 · %s' % (sex, day, zhi[2], brief)
         ss_g = ' '.join('%s%s' % (p, shishen(day, g)) for p, g in zip('年月时', [gan[0], gan[1], gan[3]]))
         ss_z = ' '.join('%s%s' % (p, shishen(day, BEN[z])) for p, z in zip('年月日时', zhi))
@@ -418,7 +474,7 @@ def build_quiz():
             tagcount[t] = tagcount.get(t, 0) + 1
         topic = topic_of(c)
         items.append({
-            'n': 0, 'title': title, 'tags': tags, 'star': 0,
+            'n': 0, 'id': sex + ''.join(gan) + ''.join(zhi), 'title': title, 'tags': tags, 'star': 0,
             'chart': {'g': sex, 'gan': gan, 'zhi': zhi}, 'nCharts': 1,
             'charts': [dict({'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}, **({'dy': dyl} if dyl else {}))],
             'face': face, 'jieLabel': '解', 'jie': (quote_html(jie) if jie else '<p class="muted">原稿对这个盘只给了上面的断语，没有再展开讲解。可点「拆解」看十神与五行。</p>'), 'chai': chai, 'noAnswer': 0,
@@ -439,7 +495,12 @@ def build_quiz():
     intro = ('<h2 id="命例库">命例库</h2><blockquote><p><strong>这是什么</strong>：从初、中、高级讲义与专题里抽出来的带完整四柱的命例。'
              '遮住「解」自己先推，再对照。<br><strong>说明</strong>：同一盘在多册里出现时取最完整的一份；'
              '部分命例原资料只给了图片、没有文字盘，这里暂未收入（二期补）。</p></blockquote>')
-    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics}
+    _ids = set(x['id'] for x in items)
+    try:    # 旧编号（v28 时的版本）→ 固定 id，用来把按编号存的学习标记迁过来
+        legacy = {k: v for k, v in json.load(io.open(os.path.join(ROOT, '_src', 'legacy_ids.json'), encoding='utf-8')).items() if v in _ids}
+    except Exception:
+        legacy = {}
+    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics, 'legacy': legacy}
 
 
 THEMES = [

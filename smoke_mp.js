@@ -94,7 +94,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($$('#noteList .card, #noteList [data-nt]').length >= 10, '专题列表');
 
   console.log('命例库');
+  window.localStorage.setItem('mp_course_seen', '{"3":1}'); window.localStorage.setItem('mp_course_seen_ids', '');
   click($('[data-tab="qlist"]')); await wait(150);
+  { const ks = Object.keys(JSON.parse(window.localStorage.getItem('mp_course_seen') || '{}'));
+    ok(ks.length === 1 && /^[乾坤]/.test(ks[0]), '旧版按编号存的已学标记自动迁成固定 id：' + ks.join(',')); }
+  window.localStorage.setItem('mp_course_seen', '{}');
   ok($$('.qgh').length >= 8, '主题分组≥8，实得 ' + $$('.qgh').length);
   click($('.qgh')); await wait(30);
   const row = $('.qrow'); ok(!!row, '展开后有命例行');
