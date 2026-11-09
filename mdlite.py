@@ -308,11 +308,24 @@ def _four_pillar(head, body):
     return render_chart(gan, zhi, label)
 
 
+_SS = [['比肩', '劫财'], ['食神', '伤官'], ['偏财', '正财'], ['七杀', '正官'], ['偏印', '正印']]
+_BEN = dict(zip('子丑寅卯辰巳午未申酉戌亥', '癸己甲乙戊丙丁己庚辛戊壬'))
+
+
+def shishen_name(day, g):
+    """十神（日主 day 看天干 g）：同类/我生/我克/克我/生我 × 阴阳同异。盘上天干标十神，地支取本气。"""
+    G = '甲乙丙丁戊己庚辛壬癸'
+    i, j = G.index(day), G.index(g)
+    return _SS[((j >> 1) - (i >> 1)) % 5][0 if (i % 2) == (j % 2) else 1]
+
+
 def render_chart(gan, zhi, label='', dayun=None):
     """四柱盘的统一 HTML。app.js 里的吸顶条用同一套结构与 class。dayun＝['甲辰','乙巳',…] 时下面加一行大运色牌。"""
+    day = gan[2]
     cols = ''.join(
-        '<div class="c%s"><div class="p">%s</div>%s%s</div>'
-        % (' day' if k == 2 else '', p, gz_span(gan[k], 'a'), gz_span(zhi[k], 'b'))
+        '<div class="c%s"><div class="p">%s</div><span class="ss%s">%s</span>%s%s<span class="ss">%s</span></div>'
+        % (' day' if k == 2 else '', p, ' me' if k == 2 else '', '日主' if k == 2 else shishen_name(day, gan[k]),
+           gz_span(gan[k], 'a'), gz_span(zhi[k], 'b'), shishen_name(day, _BEN[zhi[k]]))
         for k, p in enumerate(_PILLARS))
     lb = ('<span class="lb">%s造</span>' % _html.escape(label)) if label else ''
     dy = ''

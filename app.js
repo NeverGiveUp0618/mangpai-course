@@ -2058,6 +2058,13 @@ function plain(html) {
  * 盘滚出视野就得来回翻。滚过题头后把盘缩成一条钉在顶栏下方。
  * 多盘对照题（题21/35 等 9 道）把两个盘都放上去，横向可滑。
  */
+var SS_G = '甲乙丙丁戊己庚辛壬癸';
+var SS_BEN = { 子: '癸', 丑: '己', 寅: '甲', 卯: '乙', 辰: '戊', 巳: '丙', 午: '丁', 未: '己', 申: '庚', 酉: '辛', 戌: '戊', 亥: '壬' };
+var SS_T = [['比肩', '劫财'], ['食神', '伤官'], ['偏财', '正财'], ['七杀', '正官'], ['偏印', '正印']];
+function ssName(day, g) {      /* 十神：同类/我生/我克/克我/生我 × 阴阳同异（与 mdlite.shishen_name 同一套） */
+  var i = SS_G.indexOf(day), j = SS_G.indexOf(g);
+  return SS_T[(((j >> 1) - (i >> 1)) % 5 + 5) % 5][(i % 2) === (j % 2) ? 0 : 1];
+}
 function setupSticky(it) {
   var bar = $('#stickyChart');
   var cs = it.charts || [];
@@ -2071,7 +2078,9 @@ function setupSticky(it) {
       '<div class="cols">' + pos.map(function (p, i) {
         return '<div class="c' + (i === 2 ? ' day' : '') + '">' +
           '<div class="p">' + p + '</div>' +
-          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') + '</div>';
+          '<span class="ss' + (i === 2 ? ' me' : '') + '">' + (i === 2 ? '日主' : ssName(c.gan[2], c.gan[i])) + '</span>' +
+          gz(c.gan[i], 'a') + gz(c.zhi[i], 'b') +
+          '<span class="ss">' + ssName(c.gan[2], SS_BEN[c.zhi[i]]) + '</span></div>';
       }).join('') + '</div>' +
       (c.dy ? '<div class="dys"><span class="lb2">运</span>' + c.dy.map(function (x) { return '<div class="c">' + gz(x.charAt(0), 'a') + gz(x.charAt(1), 'b') + '</div>'; }).join('') + '</div>' : '') + '</div>';
   }).join('');
@@ -2096,7 +2105,7 @@ function navBar(it) {
     $$('#L4 .chlink').forEach(function (a) { a.onclick = function () { show('chapter', +a.dataset.ch); }; });
     $('#seenToggle').onclick = function () {
       var sv = ls(K.seen, {}); if (sv[qk(it)]) delete sv[qk(it)]; else sv[qk(it)] = Date.now(); save(K.seen, sv);
-      var on = !!sv[it.n]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';
+      var on = !!sv[qk(it)]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';
     };
     $('#bList').onclick = function () { show('qlist', null); };
     if (prev) $('#bPrev').onclick = function () { show('quiz', prev.n); };

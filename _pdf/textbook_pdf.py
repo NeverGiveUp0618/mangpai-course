@@ -168,6 +168,8 @@ tr{page-break-inside:avoid}
 .ichart .p{font-size:9.5pt;color:var(--muted);margin-bottom:1mm;line-height:1.2}
 .ichart .a,.ichart .b{display:block;width:9mm;height:9mm;line-height:9mm;margin:1mm auto 0;border-radius:2mm;font-size:15pt;font-weight:700;text-align:center;
   background:#f6efe0;box-shadow:inset 0 0 0 .6pt var(--line)}
+.ichart .ss{display:block;font-size:8.5pt;line-height:1.35;color:var(--muted);margin:.4mm 0 0;white-space:nowrap}
+.ichart .ss.me{color:var(--h);font-weight:700}
 .ichart .dys{display:flex;gap:1.6mm;margin-left:2mm;padding-left:4mm;border-left:.8pt dashed #c9b790;align-items:flex-start}
 .ichart .dys .lb{align-self:center;font-size:10.5pt;margin:0 1mm 0 0}
 .ichart .dys .a,.ichart .dys .b{width:8.2mm;height:8.2mm;line-height:8.2mm;font-size:13pt}
