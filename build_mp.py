@@ -73,14 +73,18 @@ def read(p):
         return f.read()
 
 
-def build_doc(path, ident, n, title, extra):
+def build_doc(path, ident, n, title, extra, manual=False):
     s = read(path)
     s = re.sub(r'^#\s+.*?\n', '', s, count=1)
     heads = []
-    html = merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=False))
+    html = merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual))
+    if manual:   # 讲解手册模式：标题带序号/重点标记，与命理精讲同款
+        toc = [{'lv': lv, 't': t, 'a': a, 'st': st, 'm': 1 if mn else 0} for lv, t, a, st, mn in heads if lv <= 3]
+    else:
+        toc = [{'lv': lv, 't': t, 'a': a, 'st': 0, 'm': 0} for lv, t, a in heads if lv <= 3]
     d = {
         'id': ident, 'n': n, 'title': title, 'html': html,
-        'toc': [{'lv': lv, 't': t, 'a': a, 'st': 0, 'm': 0} for lv, t, a in heads if lv <= 3],
+        'toc': toc,
         'text': strip_md(s), 'chars': len(s),
     }
     d.update(extra)
@@ -107,7 +111,7 @@ def build_courses():
     def add(path, title, lv, book, raw):
         nonlocal n
         PATHS['c%d' % n] = path
-        docs.append(build_doc(path, 'c%d' % n, n, title, {'level': lv, 'book': book, 'raw': raw}))
+        docs.append(build_doc(path, 'c%d' % n, n, title, {'level': lv, 'book': book, 'raw': raw}, manual=(not raw)))
         n += 1
 
     def first_title(path, fallback):
@@ -141,7 +145,7 @@ def build_qna():
             if not m:
                 continue
             title = read(os.path.join(d, fn)).split('\n', 1)[0].lstrip('# ').strip() or m.group(2)
-            docs.append(build_doc(os.path.join(d, fn), 'q%d' % int(m.group(1)), int(m.group(1)), title, {}))
+            docs.append(build_doc(os.path.join(d, fn), 'q%d' % int(m.group(1)), int(m.group(1)), title, {}, manual='light'))
     return docs
 
 
