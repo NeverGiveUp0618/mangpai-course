@@ -102,7 +102,7 @@ def chapter_html(lv, idx, title, path, st):
 CSS = u'''
 @page { size: A4; margin: 18mm 17mm 21mm 17mm; background: #fbf6ec;
   @bottom-center { content: counter(page); font-family: "Songti SC", serif; font-size: 10pt; color: #8a6a4b; }
-  @bottom-left { content: "盲派八字 · 教材"; font-family: "Songti SC", serif; font-size: 9pt; color: #b09a82; }
+  @bottom-left { content: "盲派八字 · 教材 · __KIND__"; font-family: "Songti SC", serif; font-size: 9pt; color: #b09a82; }
 }
 @page :first { margin: 0; @bottom-center { content: none; } @bottom-left { content: none; } }
 :root{ --paper:#fbf6ec; --ink:#2b2622; --muted:#6f6254; --h:#7b3a2c; --accent:#b4842f; --line:#dccfb6; --soft:#f2e8d3;
@@ -213,14 +213,16 @@ def build(only=None, out=None):
         body.append(chapter_html(lv, idx, title, path, st))
     toc.append('</ol></section>')
     today = datetime.date.today().strftime('%Y年%m月%d日')
-    cover = ('<section class="cover"><div class="kk">学　习　册</div><h1>盲派八字<br>教材</h1><div class="sub">初级 · 中级 · 高级 · 专题　｜　每章附习题</div>'
-             '<div class="meta">第一版（试读）<br>整理自段建业系盲派资料 · 学习自用<br>%s</div><div class="seal">盲派<br>八字</div></section>' % today)
+    kind = '合订本' if not only else ('分主题册' if only == '专题' else only + '册')
+    sub = '初级 · 中级 · 高级 · 专题　｜　每章附习题' if not only else ('%s　｜　每章附习题' % ('分主题（专题）' if only == '专题' else only))
+    cover = ('<section class="cover"><div class="kk">学　习　册</div><h1>盲派八字<br>教材</h1><div class="sub">%s</div>'
+             '<div class="meta">%s · 第一版<br>整理自段建业系盲派资料 · 学习自用<br>%s</div><div class="seal">盲派<br>八字</div></section>' % (sub, kind, today))
     htm = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>盲派八字教材</title><style>%s</style></head><body>%s%s%s</body></html>' % (
-        CSS, cover, ''.join(toc), ''.join(body))
+        CSS.replace('__KIND__', '合订本' if not only else ('分主题' if only == '专题' else only)), cover, ''.join(toc), ''.join(body))
     tmp = os.path.join(HERE, '_print.html')
     io.open(tmp, 'w', encoding='utf-8').write(htm)
     os.makedirs(OUTDIR, exist_ok=True)
-    out = out or os.path.join(OUTDIR, '盲派八字教材 · 第一版%s.pdf' % ('（%s）' % only if only else ''))
+    out = out or os.path.join(OUTDIR, '盲派八字教材 · %s.pdf' % ('合订本' if not only else ('分主题' if only == '专题' else only)))
     cmd = [CHROME, '--headless=new', '--disable-gpu', '--no-pdf-header-footer', '--no-sandbox',
            '--virtual-time-budget=60000', '--print-to-pdf=' + out, 'file://' + tmp]
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=900)
