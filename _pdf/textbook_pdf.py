@@ -13,7 +13,7 @@ sys.path.insert(0, ROOT)
 import build_mp as B  # noqa: E402
 
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-OUTDIR = os.path.abspath(os.path.join(ROOT, '..', '..', '学习册'))
+OUTDIR = '/Users/xiaojin/Documents/八笔记md/八字课程资料（服务器）/学习册'   # 用户指定：所有学习册 PDF 都放这里
 LEVELS = ['初级', '中级', '高级', '专题']
 PART_INTRO = {
     '初级': '入门：体系总览、宫位与十神、合冲穿刑破的作用方式、做功与应期入门。',
