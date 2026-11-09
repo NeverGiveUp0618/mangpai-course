@@ -130,8 +130,11 @@ strong,b{color:var(--h)}
 .toc .part small{font-size:10.5pt;color:var(--muted);font-family:"Songti SC",serif;margin-left:3mm}
 .toc ol{margin:0;padding:0;list-style:none;columns:2;column-gap:10mm}
 .toc li{font-size:11.5pt;line-height:1.75;break-inside:avoid;color:var(--ink)}
-.toc li a{color:inherit;text-decoration:none}
-.toc li i{font-style:normal;color:var(--accent);display:inline-block;width:2.2em}
+.toc li a{color:inherit;text-decoration:none;display:flex;align-items:baseline}
+.toc li em{font-style:normal;margin-left:auto;color:var(--muted);padding-left:2mm}
+.toc li a span.t{flex:0 1 auto}
+.toc li a span.d{flex:1;border-bottom:.6pt dotted var(--line);margin:0 1.5mm}
+.toc li i{flex:none;font-style:normal;color:var(--accent);display:inline-block;width:2.2em}
 /* 分部页 */
 .partpage{height:250mm;page-break-before:always;page-break-after:always;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .partpage h1{font-family:"Kaiti SC",serif;font-size:62pt;color:var(--h);letter-spacing:.3em;margin:0 0 8mm;padding-left:.3em}
@@ -195,7 +198,8 @@ details summary::-webkit-details-marker{display:none}
 '''
 
 
-def build(only=None, out=None):
+def build(only=None, out=None, nums=None):
+    nums = nums or {}
     st = st_map()
     chs = chapters()
     if only:
@@ -211,7 +215,7 @@ def build(only=None, out=None):
             toc.append('<div class="part">%s<small>%s</small></div><ol>' % (lv, H.escape(PART_INTRO[lv])))
             body.append('<section class="partpage"><div class="rule"></div><h1>%s</h1><p>%s</p></section>' % (lv, H.escape(PART_INTRO[lv])))
             cur = lv
-        toc.append('<li><a href="#ch-%s-%d"><i>%d</i>%s</a></li>' % (lv, idx, idx, H.escape(title)))
+        toc.append('<li><a href="#ch-%s-%d"><i>%d</i><span class="t">%s</span><span class="d"></span><em>%s</em></a></li>' % (lv, idx, idx, H.escape(title), nums.get((lv, idx), '000')))
         body.append(chapter_html(lv, idx, title, path, st))
     toc.append('</ol></section>')
     today = datetime.date.today().strftime('%Y年%m月%d日')
@@ -229,7 +233,7 @@ def build(only=None, out=None):
            '--virtual-time-budget=60000', '--print-to-pdf=' + out, 'file://' + tmp]
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=900)
     print('chapters', len(chs), '->', out, round(os.path.getsize(out) / 1e6, 1), 'MB')
-    return out
+    return out, chs
 
 
 if __name__ == '__main__':
@@ -239,4 +243,17 @@ if __name__ == '__main__':
         only = a[a.index('--only') + 1]
     if '--out' in a:
         out = a[a.index('--out') + 1]
-    build(only, out)
+    import fitz
+    out, chs = build(only, out)             # 第一遍：目录页码占位
+    d = fitz.open(out); nums = {}
+    def key(lv, idx): return r'%s\s*·\s*第\s*%s\s*章' % (lv, r'\s*'.join(str(idx)))
+    for lv, idx, title, path in chs:
+        for i in range(2, len(d)):
+            if re.search(key(lv, idx), d[i].get_text()[:100]):
+                nums[(lv, idx)] = i + 1; break
+    d.close()
+    assert len(nums) == len(chs), (len(nums), len(chs))
+    out, chs = build(only, out, nums)       # 第二遍：填真页码
+    d = fitz.open(out)
+    bad = [k for k, v in nums.items() if not re.search(key(*k), d[v - 1].get_text()[:100])]
+    print('目录页码核对：', '全部对上' if not bad else bad)
