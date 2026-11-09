@@ -1131,8 +1131,8 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 
 /* ===== 四柱盘重设计：五行色牌 ===== */
 .doc .ichart .c .a,.doc .ichart .c .b,.sticky-chart .c .a,.sticky-chart .c .b{
-  display:block; margin:2px auto 0; width:30px; line-height:30px; height:30px; border-radius:8px;
-  text-align:center; font-size:18px; font-weight:700; background:var(--bg2); box-shadow:inset 0 0 0 1px var(--line);
+  display:block; margin:2px auto 0; width:28px; height:28px; line-height:28px; border-radius:8px;
+  text-align:center; font-size:17px; font-weight:700; background:var(--bg2); box-shadow:inset 0 0 0 1px var(--line);
 }
 .doc .ichart .c .a.w-mu,.doc .ichart .c .b.w-mu,.sticky-chart .c .w-mu{background:color-mix(in srgb,var(--wx-mu) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-mu) 45%,transparent)}
 .doc .ichart .c .a.w-huo,.doc .ichart .c .b.w-huo,.sticky-chart .c .w-huo{background:color-mix(in srgb,var(--wx-huo) 16%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wx-huo) 45%,transparent)}
@@ -1157,7 +1157,7 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .sticky-chart .grp{flex-wrap:nowrap}
 .doc .ichart .dys .lb,.sticky-chart .dys .lb2{flex:0 0 auto; font-size:11px; color:var(--ink3); font-weight:600; letter-spacing:1px; writing-mode:vertical-rl}
 .doc .ichart .dys .c,.sticky-chart .dys .c{flex:0 0 auto; text-align:center; min-width:28px}
-.doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:28px; height:28px; line-height:28px; font-size:15px; border-radius:8px}
+.doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:28px; height:28px; line-height:28px; font-size:17px; font-weight:700; border-radius:8px}
 
 /* 章节自测选项 */
 .stopt{display:block;width:100%;text-align:left;white-space:normal;line-height:1.7;margin:0 0 9px;padding:12px 14px;font-size:14px}
