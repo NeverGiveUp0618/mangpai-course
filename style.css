@@ -1151,13 +1151,13 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .chlink{color:var(--indigo);cursor:pointer;border-bottom:1px dashed var(--indigo);font-size:13px;line-height:1.9;white-space:normal}
 .doc td{vertical-align:top}
 
-/* 大运行：盘下面一排色牌，可横滑 */
-.doc .ichart{flex-wrap:wrap}
-.doc .ichart .dys,.sticky-chart .dys{flex:1 0 100%; display:flex; align-items:center; gap:5px; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:5px; padding-top:5px; border-top:1px dashed var(--line)}
-.sticky-chart .grp{flex-wrap:wrap}
-.doc .ichart .dys .lb,.sticky-chart .dys .lb2{flex:0 0 auto; font-size:11px; color:var(--ink3); font-weight:600; letter-spacing:1px; writing-mode:horizontal-tb}
-.doc .ichart .dys .c,.sticky-chart .dys .c{flex:0 0 auto; text-align:center; min-width:26px}
-.doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:25px; height:25px; line-height:25px; font-size:14px; border-radius:7px}
+/* 大运行：与四柱同一排，整条盘可左右滑动（与命理精讲一致） */
+.doc .ichart{flex-wrap:nowrap}
+.doc .ichart .dys,.sticky-chart .dys{flex:0 0 auto; display:flex; align-items:center; gap:5px; margin:0 0 0 4px; padding:0 14px 0 10px; border:0; border-left:1px dashed var(--line)}
+.sticky-chart .grp{flex-wrap:nowrap}
+.doc .ichart .dys .lb,.sticky-chart .dys .lb2{flex:0 0 auto; font-size:11px; color:var(--ink3); font-weight:600; letter-spacing:1px; writing-mode:vertical-rl}
+.doc .ichart .dys .c,.sticky-chart .dys .c{flex:0 0 auto; text-align:center; min-width:28px}
+.doc .ichart .dys .a,.doc .ichart .dys .b,.sticky-chart .dys .a,.sticky-chart .dys .b{width:28px; height:28px; line-height:28px; font-size:15px; border-radius:8px}
 
 /* 章节自测选项 */
 .stopt{display:block;width:100%;text-align:left;white-space:normal;line-height:1.7;margin:0 0 9px;padding:12px 14px;font-size:14px}

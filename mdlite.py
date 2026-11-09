@@ -364,6 +364,8 @@ def _lift_inline_chart(para):
     先说日主 → 看盘 → 再讲十神，读起来反而更顺。
     返回 [(kind, text)] 序列，kind 为 'p' 或 'chart'。
     """
+    if re.match(r'^\s*(\*\*)?大运', para):      # 大运行里的「干／支」括注不是盘
+        return None
     out = []
     last = 0
     in_bold = False   # 盘常写在粗体中间（**命A（乙壬甲甲／未午子戌）—— 29岁亡**），
@@ -374,6 +376,11 @@ def _lift_inline_chart(para):
         if len(gan) != 4 or len(zhi) != 4:
             continue
         head = para[last:m.start()].rstrip('：: 　')
+        label = ''
+        _hs = re.sub(r'[\*：:\s　]', '', head)
+        if _hs in ('乾造', '坤造'):      # 「**乾造**：」就是盘的标签，不再单独成一段
+            label, head = _hs[0], ''
+            in_bold = False
         if in_bold:
             # 上一段把粗体补闭合了，这一段若原本就带着闭合标记，去掉免得凑成 ****
             head = head[2:] if head.startswith('**') else '**' + head
@@ -384,7 +391,7 @@ def _lift_inline_chart(para):
             in_bold = False
         if head.strip().strip('*'):
             out.append(('p', head))
-        out.append(('chart', render_chart(gan, zhi)))
+        out.append(('chart', render_chart(gan, zhi, label)))
         last = m.end()
     if not out:
         return None
