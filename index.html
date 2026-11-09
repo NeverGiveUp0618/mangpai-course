@@ -143,6 +143,15 @@
   </section>
 
   <!-- 搜索 -->
+  <section class="screen" id="s-qna"><div id="qnaList"></div></section>
+  <section class="screen" id="s-qnote">
+    <div id="qnoteBody" class="doc"></div>
+    <div class="row spread" style="margin:26px 0 8px;gap:10px">
+      <button class="btn" id="prevQ">‹ 上一篇</button>
+      <button class="btn" id="nextQ">下一篇 ›</button>
+    </div>
+  </section>
+
   <section class="screen" id="s-st"><div id="stBody"></div></section>
 
   <section class="screen" id="s-search">
@@ -160,6 +169,7 @@
   <button data-tab="course"><b>学</b><span>课程</span></button>
   <button data-tab="ref"><b>查</b><span>速查</span></button>
   <button data-tab="qlist"><b>练</b><span>题库</span></button>
+  <button data-tab="qna"><b>问</b><span>笔记</span></button>
 </nav>
 
 <button class="fab" id="fabToc" style="display:none" aria-label="目录">☰</button>

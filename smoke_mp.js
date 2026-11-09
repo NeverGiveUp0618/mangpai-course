@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-st.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-st.js', 'data/data-qna.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);
@@ -34,7 +34,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   const M = window.DATA_META;
   ok((M.counts.course + M.counts.rawCourse) >= 60 && M.counts.quiz >= 500, `数据量：课程${M.counts.course} 专题${M.counts.notes} 命例${M.counts.quiz}`);
   ok(!$('.desk-entry') && !$('.vke-entry'), '断命台/v课入口已去除');
-  ok($$('.tabbar button').length === 4, '底栏 4 个');
+  ok($$('.tabbar button').length === 5, '底栏 5 个');
 
   console.log('我没学过');
   ok(!!$('#gapCard'), '首页有「我没学过」入口');
@@ -134,6 +134,21 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click($('#btnBack')); await wait(50);
   click($('[data-tab="home"]')); await wait(60);
 
+  console.log('笔记（我的提问）');
+  ok($$('.tabbar button').length === 5, '底栏 5 个菜单');
+  click($('[data-tab="qna"]')); await wait(150);
+  ok(/还没有笔记/.test($('#qnaList').textContent), '笔记页：当前没有内容，显示占位提示');
+  window.DATA_QNA = [{ id: 'q1', n: 1, title: '测试笔记', html: '<p>原问与解答</p>', toc: [], text: '原问与解答 墓库', chars: 20 },
+                     { id: 'q2', n: 2, title: '第二篇', html: '<p>第二篇正文</p>', toc: [], text: '第二篇正文', chars: 20 }];
+  click($('[data-tab="home"]')); await wait(40);
+  click($('[data-tab="qna"]')); await wait(150);
+  ok($$('[data-qn]').length === 2, '有内容时按编号列出');
+  click($('[data-qn="1"]')); await wait(150);
+  ok(/原问与解答/.test($('#qnoteBody').textContent) && !!$('#readToggle'), '笔记详情页可读，带「标记为已读」');
+  click($('#nextQ')); await wait(100);
+  ok(/第二篇正文/.test($('#qnoteBody').textContent), '上一篇/下一篇可翻');
+  window.DATA_QNA = [];
+  click($('[data-tab="home"]')); await wait(40);
   console.log('搜索');
   click($('#btnSearch')); await wait(80);
   $('#q').value = '墓库'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(400);

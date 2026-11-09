@@ -132,6 +132,19 @@ def build_courses():
     return docs
 
 
+def build_qna():
+    """笔记（我的提问与解答）：content/笔记/NN-标题.md；目录可以为空。"""
+    docs, d = [], os.path.join(CONTENT, '笔记')
+    if os.path.isdir(d):
+        for fn in sorted(os.listdir(d)):
+            m = re.match(r'^(\d+)-(.+)\.md$', fn)
+            if not m:
+                continue
+            title = read(os.path.join(d, fn)).split('\n', 1)[0].lstrip('# ').strip() or m.group(2)
+            docs.append(build_doc(os.path.join(d, fn), 'q%d' % int(m.group(1)), int(m.group(1)), title, {}))
+    return docs
+
+
 def build_notes():
     docs, d = [], os.path.join(CONTENT, '专题')
     for k, fn in enumerate(sorted(os.listdir(d)), 1):
@@ -546,13 +559,14 @@ def main():
         subprocess.run([sys.executable, g], stdout=subprocess.DEVNULL, check=False)
     courses = build_courses()
     notes = build_notes()
+    qna = build_qna()
     quiz = build_quiz()
     link_related(courses, quiz)
     ref = build_ref(courses)
     st = build_selftest(courses)
     meta = {
         'name': '盲派八字', 'built': time.strftime('%Y-%m-%d %H:%M'),
-        'counts': {'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
+        'counts': {'qna': len(qna), 'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
                    'quizChart': len(quiz['items']), 'quizChai': len(quiz['items'])},
         'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
@@ -573,6 +587,7 @@ def main():
     ] + [('data-body-%s.js' % k, write_js('data-body-%s.js' % k, 'DATA_BODY_%s' % k, v)) for k, v in bodies.items()] + [
         ('data-course.js', write_js('data-course.js', 'DATA_COURSE', courses)),
         ('data-ref.js', write_js('data-ref.js', 'DATA_REF', ref)),
+        ('data-qna.js', write_js('data-qna.js', 'DATA_QNA', qna)),
         ('data-st.js', write_js('data-st.js', 'DATA_ST', st)),
         ('data-notes.js', write_js('data-notes.js', 'DATA_NOTES', notes)),
         ('data-quiz.js', write_js('data-quiz.js', 'DATA_QUIZ', quiz)),

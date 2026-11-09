@@ -111,6 +111,7 @@ setTimeout(function () {
 var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };
 var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
 var needSt = function () { return need('data-st.js', 'DATA_ST'); };
+var needQna = function () { return need('data-qna.js', 'DATA_QNA'); };
 var LVKEY = { '初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan' };
 function needBodyOf(c) { return c.raw ? needRaw() : need('data-body-' + LVKEY[c.level] + '.js', 'DATA_BODY_' + LVKEY[c.level]); }
 function needAllBodies(withRaw) {
@@ -147,10 +148,10 @@ var cur = { scr: 'home', id: null };
 var TITLES = {
   home: '盲派八字', course: '课程', chapter: '', notes: '专题与答疑',
   note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '知识点速查', qlist: '命例题库',
-  quiz: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
+  quiz: '', qna: '笔记 · 我的提问', qnote: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
   vke: 'v课笔记', vkeread: ''
 };
-var ROOTS = { home: 1, course: 1, notes: 1, qlist: 1, ref: 1 };
+var ROOTS = { home: 1, course: 1, notes: 1, qlist: 1, ref: 1, qna: 1 };
 
 function _apply(scr, id) {
   if (cur.scr === 'desk' && scr !== 'desk') closePick();   // 选字浮层是 fixed 的，换屏必须收掉
@@ -164,7 +165,7 @@ function _apply(scr, id) {
   $$('.tabbar button').forEach(function (b) {
     b.classList.toggle('on', b.dataset.tab === scr);
   });
-  $('#fabToc').style.display = (scr === 'chapter' || scr === 'note') ? 'block' : 'none';
+  $('#fabToc').style.display = (scr === 'chapter' || scr === 'note' || scr === 'qnote') ? 'block' : 'none';
   if (scr !== 'quiz') $('#stickyChart').classList.add('hide');
   if (scr !== 'vkeread') vkeStopSpy();   // 吸顶盘的滚动监听是全局的，换屏必须解绑
   hideToast();
@@ -483,6 +484,7 @@ RENDER.home = function () {
 function lastLabel(l) {
   if (l.scr === 'chapter') return '课程 · 第 ' + l.id + ' 讲';
   if (l.scr === 'note') return '专题 ' + l.id;
+  if (l.scr === 'qnote') return '笔记 ' + l.id;
   if (l.scr === 'quiz') return '命例';
   return TITLES[l.scr] || '';
 }
@@ -701,6 +703,47 @@ RENDER.note = function (n) {
     addReadToggle(c.id, '#prevNt');
     afterDoc($('#noteBody'), c.id);
     if (n === 1) decorateGap();
+  });
+};
+
+
+/* ============ 笔记：我的提问与解答（content/笔记/NN-主题.md） ============ */
+RENDER.qna = function () {
+  var box = $('#qnaList');
+  box.innerHTML = '<div class="empty">载入中…</div>';
+  needQna().then(function (list) {
+    var read = ls(K.read, {});
+    var intro = '<div class="card"><b style="font-size:15px">📒 我的提问与解答</b><div class="muted" style="margin-top:4px;line-height:1.7">你学习中提出的问题和对应的解答放在这里，按提问先后排列；每篇有「原问、结论、讲解、出处」。</div></div>';
+    if (!list.length) {
+      box.innerHTML = intro + '<div class="empty" style="padding:30px 10px">还没有笔记。<br>之后你每提一个问题，解答就会作为一篇笔记放进来。</div>';
+      return;
+    }
+    box.innerHTML = intro + list.map(function (c) {
+      return '<div class="card tap" data-qn="' + c.n + '"><div class="row spread"><div style="flex:1">' +
+        '<b style="font-size:15px">' + String(c.n).padStart(2, '0') + ' · ' + esc(c.title) + '</b>' +
+        '<div class="muted" style="margin-top:3px">' + Math.round(c.chars / 100) / 10 + ' 千字</div></div>' +
+        (read[c.id] >= 90 ? '<span class="pill">已读</span>' : '<span style="color:var(--ink3)">›</span>') + '</div></div>';
+    }).join('');
+    $$('[data-qn]', box).forEach(function (el) { el.onclick = function () { show('qnote', +el.dataset.qn); }; });
+  });
+};
+RENDER.qnote = function (n) {
+  needQna().then(function (list) {
+    var c = list.filter(function (x) { return x.n === n; })[0];
+    if (!c) return;
+    curDoc = c;
+    $('#ttl').textContent = c.title;
+    $('#qnoteBody').innerHTML = '<h1>' + esc(c.title) + '</h1>' + c.html;
+    bindDoc($('#qnoteBody'));
+    var i = list.indexOf(c), prev = i > 0 ? list[i - 1] : null, next = i < list.length - 1 ? list[i + 1] : null;
+    $('#prevQ').disabled = !prev; $('#nextQ').disabled = !next;
+    $('#prevQ').textContent = prev ? '‹ ' + prev.title : '‹ 上一篇';
+    $('#nextQ').textContent = next ? next.title + ' ›' : '下一篇 ›';
+    $('#prevQ').onclick = prev ? function () { show('qnote', prev.n); } : null;
+    $('#nextQ').onclick = next ? function () { show('qnote', next.n); } : null;
+    trackRead(c.id);
+    addReadToggle(c.id, '#prevQ');
+    afterDoc($('#qnoteBody'), c.id);
   });
 };
 
@@ -1718,7 +1761,7 @@ var readTimer = null;
 function trackRead(id) {
   clearInterval(readTimer);
   readTimer = setInterval(function () {
-    if (cur.scr !== 'chapter' && cur.scr !== 'note') { clearInterval(readTimer); return; }
+    if (cur.scr !== 'chapter' && cur.scr !== 'note' && cur.scr !== 'qnote') { clearInterval(readTimer); return; }
     var h = document.documentElement;
     var max = h.scrollHeight - h.clientHeight;
     var p = max <= 0 ? 100 : Math.min(100, Math.round((h.scrollTop / max) * 100));
@@ -2062,6 +2105,7 @@ function saveMyNotes(v) { save(K.notes, v); }
 function noteCtx() {
   if (cur.scr === 'chapter') return { root: $('#chapterBody'), from: '第' + cur.id + '章' };
   if (cur.scr === 'note')    return { root: $('#noteBody'),    from: '笔记 ' + cur.id };
+  if (cur.scr === 'qnote')   return { root: $('#qnoteBody'),   from: '我的提问 ' + cur.id };
   if (cur.scr === 'quiz')    return { root: $('#quizBody'),    from: '题 ' + cur.id };
   if (cur.scr === 'index')   return { root: $('#indexBody'),   from: '问题清单' };
   if (cur.scr === 'outline') return { root: $('#outlineBody'), from: '学习路线' };
@@ -2259,7 +2303,7 @@ function doSearch() {
   var main = terms[0];
   var rest = terms.slice(1);
 
-  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw), needRef().catch(function () { return null; })]).then(function (r) {
+  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw), needRef().catch(function () { return null; }), needQna().catch(function () { return []; })]).then(function (r) {
     if (r[3]) fillRaw(r[0], r[3]);
     var curCat = 'chapter';
     var hits = [], total = 0, capped = false;
@@ -2327,6 +2371,8 @@ function doSearch() {
     }
     curCat = 'note';
     r[1].forEach(function (c) { scan(c.text, '专题问答 · ' + c.title, 'note', c.n); });
+    curCat = 'qna';
+    (r[5] || []).forEach(function (c) { scan(c.text, '笔记 · ' + c.title, 'qnote', c.n); });
     curCat = 'quiz';
     var qt = quizTexts(r[2]);
     r[2].items.forEach(function (q, i) {
@@ -2349,7 +2395,7 @@ function doSearch() {
       bindRaw();
       return;
     }
-    var CATS = [['all', '全部'], ['chapter', '教材'], ['ref', '速查'], ['quiz', '命例'], ['note', '专题']];
+    var CATS = [['all', '全部'], ['chapter', '教材'], ['ref', '速查'], ['quiz', '命例'], ['note', '专题'], ['qna', '笔记']];
     function paintHits() {
       var cnt = { all: hits.length };
       hits.forEach(function (h) { cnt[h.cat] = (cnt[h.cat] || 0) + 1; });
