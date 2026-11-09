@@ -226,6 +226,7 @@ def tidy(t):
     t = re.sub(r'\d+月\s*\d+日起运|岁数[\s\d.]+|年份[\s\d.]+|[（(]?\d+岁起运[）)]?', ' ', t)
     t = re.sub(r'(?<![\u4e00-\u9fff])(分析|闲注|解析|简历及解析|简历及简析|断|注)[：:]', ' ', t)
     t = re.sub(r'\s+', ' ', t).strip(' ，,；;：:')
+    t = re.sub(r'^(?:运|岁|年)[，,]\s*', '', t)
     return t
 
 
@@ -249,6 +250,96 @@ def split_case(body):
     return label, face, ''.join(sents[k:])
 
 
+_W = r'[\s  　]'
+
+
+def _pairs_ok(stems, branches):
+    out = [g + z for g, z in zip(stems, branches) if (GAN.index(g) - ZHI.index(z)) % 2 == 0]
+    return out if len(out) == min(len(stems), len(branches)) and len(out) >= 3 else None
+
+
+def strip_dayun(body):
+    """去掉混进命例正文里的大运/起运年份/岁数残行；能还原成干支对的返回 dayun 列表，供画进盘里。"""
+    G, Z = '[%s]' % GAN, '[%s]' % ZHI
+    body = body.replace(chr(0x2028), '\n')
+    # 文中任意位置的残留：年份串、「N岁运：6戊16丁…」、「大运：戊子 丁亥 …」、散开的单字干支串
+    body = re.sub(r'(?:(?:1[89]|20)\d\d[\s\u00a0]*){3,}', ' ', body)
+    body = re.sub(r'\d{1,2}岁(?:大)?运[：:]?[\s\u00a0]*(?:\d{1,3}[%s][\s\u00a0]*){3,}' % GAN, ' ', body)
+    body = re.sub(r'(?:\d{1,2}岁(?:大)?运[：:]?)?(?:大运[：:；;]?)?(?:\d{1,3}\s*[%s]\s*){3,}(?:[%s戍]\s*){0,12}' % (GAN, ZHI), ' ', body)
+    body = re.sub(r'(?:\d{1,3}岁\s*){4,}(?:止于[：:]?)?', ' ', body)
+    body = re.sub(r'[\x00-\x08\x0b-\x1f]', '', body)
+    body = re.sub(r'(?:始于|止于)[：:]', ' ', body)
+    body = re.sub(r'(?:十神类象简表|腿脚\s*遗传宫).*$', '', body, flags=re.S)
+    body = re.sub(r'=\s*\d+\s*\\\*\s*GB\d\s*[⑴-⒇①-⑩]?', ' ', body)
+    body = re.sub(r'\d*\s*月\s*\d*\s*日起运|\d+岁\d*年?起运', ' ', body)
+    body = re.sub(r'大运[：:；;]?(?:[\s\u00a0•·：:、，,\d%s%s戍]|日(?=[\s\d]))+' % (GAN, ZHI),
+                  lambda m: ' ' if len(re.findall('[%s%s戍]' % (GAN, ZHI), m.group(0))) >= 6 else m.group(0), body)
+    body = re.sub(r'(?:^|(?<=[\s：:]))(?:[乾坤][\s\u00a0]+)?(?:[%s%s戍][\s\u00a0]+){4,}[%s%s戍]?(?=[\s\u4e00-\u9fff]|$)' % (GAN, ZHI, GAN, ZHI), ' ', body, flags=re.M)
+    lines = body.split('\n')
+    out, dy, i = [], None, 0
+    nz = lambda x: re.sub(_W, '', x)
+    while i < len(lines):
+        ln = lines[i]
+        t = nz(ln)
+        if not t:
+            out.append(ln); i += 1; continue
+        # 1 行首内联：「6癸 16壬 … 卯 寅 丑」或「大运：甲乙丙丁 辰巳午未」后面直接跟正文
+        m = re.match(r'^(?:大运[：:；;]?)?((?:\d{1,3}%s[\s 　]*){3,}|(?:%s[\s 　]*){3,})((?:%s[\s 　]*){3,})' % (G, G, Z), ln.strip())
+        if m:
+            st = re.findall(G, m.group(1)); br = re.findall(Z, m.group(2))
+            if len(st) == len(br):
+                dy = dy or _pairs_ok(st, br)
+                rest = ln.strip()[m.end():].strip()
+                rest = re.sub(r'^[\d\s]+(?=[一-鿿])', '', rest) if re.match(r'^\d+\s*$', rest[:3]) else rest
+                if rest:
+                    out.append(rest)
+                i += 1
+                continue
+        # 2 干支对一行：「大运 辛未 庚午 …  8月29日起运」「己未 戊午 …」
+        m = re.match(r'^(?:大运[：:；;]?)?((?:%s%s)+)(?:\d+月\d+日起运|\d+岁.{0,6}起运|\d+[岁年].*)?$' % (G, Z), t)
+        if m and len(m.group(1)) >= 6:
+            ps = re.findall(r'(%s)(%s)' % (G, Z), m.group(1))
+            dy = dy or _pairs_ok([a for a, b in ps], [b for a, b in ps])
+            i += 1; continue
+        # 3 年龄行：「1 11 21 …」「大运：5 15 25」「1岁 11岁」
+        if re.match(r'^(?:大运[：:；;]?)?(?:\d{1,3}岁?)+$', t) and re.search(r'\d', t) and len(re.findall(r'\d+', ln)) >= 3:
+            i += 1; continue
+        # 4 年份行 / 始于 / 流年 / 起运
+        if re.match(r'^(?:始于|起运|流年|年份|岁数)[：:]', t) or re.match(r'^(?:(?:1[89]|20)\d\d){3,}$', t) \
+                or re.match(r'^\d+岁\d*年?起运', t) or re.match(r'^[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{4}.{0,3}\d+岁\d+年起运$', t):
+            i += 1; continue
+        # 5 「大运：10戊20己…」+ 下一行「64子74丑…」
+        m = re.match(r'^大运[：:；;]?((?:\d{1,3}%s)+)$' % G, t)
+        if m and i + 1 < len(lines):
+            n2 = nz(lines[i + 1])
+            if re.match(r'^(?:\d{1,3}%s)+$' % Z, n2) or re.match(r'^%s+$' % Z, n2):
+                st = re.findall(G, m.group(1)); br = re.findall(Z, n2)
+                if len(st) == len(br):
+                    dy = dy or _pairs_ok(st, br)
+                    i += 2; continue
+        # 6 「大运：甲乙丙丁 辰巳午未」「大运 庚己戊丁 午巳辰卯」「大运：5 庚…」同行
+        m = re.match(r'^大运\d*[：:]?\d*((?:%s)+)\d*((?:%s)+)\d*$' % (G, Z), t)
+        if m and len(m.group(1)) == len(m.group(2)):
+            dy = dy or _pairs_ok(list(m.group(1)), list(m.group(2)))
+            i += 1; continue
+        # 7 「大运：甲乙丙丁」+ 下一行「辰巳午未」
+        m = re.match(r'^(?:大运[：:；;]?)?\d*((?:%s)+)\d*$' % G, t)
+        if m and len(m.group(1)) >= 4 and i + 1 < len(lines):
+            n2 = nz(lines[i + 1])
+            if re.match(r'^(?:%s)+\d*$' % Z, n2) and len(re.findall(Z, n2)) == len(m.group(1)):
+                dy = dy or _pairs_ok(list(m.group(1)), re.findall(Z, n2))
+                i += 2; continue
+        # 9 以「大运」开头的短行（OCR 残行，没有句读）
+        if t.startswith('大运') and len(t) <= 42 and not re.search('[。，；！？]', t):
+            m = re.findall(r'([%s])([%s])' % (GAN, ZHI), t)
+            i += 1; continue
+        # 8 孤立的纯干/纯支长串（运干运支行的残留）
+        if re.match(r'^(?:%s){5,}$' % G, t) or re.match(r'^(?:%s){5,}$' % Z, t):
+            i += 1; continue
+        out.append(ln); i += 1
+    return '\n'.join(out), dy
+
+
 def build_quiz():
     cases = json.load(io.open(os.path.join(ROOT, '_src', 'cases.json'), encoding='utf-8'))
     best = {}
@@ -261,6 +352,12 @@ def build_quiz():
             continue
         if c.get('bad'):   # skip_bad：存疑盘不收
             continue
+        if body.count('╱') >= 3:      # 「流年╱大运☆」清单串盘的错乱段，无法还原
+            continue
+        # 正文里已经滑进下一例/下一节的内容：在「●乾造」「第N节」「●…组合」「例N.」处截断
+        _cut = re.search(r'(?<=.)(?:[●•]\s*[乾坤]\s*造|第[一二三四五六七八九十]+节|●[^\n●]{2,14}(?:组合|看法|断法|判断)|\n\s*例\s*\d+[.．、])', body)
+        if _cut and _cut.start() > 40:
+            body = body[:_cut.start()].strip()
         key = (c['sex'], gan, zhi)
         c['body'] = body
         old = best.get(key)
@@ -279,8 +376,18 @@ def build_quiz():
                 dyl = parse_dayun(ln)
                 if dyl:
                     break
+        body, _dy2 = strip_dayun(body)
+        dyl = dyl or _dy2
+        if not dyl and c.get('dayun'):
+            dyl = strip_dayun(c['dayun'])[1]
         label, face_t, jie = split_case(body)
         face_t, jie = tidy(face_t), tidy(jie)
+        if len(re.sub(r'\s', '', face_t + jie)) < 20:      # 清完只剩残渣，没有可读内容 → 不收
+            continue
+        if len(re.sub(r'\s', '', face_t)) < 4 and jie:      # 题面只剩标签：拿解的头一两句当题面
+            _ss = [x.strip() for x in split_sent(re.sub(r'\s+', ' ', jie)) if x.strip()]
+            if len(_ss) >= 2:
+                face_t, jie = _ss[0], ''.join(_ss[1:])
         jie = re.sub(r'^(简历及解析|简历及简析|解析|分析|解)[：:]', '', jie).strip()
         face_src = face_t
         sums = re.sub(r'[\s　]+', '', (face_t + ' ' + jie))
@@ -303,8 +410,7 @@ def build_quiz():
         tags = tags_of(sums)
         if c.get('early'):
             tags = ['早期口径'] + tags
-            face = ('<p><span class="pill g">⚠️ 早期口径：出自《盲派批命案例集》，仍以用神、旺衰为核心，与成熟体系不同，对照阅读</span></p>' +
-                    ('<p>' + c['dayun'] + '</p>' if c.get('dayun') else '')) + face
+            face = '<p><span class="pill g">⚠️ 早期口径：出自《盲派批命案例集》，仍以用神、旺衰为核心，与成熟体系不同，对照阅读</span></p>' + face
         if c.get('bad'):
             tags = ['待校对'] + tags
             face += '<p><span class="pill g">⚠️ 此盘干支组合不合历法，疑识别或原稿笔误，待对照原件校对</span></p>'
