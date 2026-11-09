@@ -76,6 +76,14 @@ def read(p):
 def build_doc(path, ident, n, title, extra, manual=False):
     s = read(path)
     s = re.sub(r'^#\s+.*?\n', '', s, count=1)
+    if manual:   # 教材里 250 字以上的整段（多是命例断解）按句拆成短段，手机上好读
+        _o = []
+        for _ln in s.split('\n'):
+            if len(_ln) > 250 and not _ln.startswith(('#', '>', '|', '-', '*', '<', '`', '!')) and '／' not in _ln[:40]:
+                _o.append(beautify(_ln, target=110, bold=False))
+            else:
+                _o.append(_ln)
+        s = '\n'.join(_o)
     heads = []
     html = merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual))
     if manual:   # 讲解手册模式：标题带序号/重点标记，与命理精讲同款

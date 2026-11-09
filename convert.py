@@ -40,6 +40,18 @@ def clean_lines(text):
         l = re.sub(r'[ \t　]+', ' ', l) if not re.match(r'^[甲乙丙丁戊己庚辛壬癸]', l) else l
         if not l or NOISE.search(l) or OFFTOPIC.search(l):
             continue
+        if re.match(r'^(?:年份?|始于|止于|起运)?[：:\s]*[\d.\s]*(?:(?:1[89]|20)\d\d[\s.]*){3,}$', l) or re.match(r'^(?:\d{1,3}\s+){3,}\d{1,3}\s*$', l) or re.match(r'^(?:\d{2,3}\s+)+\d{2,3}\s*$', l):
+            continue
+        if len(l) <= 40 and re.match(r'^(?:[\u4e00-\u9fff] ){2,}[\u4e00-\u9fff]$', l) and sum(c in GAN + ZHI for c in l.replace(' ', '')) <= len(l.replace(' ', '')) * 0.5:
+            l = l.replace(' ', '')      # 「干 支 特 性 详 解」这类逐字空格的标题
+        l = re.sub(r'(?:年份?\s*[\d.]*\s*)?(?:(?:1[89]|20)\d\d\s*){4,}', ' ', l).strip()
+        if len(l) <= 40 and len(re.findall(r'(?<![\u4e00-\u9fff])[\u4e00-\u9fff](?= [\u4e00-\u9fff](?![\u4e00-\u9fff]))', l)) >= 3:
+            _t = l.replace(' ', '')
+            if sum(c in GAN + ZHI for c in _t) <= len(_t) * 0.5:
+                l = re.sub(r'(?<=[\u4e00-\u9fff]) (?=[\u4e00-\u9fff])', '', l)
+        if not l:
+            continue
+        l = re.sub(r'[，,]{2,}', '，', l); l = re.sub(r'。{2,}', '。', l); l = re.sub(r'。，', '。', l); l = re.sub(r'，。', '。', l)
         out.append(l)
     return out
 
@@ -229,8 +241,43 @@ def simp(text):
     return r2
 
 
+_ZG = '[%s]' % GAN
+_ZZ = '[%s]' % ZHI
+_PL1 = re.compile(r'^(?P<pre>(?:例\s*\d*\s*[.．、:：]?|举例\s*[：:.．]?|例如\s*[：:]?)?)\s*(?P<sex>乾|坤)?\s*造?\s*[：:]?\s*(?P<g>(?:%s\s*){4})(?:大运\s*[：:]?\s*(?P<ds>(?:%s\s*){3,12}))?$' % (_ZG, _ZG))
+_PL2 = re.compile(r'^(?:[（(][^）)]{0,20}[）)]\s*)?(?P<z>(?:%s\s*){4})(?P<dz>(?:%s\s*){0,12})(?P<tail>.*)$' % (_ZZ, _ZZ))
+
+
+def fix_pans(text):
+    """把「乾造 癸 丁 甲 己 大运：丙 乙 甲…／巳 巳 戌 巳 辰 卯 寅…」这种两行写法的盘还原成「乾造：干 支」＋「大运：丙辰 乙卯…」，
+    让后面的识别当成正规命盘（出色牌，大运同排）。逐行匹配，避免整段正则回溯。"""
+    L = text.split('\n')
+    out, i = [], 0
+    while i < len(L):
+        m1 = _PL1.match(L[i].strip()) if len(L[i]) < 120 else None
+        m2 = _PL2.match(L[i + 1].strip()) if (m1 and i + 1 < len(L)) else None
+        if m1 and m2 and (m1.group('sex') or m1.group('pre')):
+            sex = m1.group('sex') or '乾'
+            if m1.group('pre') and m1.group('pre').strip():
+                out.append(m1.group('pre').strip())
+            out.append('%s造：%s %s' % (sex, squash(m1.group('g')), squash(m2.group('z'))))
+            ds = squash(m1.group('ds') or ''); dz = squash(m2.group('dz') or '')
+            if ds and len(ds) == len(dz) and all((GAN.index(a) - ZHI.index(b)) % 2 == 0 for a, b in zip(ds, dz)):
+                out.append('大运：' + ' '.join(a + b for a, b in zip(ds, dz)))
+            tail = (m2.group('tail') or '').strip()
+            if tail:
+                out.append(tail)
+            i += 2
+            continue
+        out.append(L[i]); i += 1
+    return '\n'.join(out)
+
+
 def read_lines(name, pre=False):
     raw = simp(io.open(os.path.join(TXT, name + '.txt'), encoding='utf-8').read())
+    raw = raw.replace('\u2028', '\n').replace('\xa0', ' ').replace('\x07', ' ')
+    raw = re.sub(r'[\x00-\x06\x08\x0b-\x1f]', '', raw)
+    raw = raw.replace('**', '＊＊')
+    raw = fix_pans(raw)
     if pre:
         return clean_lines(presplit(raw))
     return clean_lines(raw)
