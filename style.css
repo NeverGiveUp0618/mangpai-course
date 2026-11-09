@@ -1170,3 +1170,7 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .doc .ichart .c .ss.me,.sticky-chart .c .ss.me{color:var(--acc,var(--ink));font-weight:700}
 .sticky-chart .c .ss{font-size:9px;margin:1px 0 0}
 .sticky-chart .c{min-width:34px}
+
+/* 大运那一排与四柱（含十神行）上下居中对齐 */
+.doc .ichart{align-items:center}
+.doc .ichart .dys,.sticky-chart .dys{align-self:center}

@@ -160,7 +160,7 @@ th{background:#ecdfc3;color:var(--h);font-weight:700}
 tr{page-break-inside:avoid}
 .pill{display:inline-block;padding:0 2.5mm;border-radius:3mm;background:#ecdfc3;color:var(--h);font-size:10.5pt}
 /* 命盘 */
-.ichart{display:flex;flex-wrap:nowrap;align-items:flex-start;gap:3mm;margin:4mm 0;padding:3mm 4mm;border:.6pt solid var(--line);border-radius:2.5mm;
+.ichart{display:flex;flex-wrap:nowrap;align-items:center;gap:3mm;margin:4mm 0;padding:3mm 4mm;border:.6pt solid var(--line);border-radius:2.5mm;
   background:#fff9ee;page-break-inside:avoid;width:max-content;max-width:100%}
 .ichart .lb{align-self:center;font-family:"Kaiti SC",serif;color:var(--h);font-size:12.5pt;margin-right:1mm}
 .ichart .cols{display:flex;gap:2mm}
@@ -170,7 +170,7 @@ tr{page-break-inside:avoid}
   background:#f6efe0;box-shadow:inset 0 0 0 .6pt var(--line)}
 .ichart .ss{display:block;font-size:8.5pt;line-height:1.35;color:var(--muted);margin:.4mm 0 0;white-space:nowrap}
 .ichart .ss.me{color:var(--h);font-weight:700}
-.ichart .dys{display:flex;gap:1.6mm;margin-left:2mm;padding-left:4mm;border-left:.8pt dashed #c9b790;align-items:flex-start}
+.ichart .dys{display:flex;gap:1.6mm;margin-left:2mm;padding-left:4mm;border-left:.8pt dashed #c9b790;align-items:center;align-self:center}
 .ichart .dys .lb{align-self:center;font-size:10.5pt;margin:0 1mm 0 0}
 .ichart .dys .a,.ichart .dys .b{width:8.2mm;height:8.2mm;line-height:8.2mm;font-size:13pt}
 .w-mu{color:var(--wx-mu)!important;background:#e3efdc!important}.w-huo{color:var(--wx-huo)!important;background:#f7ded6!important}
