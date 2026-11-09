@@ -109,7 +109,7 @@ CSS = u'''
   --wx-mu:#3d7a4a; --wx-huo:#c0452f; --wx-tu:#9a6b2f; --wx-jin:#b89a2e; --wx-shui:#2f5f9a; }
 *{box-sizing:border-box}
 html{background:#fff}
-body{margin:0;font-family:"Songti SC","STSong",serif;font-size:13pt;line-height:1.85;color:var(--ink);background:var(--paper);
+body{margin:0;font-family:"Songti SC","STSong",serif;font-size:12pt;line-height:1.85;color:var(--ink);background:var(--paper);
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
 p{margin:.45em 0;text-align:justify;orphans:2;widows:2}
 strong,b{color:var(--h)}
@@ -151,10 +151,10 @@ strong,b{color:var(--h)}
 h3 .mhn{background:var(--accent);border-radius:1mm;padding:0 .35em;min-width:2em}
 .doc ul,.doc ol{margin:.4em 0 .6em;padding-left:1.5em}
 .doc li{margin:.18em 0}
-blockquote{margin:3mm 0;padding:2.5mm 4mm;background:var(--soft);border-left:2.4pt solid var(--accent);border-radius:0 2mm 2mm 0;font-size:12.5pt;page-break-inside:avoid}
+blockquote{margin:3mm 0;padding:2.5mm 4mm;background:var(--soft);border-left:2.4pt solid var(--accent);border-radius:0 2mm 2mm 0;font-size:11.6pt;page-break-inside:avoid}
 blockquote p{margin:.25em 0}
 .tw{margin:3mm 0;overflow:visible}
-table{border-collapse:collapse;width:100%;font-size:11.5pt;line-height:1.6}
+table{border-collapse:collapse;width:100%;font-size:10.8pt;line-height:1.6}
 th,td{border:.6pt solid var(--line);padding:1.4mm 2.2mm;vertical-align:top}
 th{background:#ecdfc3;color:var(--h);font-weight:700}
 tr{page-break-inside:avoid}
@@ -175,7 +175,7 @@ tr{page-break-inside:avoid}
 .w-tu{color:var(--wx-tu)!important;background:#efe0c4!important}.w-jin{color:var(--wx-jin)!important;background:#f3ebc4!important}
 .w-shui{color:var(--wx-shui)!important;background:#dbe7f5!important}
 /* 习题 */
-details{margin:2.5mm 0 3.5mm;padding:2mm 3.5mm;background:#f7efdd;border-left:2.2pt solid #c98f3b;border-radius:0 2mm 2mm 0;page-break-inside:avoid;font-size:12.5pt}
+details{margin:2.5mm 0 3.5mm;padding:2mm 3.5mm;background:#f7efdd;border-left:2.2pt solid #c98f3b;border-radius:0 2mm 2mm 0;page-break-inside:avoid;font-size:11.6pt}
 details summary{font-weight:700;color:#8e4a37;list-style:none;font-size:11.5pt;letter-spacing:.1em}
 details summary::-webkit-details-marker{display:none}
 .quiz{margin-top:9mm;padding-top:4mm;border-top:1.2pt dashed var(--accent)}
