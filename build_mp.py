@@ -47,18 +47,22 @@ def parse_dayun(text):
 
 
 def merge_dayun(html):
-    """把盘后紧跟的「大运：…」段落并进盘里（色牌一行）。"""
-    pat = re.compile(r'(<div class="ichart">(?:(?!<div class="ichart">).)*?</div></div>)\s*<p>(?:<strong>)?大运[：:](.*?)</p>', re.S)
+    """把盘后紧跟的「大运：…」并进盘里（色牌一行）。
+    两种写法都认：①独立一段 <p>大运：…</p>；②和后文挤在同一段 <p><br>大运：…<br>断语…</p>（教材里大量如此，
+    之前只认①，②的大运行一直没进盘）。②合并后，「大运」行以外的文字留作原段。"""
+    pat = re.compile(r'(<div class="ichart">(?:(?!<div class="ichart">).)*?</div></div>)((?:\s*<p>(?:(?!大运)[^<]){1,40}</p>){0,2})\s*<p>(?:<br>\s*)?(?:<strong>)?大运[：:]([^<]*?)(?:</strong>)?(?:\s*<br>\s*(.*?))?</p>', re.S)
 
     def rep(m):
-        dy = parse_dayun(re.sub(r'<[^>]+>', '', m.group(2)))
+        line, _, tail = m.group(3).partition('\n')      # 同一段里大运行后面直接换行接断语的情况
+        dy = parse_dayun(re.sub(r'<[^>]+>', '', line))
         if not dy:
             return m.group(0)
-        chips = ''.join('<div class="c"><span class="a w-%s">%s</span><span class="b w-%s">%s</span></div>' % (
-            WXC[x[0]], x[0], WXC[x[1]], x[1]) for x in dy)
-        return m.group(1)[:-6] + '<div class="dys"><span class="lb">运</span>%s</div></div>' % chips
+        rest = ((tail + ' ' if tail.strip() else '') + (m.group(4) or '')).strip()
+        lb = re.search(r'class="lb">([^<]*?)造', m.group(1))
+        sp = re.findall(r'<span class="[ab] w-[^"]*">([^<])</span>', m.group(1))
+        off = bool(lb and len(sp) >= 8 and not _dy_fit(dy, sp[0:8:2], sp[1:8:2]))    # 原稿大运接不上月柱（顺逆/起步对不上）：照录但标「待核」
+        return m.group(1)[:-6] + dys_html(dy, off=off) + '</div>' + m.group(2) + ('<p>%s</p>' % rest if rest else '')
     return pat.sub(rep, html)
-
 
 
 def derive_dayun(sex, gan, zhi, n=12):
@@ -108,11 +112,13 @@ def infer_dayun_docs(html):
     return ''.join(out)
 
 
-def dys_html(dy, est=False):
+def dys_html(dy, est=False, off=False):
     chips = ''.join('<div class="c"><span class="a w-%s">%s</span><span class="b w-%s">%s</span></div>' % (
         WXC[x[0]], x[0], WXC[x[1]], x[1]) for x in dy)
     if est:
         return '<div class="dys est" title="原稿没给大运表；按月柱顺逆推算（起运岁数未知）"><span class="lb">推运</span>%s</div>' % chips
+    if off:
+        return '<div class="dys off" title="原稿给的大运接不上月柱（顺逆或起步对不上），照录，待核"><span class="lb">运?</span>%s</div>' % chips
     return '<div class="dys"><span class="lb">运</span>%s</div>' % chips
 
 
