@@ -60,6 +60,75 @@ def merge_dayun(html):
     return pat.sub(rep, html)
 
 
+
+def derive_dayun(sex, gan, zhi, n=12):
+    """按月柱＋性别＋年干阴阳顺逆推算大运干支序列（起运岁数原稿没给，只推干支）。"""
+    k = [i for i in range(60) if GAN[i % 10] == gan[1] and ZHI[i % 12] == zhi[1]]
+    if not k or sex not in '乾坤':
+        return None
+    yang = GAN.index(gan[0]) % 2 == 0
+    st = 1 if ((yang and sex == '乾') or ((not yang) and sex == '坤')) else -1
+    return [GAN[(k[0] + st * j) % 10] + ZHI[(k[0] + st * j) % 12] for j in range(1, n + 1)]
+
+
+def infer_dayun(sex, gan, zhi, text):
+    """原稿没给大运表、但正文提到「某某运」时：若提到的干支运至少一半落在按月柱推出的序列里，就把这段序列画进盘（标「推运」）。
+    只在正文确实谈到大运时才画，避免给纯讲结构的盘硬加一行。"""
+    ms = set(re.findall(r'([%s][%s])运' % (GAN, ZHI), text))
+    if not ms:
+        return None
+    d = derive_dayun(sex, gan, zhi)
+    inn = [m for m in ms if d and m in d] if d else []
+    if not inn or len(inn) * 2 < len(ms):      # 提到的干支运至少一半要落在推出的序列里（其余多是把流年也写成「某某运」）
+        return None
+    far = max(d.index(m) for m in inn)
+    return d[:min(12, max(6, far + 3))]
+
+
+_PAN_RE = re.compile(r'<div class="ichart">((?:(?!<div class="ichart">).)*)', re.S)
+
+
+def infer_dayun_docs(html):
+    """教材/原稿/章节正文里：没有大运行的盘，按其后到下一个盘之间的正文判断要不要补推运行。"""
+    parts = re.split(r'(?=<div class="ichart">)', html)
+    out = [parts[0]]
+    for seg in parts[1:]:
+        end = _pan_end(seg)
+        if end:
+            pan = seg[:end]
+            if 'class="dys"' not in pan:
+                lb = re.search(r'class="lb">([^<]*?)造', pan)
+                spans = re.findall(r'<span class="[ab] w-[^"]*">([^<])</span>', pan)
+                if lb and len(spans) >= 8:
+                    dy = infer_dayun(lb.group(1)[-1], spans[0:8:2], spans[1:8:2], re.sub(r'<[^>]+>', '', seg[end:]))
+                    if dy:
+                        out.append(pan[:-6] + dys_html(dy, est=True) + pan[-6:] + seg[end:])
+                        continue
+        out.append(seg)
+    return ''.join(out)
+
+
+def dys_html(dy, est=False):
+    chips = ''.join('<div class="c"><span class="a w-%s">%s</span><span class="b w-%s">%s</span></div>' % (
+        WXC[x[0]], x[0], WXC[x[1]], x[1]) for x in dy)
+    if est:
+        return '<div class="dys est" title="原稿没给大运表；按月柱顺逆推算（起运岁数未知）"><span class="lb">推运</span>%s</div>' % chips
+    return '<div class="dys"><span class="lb">运</span>%s</div>' % chips
+
+
+def _pan_end(seg):
+    """返回盘（<div class="ichart"> … </div>）结束标签之后的位置。"""
+    depth, i = 0, 0
+    for m in re.finditer(r'<div\b|</div>', seg):
+        if m.group(0) == '</div>':
+            depth -= 1
+            if depth == 0:
+                return m.end()
+        else:
+            depth += 1
+    return None
+
+
 def write_js(name, var, obj):
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, name)
@@ -85,7 +154,7 @@ def build_doc(path, ident, n, title, extra, manual=False):
                 _o.append(_ln)
         s = '\n'.join(_o)
     heads = []
-    html = merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual))
+    html = infer_dayun_docs(merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual)))
     if manual:   # 讲解手册模式：标题带序号/重点标记，与命理精讲同款
         toc = [{'lv': lv, 't': t, 'a': a, 'st': st, 'm': 1 if mn else 0} for lv, t, a, st, mn in heads if lv <= 3]
     else:
@@ -436,6 +505,10 @@ def build_quiz():
             dyl = strip_dayun(c['dayun'])[1]
         if dyl and not _dy_fit(dyl, gan, zhi):
             dyl = None
+        dy_est = False
+        if not dyl:
+            dyl = infer_dayun(sex, gan, zhi, body)
+            dy_est = bool(dyl)
         label, face_t, jie = split_case(body)
         face_t, jie = tidy(face_t), tidy(jie)
         if label == '断' and len(face_t) > 300 and len(jie) < len(face_t):    # 题面是一大段故事：头两三句留作题面，其余并入解
@@ -468,7 +541,7 @@ def build_quiz():
         title = '%s造 %s%s日 · %s' % (sex, day, zhi[2], brief)
         ss_g = ' '.join('%s%s' % (p, shishen(day, g)) for p, g in zip('年月时', [gan[0], gan[1], gan[3]]))
         ss_z = ' '.join('%s%s' % (p, shishen(day, BEN[z])) for p, z in zip('年月日时', zhi))
-        chai = ('<p><strong>%s日主</strong></p>' % day) + render_chart(gan, zhi, sex, dyl) + \
+        chai = ('<p><strong>%s日主</strong></p>' % day) + render_chart(gan, zhi, sex, dyl, est=dy_est) + \
                '<p><strong>天干十神</strong>：%s</p><p><strong>地支（取本气）</strong>：%s</p>' % (ss_g, ss_z)
         face = '<p><strong>%s</strong>：</p>' % label + para_html(face_t)
         tags = tags_of(sums)
@@ -484,7 +557,7 @@ def build_quiz():
         items.append({
             'n': 0, 'id': sex + ''.join(gan) + ''.join(zhi), 'title': title, 'tags': tags, 'star': 0,
             'chart': {'g': sex, 'gan': gan, 'zhi': zhi}, 'nCharts': 1,
-            'charts': [dict({'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}, **({'dy': dyl} if dyl else {}))],
+            'charts': [dict({'g': sex, 'gan': gan, 'zhi': zhi, 'label': ''}, **({'dy': dyl, 'dyest': 1} if dyl and dy_est else ({'dy': dyl} if dyl else {})))],
             'face': face, 'jieLabel': '解', 'jie': (quote_html(jie) if jie else '<p class="muted">原稿对这个盘只给了上面的断语，没有再展开讲解。可点「拆解」看十神与五行。</p>'), 'chai': chai, 'noAnswer': 0,
             'text': sums[:4000], 'topic': topic, 'seq': 0,
             '_src': '%s · %s' % (c.get('book', ''), c.get('chapter', '')),

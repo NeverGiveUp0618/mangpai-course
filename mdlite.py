@@ -319,7 +319,7 @@ def shishen_name(day, g):
     return _SS[((j >> 1) - (i >> 1)) % 5][0 if (i % 2) == (j % 2) else 1]
 
 
-def render_chart(gan, zhi, label='', dayun=None):
+def render_chart(gan, zhi, label='', dayun=None, est=False):
     """四柱盘的统一 HTML。app.js 里的吸顶条用同一套结构与 class。dayun＝['甲辰','乙巳',…] 时下面加一行大运色牌。"""
     day = gan[2]
     cols = ''.join(
@@ -330,7 +330,7 @@ def render_chart(gan, zhi, label='', dayun=None):
     lb = ('<span class="lb">%s造</span>' % _html.escape(label)) if label else ''
     dy = ''
     if dayun:
-        dy = '<div class="dys"><span class="lb">运</span>%s</div>' % ''.join(
+        dy = ('<div class="dys est" title="原稿没给大运表；按月柱顺逆推算（起运岁数未知）"><span class="lb">推运</span>%s</div>' if est else '<div class="dys"><span class="lb">运</span>%s</div>') % ''.join(
             '<div class="c">%s%s</div>' % (gz_span(x[0], 'a'), gz_span(x[1], 'b')) for x in dayun)
     return '<div class="ichart">%s<div class="cols">%s</div>%s</div>' % (lb, cols, dy)
 
