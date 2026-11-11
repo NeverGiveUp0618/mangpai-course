@@ -78,7 +78,9 @@ def derive_dayun(sex, gan, zhi, n=12):
 def infer_dayun(sex, gan, zhi, text):
     """原稿没给大运表、但正文提到「某某运」时：若提到的干支运至少一半落在按月柱推出的序列里，就把这段序列画进盘（标「推运」）。
     只在正文确实谈到大运时才画，避免给纯讲结构的盘硬加一行。"""
-    ms = set(re.findall(r'([%s][%s])运' % (GAN, ZHI), text))
+    ms = set(re.findall(r'([%s][%s])(?:大)?运' % (GAN, ZHI), text))
+    for lst in re.findall(r'((?:[%s][%s][、，,和及与到至/]+)+[%s][%s])(?:大)?运' % (GAN, ZHI, GAN, ZHI), text):    # 「甲午、乙未运」
+        ms.update(re.findall(r'[%s][%s]' % (GAN, ZHI), lst))
     if not ms:
         return None
     d = derive_dayun(sex, gan, zhi)
@@ -135,6 +137,63 @@ def _pan_end(seg):
     return None
 
 
+
+def _loose_dy(t, d):
+    """原稿「大运：…」行写得不全（只列地支／只列天干／只有一两个／带岁数）时，对照按月柱推出的序列 d 补全成干支。
+    返回干支列表（取自 d）；对不上就返回 None，宁可不画。"""
+    t = t.strip()
+    gz = re.findall(r'([%s])([%s])' % (GAN, ZHI), re.sub(r'[（(][^）)]*[）)]', '', t))
+    gz = [a + b for a, b in gz]
+    if gz:
+        hit = [d.index(x) for x in gz if x in d]
+        if hit and len(hit) * 2 >= len(gz):
+            return d[:max(len(gz), max(hit) + 1)]
+        return None
+    main = re.sub(r'[（(][^）)]*[）)]', '', t)
+    pm = re.findall(r'[（(]([^）)]*)[）)]', t)
+    pz = [x for x in ''.join(pm) if x in ZHI] if pm and all(c in ZHI + ' 　、，,' for c in ''.join(pm)) else []
+    gs = [c for c in main if c in GAN]
+    zs = [c for c in main if c in ZHI]
+    if not zs and pz and len(pz) == len(gs):
+        zs = pz
+    if not zs and not gs:
+        zs = [c for c in re.sub(r'原稿[^\s（(]*', '', t) if c in ZHI]
+    for seq, pick in ((zs, lambda x: x[1]), (gs, lambda x: x[0])):
+        if len(seq) >= 3:
+            for off in (0, 1):
+                dd = [pick(x) for x in d[off:off + len(seq)]]
+                if dd == seq:
+                    return d[:off + len(seq)]
+            if sum(1 for a, b in zip(seq, [pick(x) for x in d]) if a == b) * 5 >= len(seq) * 4:
+                return d[:len(seq)]
+    return None
+
+
+def attach_loose_dayun(html):
+    """盘后（同一节内，不要求紧挨着）有「大运：…」行但没并进盘的：按月柱推出序列核对后补全画进盘。"""
+    parts = re.split(r'(?=<div class="ichart">)', html)
+    out = [parts[0]]
+    for seg in parts[1:]:
+        end = _pan_end(seg)
+        if end and 'class="dys' not in seg[:end]:
+            pan = seg[:end]
+            lb = re.search(r'class="lb">([^<]*?)造', pan)
+            sp = re.findall(r'<span class="[ab] w-[^"]*">([^<])</span>', pan)
+            m = re.search(r'<p>(?:<br>\s*)?(?:<strong>)?大运[：:]([^<\n]*)', seg[end:])
+            if len(sp) >= 8 and m:
+                d = derive_dayun(lb.group(1)[-1], sp[0:8:2], sp[1:8:2]) if lb else None
+                dy = _loose_dy(m.group(1), d) if d else None
+                if dy:
+                    row = dys_html(dy).replace('<div class="dys">', '<div class="dys" title="原稿大运写得不全，干支按月柱顺逆补全">', 1)
+                    seg = pan[:-6] + row + '</div>' + seg[end:]
+                else:      # 补不全：但原稿自己写全了干支 → 照原稿画（对不上月柱的标「运?」，没标性别的无从核对，照画）
+                    pr = parse_dayun(m.group(1))
+                    if pr:
+                        seg = pan[:-6] + dys_html(pr, off=bool(d)) + '</div>' + seg[end:]
+        out.append(seg)
+    return ''.join(out)
+
+
 def write_js(name, var, obj):
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, name)
@@ -160,7 +219,7 @@ def build_doc(path, ident, n, title, extra, manual=False):
                 _o.append(_ln)
         s = '\n'.join(_o)
     heads = []
-    html = infer_dayun_docs(merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual)))
+    html = infer_dayun_docs(attach_loose_dayun(merge_dayun(md2html(s, heading_offset=0, collect_headings=heads, manual=manual))))
     if manual:   # 讲解手册模式：标题带序号/重点标记，与命理精讲同款
         toc = [{'lv': lv, 't': t, 'a': a, 'st': st, 'm': 1 if mn else 0} for lv, t, a, st, mn in heads if lv <= 3]
     else:
