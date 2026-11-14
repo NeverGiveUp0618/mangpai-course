@@ -128,6 +128,23 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   }
   ok(/\d+ \/ \d+/.test($('#stBody').textContent), '做完显示成绩');
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_st') || '{}')).length === 1, '成绩按章节记录（只记最好一次）');
+  console.log('错题本');
+  const W = () => JSON.parse(window.localStorage.getItem('mp_course_wrong') || '{}');
+  const nw = Object.keys(W()).length;
+  ok(nw > 0, '答错的题自动进错题本，实得 ' + nw);
+  const openWrong = async () => { click($('#btnBack')); await wait(60); click($('#stEntry')); await wait(250); click($('#wrongEntry')); await wait(250); };
+  await openWrong();
+  ok($$('#stBody .stopt').length === 4, '错题本里出题（4 选 1）');
+  const q0 = $('#stBody .card b').textContent;
+  // 逐个点选项，直到答对或选完，确认答对会移出
+  const opts = $$('#stBody .stopt'); let moved = false;
+  for (let k = 0; k < 4 && !moved; k++) {
+    click($$('#stBody .stopt')[k]); await wait(20);
+    moved = /已移出/.test($('#stBody').textContent);
+    if (!moved) { await openWrong(); }
+  }
+  ok(moved, '在错题本答对后移出');
+  ok(Object.keys(W()).length === nw - 1 || nw === 0, '错题数减一');
   console.log('章节页附加');
   click($('[data-tab="course"]')); await wait(120);
   click($('[data-ch="1"]')); await wait(300);
