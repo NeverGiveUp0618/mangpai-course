@@ -797,45 +797,30 @@ def link_related(courses, quiz):
         c['cases'] = [{'n': x['n'], 't': x['title']} for x in pool]
 
 
-ST_RE = re.compile(r'(?:^|\n)\s*(?:\d+|[①②③④⑤⑥⑦⑧⑨⑩])[\.、．]?\s*(.+?)\n\s*<details>\s*<summary>[^<]*</summary>(.*?)</details>', re.S)
-
-
 def build_selftest(courses):
-    """把每章「自测」题＋折叠答案做成客观选择题：正确答案＋同章/同级其他题的答案作干扰项。"""
+    """章末题：读 content/题目/<级>/<教材文件名>.json（人工出题、校验见 check_questions.py）。
+    选项位置按 (题序+章号) 轮换，保证四个位置均衡又不成规律；没有题目文件的章不出题（不再用旧的拼凑干扰项）。"""
     import random
     chs = []
     for c in courses:
         if c['raw'] or c['id'] not in PATHS:
             continue
-        md = read(PATHS[c['id']])
+        pth = PATHS[c['id']]
+        rel = os.path.relpath(pth, os.path.join(CONTENT, '教材'))[:-3]
+        qf = os.path.join(CONTENT, '题目', rel + '.json')
+        if not os.path.exists(qf):
+            continue
+        raw = json.load(io.open(qf, encoding='utf-8'))
         qs = []
-        for m in ST_RE.finditer(md):
-            q = strip_md(m.group(1)).strip()
-            a = strip_md(m.group(2)).strip()
-            if 6 <= len(q) <= 120 and 6 <= len(a) <= 260:
-                qs.append({'q': q, 'a': a})
+        for k, x in enumerate(raw):
+            rnd = random.Random('%s-%d' % (c['n'], k))
+            others = list(x['w']); rnd.shuffle(others)
+            pos = (k + c['n']) % 4
+            opts = others[:pos] + [x['a']] + others[pos:]
+            sec = re.sub(r'^#+\s*', '', x['sec']).replace('**', '').strip()
+            qs.append({'q': x['q'], 'opts': opts, 'ans': pos, 'exp': x['e'], 'sec': sec, 't': x['t']})
         if qs:
             chs.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'qs': qs})
-    lv_answers = {}
-    for ch in chs:
-        lv_answers.setdefault(ch['level'], []).extend(x['a'] for x in ch['qs'])
-    for ch in chs:
-        answers = [x['a'] for x in ch['qs']]
-        for k, x in enumerate(ch['qs']):
-            rnd = random.Random('%s-%d' % (ch['n'], k))
-            own = [a for j, a in enumerate(answers) if j != k]
-            rnd.shuffle(own)
-            pool = own[:3]
-            if len(pool) < 3:
-                more = [a for a in lv_answers[ch['level']] if a != x['a'] and a not in pool]
-                rnd.shuffle(more)
-                pool += more[:3 - len(pool)]
-            opts = pool + [x['a']]
-            rnd.shuffle(opts)
-            x['opts'] = opts
-            x['ans'] = opts.index(x['a'])
-            del x['a']
-            x['exp'] = opts[x['ans']]
     return {'chapters': chs}
 
 

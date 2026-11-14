@@ -1800,8 +1800,8 @@ function addChapterExtras(c) {
   needSt().then(function (S) {
     var ch = S.chapters.filter(function (x) { return x.n === c.n; })[0];
     var slot = $('#chSt'); if (!ch || !slot) return;
-    slot.innerHTML = '<div class="card tap" id="chStBtn" style="margin-top:14px"><div class="row spread"><div><b style="font-size:15px">📝 做本章自测</b><div class="muted" style="margin-top:2px">' + ch.qs.length + ' 道选择题，答完直接判对错</div></div><span style="color:var(--ink3)">›</span></div></div>';
-    $('#chStBtn').onclick = function () { show('st', c.n); };
+    slot.style.marginTop = '22px';
+    stRun(slot, S, c.n, true);
   }).catch(function () {});
 }
 
@@ -1823,21 +1823,22 @@ function stList(box, S) {
   box.innerHTML = h;
   $$('[data-st]', box).forEach(function (el) { el.onclick = function () { show('st', +el.dataset.st); }; });
 }
-function stRun(box, S, n) {
+function stRun(box, S, n, inline) {
   var ch = S.chapters.filter(function (c) { return c.n === n; })[0];
-  if (!ch) { stList(box, S); return; }
-  var i = 0, ok = 0;
+  if (!ch) { if (!inline) stList(box, S); return; }
+  var i = 0, ok = 0, best0 = stRes()[n];
+  var head = inline ? '<div class="row spread" style="margin:0 2px 8px"><b style="font-size:15px">📝 本章练习</b><span class="muted">' + ch.qs.length + ' 题' + (best0 != null ? ' · 最好 ' + best0 + '/' + ch.qs.length : '') + '</span></div>' : '';
   function draw() {
     if (i >= ch.qs.length) {
       var res = stRes(); if (res[n] == null || ok > res[n]) { res[n] = ok; save('mp_course_st', res); }
-      box.innerHTML = '<div class="card" style="text-align:center"><div class="muted">' + esc(ch.title) + ' · 自测完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">' + ok + ' / ' + ch.qs.length + '</div>' +
-        '<div class="row" style="gap:10px"><button class="btn" id="stAgain" style="flex:1">再做一遍</button><button class="btn" id="stBack" style="flex:1">回到本章</button></div></div>';
+      box.innerHTML = head + '<div class="card" style="text-align:center"><div class="muted">' + esc(ch.title) + ' · 练习完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">' + ok + ' / ' + ch.qs.length + '</div>' +
+        '<div class="row" style="gap:10px"><button class="btn" id="stAgain" style="flex:1">再做一遍</button>' + (inline ? '' : '<button class="btn" id="stBack" style="flex:1">回到本章</button>') + '</div></div>';
       $('#stAgain').onclick = function () { i = 0; ok = 0; draw(); };
-      $('#stBack').onclick = function () { show('chapter', n); };
+      if (!inline) $('#stBack').onclick = function () { show('chapter', n); };
       return;
     }
     var q = ch.qs[i], answered = false;
-    box.innerHTML = '<div class="muted" style="margin:0 2px 8px">' + esc(ch.title) + ' · 第 ' + (i + 1) + ' / ' + ch.qs.length + ' 题</div>' +
+    box.innerHTML = head + '<div class="muted" style="margin:0 2px 8px">' + (inline ? '' : esc(ch.title) + ' · ') + '第 ' + (i + 1) + ' / ' + ch.qs.length + ' 题</div>' +
       '<div class="card"><b style="font-size:15.5px;line-height:1.7">' + esc(q.q) + '</b></div>' +
       q.opts.map(function (o, k) { return '<button class="btn stopt" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') +
       '<div id="stNext"></div>';
@@ -1848,11 +1849,11 @@ function stRun(box, S, n) {
         if (good) ok++;
         $$('.stopt', box).forEach(function (x) { x.disabled = true; if (+x.dataset.k === q.ans) x.classList.add('stok'); });
         if (!good) b.classList.add('stno');
-        $('#stNext').innerHTML = '<div class="muted" style="margin:6px 2px">' + (good ? '✓ 答对了' : '✗ 答错了，绿色是正确答案') + '</div><button class="btn pri" id="stGo" style="width:100%;margin-top:6px">' + (i + 1 >= ch.qs.length ? '看成绩' : '下一题 ›') + '</button>';
+        $('#stNext').innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了' : '✗ 答错了，绿色是正确答案') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div><button class="btn pri" id="stGo" style="width:100%;margin-top:6px">' + (i + 1 >= ch.qs.length ? '看成绩' : '下一题 ›') + '</button>';
         $('#stGo').onclick = function () { i++; draw(); };
       };
     });
-    window.scrollTo(0, 0);
+    if (!inline) window.scrollTo(0, 0);
   }
   draw();
 }

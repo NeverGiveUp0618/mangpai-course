@@ -115,12 +115,12 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok($$('#L4 .chlink').length > 0, '命例页有「相关教材章节」');
   click($('#btnBack')); await wait(60);
   click($('#stEntry')); await wait(250);
-  ok($$('[data-st]').length >= 30, '章节自测列表 ≥ 30 章，实得 ' + $$('[data-st]').length);
+  ok($$('[data-st]').length >= 30, '章节练习列表 ≥ 30 章，实得 ' + $$('[data-st]').length);
   click($('[data-st]')); await wait(250);
-  ok($$('.stopt').length === 4, '自测题是 4 选 1');
+  ok($$('#stBody .stopt').length === 4, '自测题是 4 选 1');
   let guard = 0;
-  while ($$('.stopt').length && guard++ < 30) {
-    click($$('.stopt')[0]); await wait(20);
+  while ($$('#stBody .stopt').length && guard++ < 30) {
+    click($$('#stBody .stopt')[0]); await wait(20);
     ok(true, '');
     const go = $('#stGo'); if (!go) break;
     pass--; // 上面那个占位 ok 不计数
@@ -132,9 +132,9 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click($('[data-tab="course"]')); await wait(120);
   click($('[data-ch="1"]')); await wait(300);
   ok($$('#chExtras .chlink').length > 0, '章节页有「本章相关命例」');
-  ok(!!$('#chStBtn'), '章节页有「做本章自测」按钮');
-  click($('#chStBtn')); await wait(250);
-  ok($$('.stopt').length === 4, '从章节页进入自测');
+  ok($$('#chSt .stopt').length === 4, '章节页末尾直接出题（4 选 1）');
+  click($$('#chSt .stopt')[0]); await wait(30);
+  ok(/〔/.test($('#chSt').textContent) && !!$('#stGo'), '答完出讲解与出处，并有「下一题」');
   click($('#btnBack')); await wait(50);
   click($('[data-tab="home"]')); await wait(60);
 
