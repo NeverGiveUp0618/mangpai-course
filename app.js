@@ -1638,20 +1638,20 @@ function drawRef(all) {
 
 
 /* ============ 知识点速查（查）：小结 / 口诀 / 表格 / 原文问答 ============ */
-var refSeg = 'sum', refKw = '';
+var refSeg = 'cmp', refKw = '', refTopic = '', refPair = { k: 'zhi', a: '', b: '' };
 RENDER.ref = function () {
   var box = $('#refBody');
   box.innerHTML = '<div class="empty">载入中…</div>';
-  needRef().then(function (R) { paintRef2(box, R || { sum: [], kou: [], tab: [] }); });
+  needRef().then(function (R) { paintRef2(box, R || { sum: [], kou: [], tab: [], cmp: [], pair: null }); });
 };
 function paintRef2(box, R) {
   var nNotes = (META.counts && META.counts.notes) || 0;
-  var segs = [['sum', '章节小结 ' + R.sum.length], ['kou', '口诀 ' + R.kou.length], ['tab', '速查表 ' + R.tab.length]];
+  var segs = [['cmp', '综合表 ' + (R.cmp || []).length], ['pair', '两支/两干速查'], ['tab', '教材表 ' + R.tab.length], ['sum', '章节小结 ' + R.sum.length], ['kou', '口诀 ' + R.kou.length]];
   box.innerHTML = '<div class="row wrap" style="gap:6px;margin-bottom:10px" id="refSegs">' +
     segs.map(function (g) { return '<span class="pill' + (refSeg === g[0] ? ' sel' : ' g') + '" data-seg="' + g[0] + '">' + g[1] + '</span>'; }).join('') +
     '<span class="pill g" id="refNotes">原文问答 ' + nNotes + ' 篇 ›</span></div>' +
     '<input id="rfq" type="search" placeholder="搜小结、口诀、表里的字，如：墓库 合绊 应期" autocomplete="off" value="' + esc(refKw) + '">' +
-    '<div class="rf-bar"><span id="rfCnt"></span><button id="rfAll">全部展开</button></div><div id="rfList"></div>';
+    '<div class="rf-bar" id="rfBar"><span id="rfCnt"></span><button id="rfAll">全部展开</button></div><div id="rfList"></div>';
   $$('[data-seg]', box).forEach(function (el) {
     el.onclick = function () { refSeg = el.dataset.seg; paintRef2(box, R); };
   });
@@ -1667,7 +1667,18 @@ function paintRef2(box, R) {
 function drawRef2(R) {
   var words = refKw.split(/\s+/).filter(Boolean), html = '', n = 0, cur = '';
   function hit(t) { return words.every(function (w) { return t.indexOf(w) >= 0; }); }
-  if (refSeg === 'sum') {
+  if ($('#rfBar')) $('#rfBar').style.display = refSeg === 'pair' ? 'none' : '';
+  $('#rfq').style.display = refSeg === 'pair' ? 'none' : '';
+  if (refSeg === 'pair') { drawPair(R); return; }
+  if (refSeg === 'cmp') {
+    (R.cmp || []).forEach(function (r) {
+      if (!hit(r.topic + r.name + r.text)) return;
+      n++;
+      if (r.topic !== cur) { cur = r.topic; html += '<div class="rf-g"><span>' + esc(cur) + '</span></div>'; }
+      html += '<div class="rf-i' + (words.length ? ' open' : '') + '"><button class="rf-h"><b>' + esc(r.name) + '</b><span>' + esc(r.chapter ? '出自 ' + r.chapter : '') + '</span></button>' +
+        '<div class="rf-b doc">' + r.html + (r.n ? '<button class="rf-go" data-n="' + r.n + '">到第 ' + r.n + ' 章看上下文 ›</button>' : '') + '</div></div>';
+    });
+  } else if (refSeg === 'sum') {
     R.sum.forEach(function (r) {
       if (!hit(r.title + r.text)) return;
       n++;
@@ -1684,7 +1695,12 @@ function drawRef2(R) {
         '</p><button class="rf-go" data-n="' + r.n + '">到本章 ›</button></div></div>';
     });
   } else {
+    var tps = {};
+    R.tab.forEach(function (r) { tps[r.topic] = (tps[r.topic] || 0) + 1; });
+    html += '<div class="row wrap" style="gap:6px;margin:0 0 8px" id="rfTopics"><span class="pill' + (refTopic ? ' g' : ' sel') + '" data-tp="">全部</span>' +
+      Object.keys(tps).map(function (k) { return '<span class="pill' + (refTopic === k ? ' sel' : ' g') + '" data-tp="' + k + '">' + k + ' ' + tps[k] + '</span>'; }).join('') + '</div>';
     R.tab.forEach(function (r) {
+      if (refTopic && r.topic !== refTopic) return;
       if (!hit(r.name + r.sec + r.chapter + r.text)) return;
       n++;
       if (r.chapter !== cur) { cur = r.chapter; html += '<div class="rf-g"><span>' + esc(r.level + ' · ' + cur) + '</span></div>'; }
@@ -1694,11 +1710,59 @@ function drawRef2(R) {
   }
   $('#rfCnt').textContent = n + ' 条';
   $('#rfList').innerHTML = html || '<p class="muted">没找到。换个词试试。</p>';
+  $$('#rfTopics [data-tp]').forEach(function (el) { el.onclick = function () { refTopic = el.dataset.tp; drawRef2(R); }; });
+  $$('.rf-mx td', $('#rfList')).forEach(function (td) {
+    var t = td.textContent.trim();
+    if (/冲/.test(t)) td.className = 'mx-c'; else if (/穿/.test(t)) td.className = 'mx-u';
+    else if (/合/.test(t)) td.className = 'mx-h'; else if (/破|刑/.test(t)) td.className = 'mx-p';
+    else if (/^(比肩|劫财)$/.test(t)) td.className = 'mx-b'; else if (/官|杀/.test(t)) td.className = 'mx-c';
+    else if (/财/.test(t)) td.className = 'mx-h'; else if (/印/.test(t)) td.className = 'mx-u'; else if (/食|伤/.test(t)) td.className = 'mx-p';
+  });
   $$('.rf-i', $('#rfList')).forEach(function (d) {
     var h = d.querySelector('.rf-h');
     if (h) h.onclick = function () { d.classList.toggle('open'); };
   });
   $$('.rf-go', $('#rfList')).forEach(function (b) { b.onclick = function () { show('chapter', +b.dataset.n); }; });
+}
+
+/* 两支 / 两干速查：点两个字，看它们相见的关系，以及两边教材表里各自怎么说 */
+function drawPair(R) {
+  var P = R.pair, box = $('#rfList');
+  if (!P) { box.innerHTML = '<p class="muted">没有数据。</p>'; return; }
+  $('#rfCnt').textContent = '';
+  var isZ = refPair.k === 'zhi', L = isZ ? '子丑寅卯辰巳午未申酉戌亥'.split('') : '甲乙丙丁戊己庚辛壬癸'.split('');
+  function btns(which) {
+    return '<div class="pr-row">' + L.map(function (c) { return '<span class="pill ' + (refPair[which] === c ? 'sel' : 'g') + '" data-pr="' + which + c + '">' + c + '</span>'; }).join('') + '</div>';
+  }
+  var h = '<div class="row wrap" style="gap:6px;margin:0 0 8px"><span class="pill ' + (isZ ? 'sel' : 'g') + '" data-pk="zhi">地支两两</span><span class="pill ' + (!isZ ? 'sel' : 'g') + '" data-pk="gan">天干两两</span></div>' +
+    '<div class="muted" style="font-size:12.5px;margin:2px 0">先点上一排一个，再点下一排一个：</div>' + btns('a') + btns('b');
+  var a = refPair.a, b = refPair.b;
+  if (a && b) {
+    var T = isZ ? P.zhi : P.gan, nn = isZ ? P.nz : P.ng;
+    if (a === b) h += '<p class="muted" style="margin:10px 0">两个相同的字相见，教材没有单列，见对应章节。</p>';
+    else {
+      var rel = isZ ? (P.rz[a + b] || []).join(' / ') : a + '日见' + b + '：' + P.sg[a + b] + '　·　' + b + '日见' + a + '：' + P.sg[b + a];
+      h += '<div class="rf-i open" style="margin-top:10px"><div class="rf-b doc" style="display:block;padding:10px 12px"><p style="margin:0"><b style="font-size:16px">' + a + ' · ' + b + '</b>　' +
+        (rel ? '<span class="pill sel">' + esc(rel) + '</span>' : '<span class="muted">无专门作用（教材未单列）</span>') + '</p></div></div>';
+      [[a, b], [b, a]].forEach(function (pr) {
+        var e = T[pr[0]] && T[pr[0]][pr[1]];
+        h += '<div class="rf-i open"><div class="rf-b doc" style="display:block;padding:9px 12px"><p style="margin:0 0 3px"><b>' + (isZ ? pr[0] + ' 见 ' + pr[1] : pr[0] + ' 日见 ' + pr[1]) + '</b>' +
+          (e ? '　<span class="muted">' + esc(e[0]) + '</span>' : '') + '</p><p style="margin:0">' + (e ? e[1] : '<span class="muted">教材的「' + pr[0] + (isZ ? '与其他地支' : '日见九干') + '」表里没有单列这一条。</span>') + '</p></div></div>';
+      });
+      h += '<button class="rf-go" id="prGo">到第 ' + nn + ' 章看全部 ›</button>';
+    }
+  } else h += '<p class="muted" style="margin:10px 0">还没选完。选两个字，下面会列出它们的关系和各自的象义。</p>';
+  box.innerHTML = h;
+  $$('[data-pk]', box).forEach(function (el) { el.onclick = function () { refPair = { k: el.dataset.pk, a: '', b: '' }; drawPair(R); }; });
+  $$('[data-pr]', box).forEach(function (el) {
+    el.onclick = function () {
+      var w = el.dataset.pr.charAt(0), c = el.dataset.pr.slice(1);
+      refPair[w] = c;
+      drawPair(R);
+    };
+  });
+  var go = $('#prGo'); if (go) go.onclick = function () { show('chapter', nn0()); };
+  function nn0() { return isZ ? P.nz : P.ng; }
 }
 
 RENDER.outline = function () {

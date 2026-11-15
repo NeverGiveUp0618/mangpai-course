@@ -1174,3 +1174,16 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 /* 大运那一排与四柱（含十神行）上下居中对齐 */
 .doc .ichart{align-items:center}
 .doc .ichart .dys,.sticky-chart .dys{align-self:center}
+
+/* 速查：综合表 / 矩阵 / 两支速查 */
+.rf-mx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rf-mx table{font-size:12px;min-width:max-content}
+.rf-mx th,.rf-mx td{padding:4px 6px;text-align:center;white-space:nowrap}
+.rf-mx tr>:first-child{position:sticky;left:0;background:var(--bg2);font-weight:600}
+.rf-mx td.mx-c{background:rgba(214,92,92,.22)}
+.rf-mx td.mx-h{background:rgba(92,170,120,.22)}
+.rf-mx td.mx-u{background:rgba(214,170,70,.22)}
+.rf-mx td.mx-p{background:rgba(120,130,220,.22)}
+.rf-mx td.mx-b{background:rgba(160,160,160,.18)}
+.pr-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.pr-row .pill{min-width:32px;text-align:center;padding:5px 8px}

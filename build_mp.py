@@ -745,7 +745,114 @@ def build_ref(courses):
                              'html': md2html('\n'.join(blk)), 'text': strip_md('\n'.join(blk))})
                 continue
             i += 1
-    return {'sum': sums, 'kou': kous, 'tab': tabs}
+    for t in tabs:
+        t['topic'] = _ref_topic(t['chapter'])
+    cmp_, pair = _build_cmp(courses), _build_pair(courses)
+    return {'sum': sums, 'kou': kous, 'tab': tabs, 'cmp': cmp_, 'pair': pair}
+
+
+REF_TOPICS = [
+    ('地支', r'地支|合（|冲、穿|刑、破|三合|六冲'),
+    ('天干十神', r'十天干|天干|十神与宫位|十神类象|干支配置|干支关系'),
+    ('宫位象法', r'宫位|类象|象的应用|象义|职业象法|干支虚实'),
+    ('做功体用', r'做功|体用|能量|正局|反局|基础问题|入手|总览|天道'),
+    ('应期', r'应期'),
+    ('婚姻六亲', r'婚|恋爱|配偶|父母|六亲|伤克|独身|伤官、六亲'),
+    ('财官职业', r'财命|官命|学历|职业|疾病|实战|口才|医生'),
+]
+
+
+def _ref_topic(chapter):
+    for name, rx in REF_TOPICS:
+        if re.search(rx, chapter):
+            return name
+    return '其他'
+
+
+def _find_course(courses, src):
+    lv, pre = src.split('|')
+    for c in courses:
+        if not c['raw'] and c['level'] == lv and c['title'].startswith(pre):
+            return c
+    return None
+
+
+def _build_cmp(courses):
+    """综合速查表：content/速查/综合速查表.md（由 _cheat_gen.py 生成），按 ## 主题 / ### 表名 切开。"""
+    p = os.path.join(ROOT, 'content', '速查', '综合速查表.md')
+    if not os.path.exists(p):
+        return []
+    lines = io.open(p, encoding='utf-8').read().split('\n')
+    res, topic, i = [], '', 0
+    while i < len(lines):
+        ln = lines[i]
+        if ln.startswith('## '):
+            topic = ln[3:].strip()
+        elif ln.startswith('### '):
+            name = ln[4:].strip()
+            j = i + 1
+            while j < len(lines) and not lines[j].startswith('## ') and not lines[j].startswith('### '):
+                j += 1
+            body = '\n'.join(lines[i + 1:j]).strip()
+            m = re.search(r'<!--src:(.*?)-->', body)
+            c = _find_course(courses, m.group(1)) if m else None
+            body = re.sub(r'<!--.*?-->', '', body).strip()
+            html = md2html(body)
+            if '<!--matrix-->' in '\n'.join(lines[i + 1:j]):
+                html = '<div class="rf-mx">' + html + '</div>'
+            res.append({'topic': topic, 'name': name, 'n': c['n'] if c else 0, 'chapter': c['title'] if c else '',
+                        'html': html, 'text': strip_md(body)})
+            i = j
+            continue
+        i += 1
+    return res
+
+
+def _tables_by_head(md, rx):
+    """取 md 里 ### 标题匹配 rx 的第一张表，返回 (标题, [行cells])。"""
+    lines = md.split('\n')
+    out = []
+    for i, ln in enumerate(lines):
+        m = re.match(r'^###\s+(.*)$', ln)
+        if m and re.search(rx, m.group(1)):
+            k = i + 1
+            while k < len(lines) and not lines[k].startswith('|'):
+                if lines[k].startswith('#'):
+                    break
+                k += 1
+            rows = []
+            while k < len(lines) and lines[k].startswith('|'):
+                cells = [x.strip() for x in lines[k].strip().strip('|').split('|')]
+                if not set(''.join(cells)) <= set('-: '):
+                    rows.append(cells)
+                k += 1
+            out.append((m.group(1), rows[1:]))
+    return out
+
+
+def _build_pair(courses):
+    """两支速查 / 两干速查：从「X与其他地支」「X日见九干」两类表里抽出 {X: {Y: [关系, 象义]}}。"""
+    zhi, gan = {}, {}
+    for c in courses:
+        if c['raw'] or c['level'] != '中级' or c['id'] not in PATHS:
+            continue
+        md = read(PATHS[c['id']])
+        if c['title'].startswith('十二地支象义'):
+            for ttl, rows in _tables_by_head(md, r'^[子丑寅卯辰巳午未申酉戌亥]与其他地支$'):
+                x = ttl[0]
+                zhi[x] = {r[0]: [r[1], r[2]] for r in rows if len(r) >= 3}
+        if c['title'].startswith('十天干象义'):
+            for ttl, rows in _tables_by_head(md, r'^[甲乙丙丁戊己庚辛壬癸]日见九干$'):
+                x = ttl[0]
+                gan[x] = {r[0]: [r[1], r[2]] for r in rows if len(r) >= 3}
+    nz = next((c['n'] for c in courses if not c['raw'] and c['level'] == '中级' and c['title'].startswith('十二地支象义')), 0)
+    ng = next((c['n'] for c in courses if not c['raw'] and c['level'] == '中级' and c['title'].startswith('十天干象义')), 0)
+    import _cheat_gen as G
+    rz = {a + b: G.rel_of(a, b) for a in G.ZHI for b in G.ZHI if a != b and G.rel_of(a, b)}
+    sg = {a + b: G.shishen(a, b) for a in G.GAN for b in G.GAN if a != b}
+    return {'rz': rz, 'sg': sg, 'zhi': {k: {a: [strip_md(b[0]), md2html(b[1]).replace('<p>', '').replace('</p>', '')] for a, b in v.items()} for k, v in zhi.items()},
+            'gan': {k: {a: [strip_md(b[0]), md2html(b[1]).replace('<p>', '').replace('</p>', '')] for a, b in v.items()} for k, v in gan.items()},
+            'nz': nz, 'ng': ng}
 
 
 TOPIC_CHAPTERS = {
