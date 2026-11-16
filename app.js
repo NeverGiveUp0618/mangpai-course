@@ -1883,8 +1883,8 @@ RENDER.st = function (id) {
   needSt().then(function (S) { if (id == null) stList(box, S); else if (id === 'wrong') wrongRun(box, S); else stRun(box, S, +id); });
 };
 function stList(box, S) {
-  var res = stRes(), lv = '', wn = wrongList(S).length, h = '<div class="card tap" id="wrongEntry"><div class="row spread"><div><b style="font-size:15px">📕 错题本</b><div class="muted" style="margin-top:2px">' + (wn ? wn + ' 道待攻克，答对一次就移出' : '暂无错题') + '</div></div><span style="color:var(--ink3)">›</span></div></div>' +
-    '<div class="muted" style="margin:0 2px 10px">每章练习题都是选择题，答完立刻判对错；成绩只记「最好一次」，答错的会自动进错题本。</div>';
+  var res = stRes(), lv = '', wn = wrongList(S).length, h = '<div class="card tap" id="wrongEntry"><div class="row spread"><div><b style="font-size:15px">📕 错题本</b><div class="muted" style="margin-top:2px">' + (wn ? wn + ' 道在错题本里，是否移出由你决定' : '暂无错题') + '</div></div><span style="color:var(--ink3)">›</span></div></div>' +
+    '<div class="muted" style="margin:0 2px 10px">每章练习题都是选择题，答完立刻判对错；成绩只记「最好一次」，答错的会自动进错题本，在错题本里由你决定移不移出。</div>';
   S.chapters.forEach(function (c) {
     if (c.level !== lv) { lv = c.level; h += '<h3 class="lvh">' + esc(lv) + '</h3>'; }
     var best = res[c.n];
@@ -1896,18 +1896,19 @@ function stList(box, S) {
   $('#wrongEntry').onclick = function () { show('st', 'wrong'); };
 }
 
-/* ============ 错题本：章末题答错自动记入，在错题本里答对一次移出 ============ */
+/* ============ 错题本：章末题答错自动记入；移不移出由自己决定（答对也不会自动移出） ============ */
 function wrongMap() { return ls('mp_course_wrong', {}); }
 function wkey(n, q) { return n + '|' + q.q; }
 function wrongMark(n, q, good, fromBook) {
   var m = wrongMap(), k = wkey(n, q);
   if (!good) { var o = m[k] || { n: n, c: 0 }; o.c++; o.t = Date.now(); m[k] = o; save('mp_course_wrong', m); }
-  else if (fromBook && m[k]) { delete m[k]; save('mp_course_wrong', m); }
+  else if (fromBook && m[k]) { m[k].ok = (m[k].ok || 0) + 1; save('mp_course_wrong', m); }   // 答对只记一笔，不自动移出
 }
+function wrongRemove(n, q) { var m = wrongMap(), k = wkey(n, q); if (m[k]) { delete m[k]; save('mp_course_wrong', m); } }
 function wrongList(S) {
   var m = wrongMap(), out = [];
   S.chapters.forEach(function (c) {
-    c.qs.forEach(function (q) { var o = m[wkey(c.n, q)]; if (o) out.push({ ch: c, q: q, t: o.t || 0, c: o.c || 1 }); });
+    c.qs.forEach(function (q) { var o = m[wkey(c.n, q)]; if (o) out.push({ ch: c, q: q, t: o.t || 0, c: o.c || 1, ok: o.ok || 0 }); });
   });
   out.sort(function (a, b) { return b.t - a.t; });
   return out;
@@ -1915,36 +1916,41 @@ function wrongList(S) {
 function wrongRun(box, S) {
   var list = wrongList(S);
   if (!list.length) {
-    box.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:30px">🎉</div><div style="margin:8px 0">错题本是空的</div><div class="muted">在章末练习里答错的题会自动记到这里</div><button class="btn" id="wBack" style="margin-top:12px;width:100%">回到章节练习</button></div>';
+    box.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:30px">🎉</div><div style="margin:8px 0">错题本是空的</div><div class="muted">在章末练习里答错的题会自动记到这里，移不移出由你决定</div><button class="btn" id="wBack" style="margin-top:12px;width:100%">回到章节练习</button></div>';
     $('#wBack', box).onclick = function () { show('st', null); };
     return;
   }
-  var i = 0, fixed = 0;
+  var i = 0, fixed = 0, gone = 0;
   function draw() {
     if (i >= list.length) {
       var left = wrongList(S).length;
-      box.innerHTML = '<div class="card" style="text-align:center"><div class="muted">错题本 · 本轮完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">移出 ' + fixed + ' / ' + list.length + '</div><div class="muted">错题本还剩 ' + left + ' 道</div>' +
+      box.innerHTML = '<div class="card" style="text-align:center"><div class="muted">错题本 · 本轮完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">答对 ' + fixed + ' / ' + list.length + '</div><div class="muted">本轮移出 ' + gone + ' 道 · 错题本还剩 ' + left + ' 道</div>' +
         '<div class="row" style="gap:10px;margin-top:12px"><button class="btn" id="wAgain" style="flex:1">' + (left ? '再来一轮' : '返回') + '</button><button class="btn" id="wBack" style="flex:1">回章节练习</button></div></div>';
       $('#wAgain', box).onclick = function () { if (left) wrongRun(box, S); else show('st', null); };
       $('#wBack', box).onclick = function () { show('st', null); };
       return;
     }
     var it = list[i], q = it.q, answered = false;
-    box.innerHTML = '<div class="muted" style="margin:0 2px 8px">错题本 · 第 ' + (i + 1) + ' / ' + list.length + ' 题 · 错过 ' + it.c + ' 次</div>' +
+    box.innerHTML = '<div class="muted" style="margin:0 2px 8px">错题本 · 第 ' + (i + 1) + ' / ' + list.length + ' 题 · 错过 ' + it.c + ' 次' + (it.ok ? ' · 后来答对 ' + it.ok + ' 次' : '') + '</div>' +
       '<div class="muted" style="margin:0 2px 6px;font-size:12px">' + esc(it.ch.title) + '</div>' +
       '<div class="card"><b style="font-size:15.5px;line-height:1.7">' + esc(q.q) + '</b></div>' +
-      q.opts.map(function (o, k) { return '<button class="btn stopt" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') + '<div id="stNext"></div>';
+      q.opts.map(function (o, k) { return '<button class="btn stopt" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') + '<div id="stNext"></div>' +
+      '<div class="row" id="wPre" style="gap:10px;margin-top:6px"><button class="btn" id="wSkip" style="flex:1">先跳过</button><button class="btn" id="wDrop" style="flex:1">已掌握，移出</button></div>';
+    $('#wSkip', box).onclick = function () { i++; draw(); };
+    $('#wDrop', box).onclick = function () { wrongRemove(it.ch.n, q); gone++; i++; draw(); };
     $$('.stopt', box).forEach(function (b) {
       b.onclick = function () {
         if (answered) return; answered = true;
+        var pre = $('#wPre', box); if (pre) pre.style.display = 'none';
         var k = +b.dataset.k, good = k === q.ans;
         if (good) fixed++;
         wrongMark(it.ch.n, q, good, true);
         $$('.stopt', box).forEach(function (x) { x.disabled = true; if (+x.dataset.k === q.ans) x.classList.add('stok'); });
         if (!good) b.classList.add('stno');
-        $('#stNext', box).innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了，已移出错题本' : '✗ 还没记住，留在错题本') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div>' +
-          '<div class="row" style="gap:10px"><button class="btn pri" id="stGo" style="flex:1">' + (i + 1 >= list.length ? '看结果' : '下一题 ›') + '</button><button class="btn" id="stRead" style="flex:0 0 auto">回课文</button></div>';
+        $('#stNext', box).innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了' : '✗ 答错了') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div>' +
+          '<div class="row" style="gap:10px"><button class="btn' + (good ? '' : ' pri') + '" id="stGo" style="flex:1">留在错题本' + (i + 1 >= list.length ? '（看结果）' : ' ›') + '</button><button class="btn' + (good ? ' pri' : '') + '" id="stDrop" style="flex:1">移出错题本</button><button class="btn" id="stRead" style="flex:0 0 auto">回课文</button></div>';
         $('#stGo', box).onclick = function () { i++; draw(); };
+        $('#stDrop', box).onclick = function () { wrongRemove(it.ch.n, q); gone++; i++; draw(); };
         $('#stRead', box).onclick = function () { show('chapter', it.ch.n); };
       };
     });

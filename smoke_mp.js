@@ -152,15 +152,18 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   await openWrong();
   ok($$('#stBody .stopt').length === 4, '错题本里出题（4 选 1）');
   const q0 = $('#stBody .card b').textContent;
-  // 逐个点选项，直到答对或选完，确认答对会移出
-  const opts = $$('#stBody .stopt'); let moved = false;
-  for (let k = 0; k < 4 && !moved; k++) {
+  // 逐个点选项直到答对：答对后不会自动移出，要点「移出错题本」才移
+  let good = false;
+  for (let k = 0; k < 4 && !good; k++) {
     click($$('#stBody .stopt')[k]); await wait(20);
-    moved = /已移出/.test($('#stBody').textContent);
-    if (!moved) { await openWrong(); }
+    good = /答对了/.test($('#stBody').textContent);
+    if (!good) { await openWrong(); }
   }
-  ok(moved, '在错题本答对后移出');
-  ok(Object.keys(W()).length === nw - 1 || nw === 0, '错题数减一');
+  ok(good, '在错题本答对');
+  ok(Object.keys(W()).length === nw, '答对后错题仍留在错题本（不自动移出），数量不变');
+  ok(!!$('#stDrop') && !!$('#stGo'), '答完有「留在错题本」「移出错题本」两个选择');
+  click($('#stDrop')); await wait(40);
+  ok(Object.keys(W()).length === nw - 1, '点「移出错题本」后错题数减一');
   console.log('章节页附加');
   click($('[data-tab="course"]')); await wait(120);
   click($('[data-ch="1"]')); await wait(300);
