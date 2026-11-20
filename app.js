@@ -111,6 +111,7 @@ setTimeout(function () {
 var needCourse = function () { return need('data-course.js', 'DATA_COURSE'); };
 var needRaw = function () { return need('data-raw.js', 'DATA_RAW'); };
 var needSt = function () { return need('data-st.js', 'DATA_ST'); };
+var needPlain = function () { return need('data-plain.js', 'DATA_PLAIN'); };
 var needQna = function () { return need('data-qna.js', 'DATA_QNA'); };
 var LVKEY = { '初级': 'chu', '中级': 'zhong', '高级': 'gao', '专题': 'zhuan' };
 function needBodyOf(c) { return c.raw ? needRaw() : need('data-body-' + LVKEY[c.level] + '.js', 'DATA_BODY_' + LVKEY[c.level]); }
@@ -161,7 +162,7 @@ var cur = { scr: 'home', id: null };
 var TITLES = {
   home: '盲派八字', course: '课程', chapter: '', notes: '专题与答疑',
   note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '知识点速查', qlist: '命例题库',
-  quiz: '', qna: '笔记 · 我的提问', qnote: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
+  plain: '', quiz: '', qna: '笔记 · 我的提问', qnote: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
   vke: 'v课笔记', vkeread: ''
 };
 var ROOTS = { home: 1, course: 1, notes: 1, qlist: 1, ref: 1, qna: 1 };
@@ -176,9 +177,9 @@ function _apply(scr, id) {
   $('#btnBack').classList.toggle('show', !ROOTS[scr]);
   $('#ttl').textContent = TITLES[scr] || '盲派八字';
   $$('.tabbar button').forEach(function (b) {
-    b.classList.toggle('on', b.dataset.tab === scr);
+    b.classList.toggle('on', b.dataset.tab === scr || (scr === 'plain' && b.dataset.tab === 'course'));
   });
-  $('#fabToc').style.display = (scr === 'chapter' || scr === 'note' || scr === 'qnote') ? 'block' : 'none';
+  $('#fabToc').style.display = (scr === 'chapter' || scr === 'note' || scr === 'qnote' || scr === 'plain') ? 'block' : 'none';
   if (scr !== 'quiz') $('#stickyChart').classList.add('hide');
   if (scr !== 'vkeread') vkeStopSpy();   // 吸顶盘的滚动监听是全局的，换屏必须解绑
   hideToast();
@@ -504,6 +505,7 @@ function lastLabel(l) {
   if (l.scr === 'chapter') return '课程 · 第 ' + l.id + ' 讲';
   if (l.scr === 'note') return '专题 ' + l.id;
   if (l.scr === 'qnote') return '笔记 ' + l.id;
+  if (l.scr === 'plain') return '初级白话课 · 第 ' + l.id + ' 课';
   if (l.scr === 'quiz') return '命例';
   return TITLES[l.scr] || '';
 }
@@ -512,7 +514,8 @@ function lastLabel(l) {
 RENDER.course = function () {
   var box = $('#courseList');
   box.innerHTML = '<div class="empty">载入中…</div>';
-  needCourse().then(function (list) {
+  Promise.all([needCourse(), needPlain()]).then(function (sets) {
+    var list = sets[0], plain = sets[1] || [];
     var read = ls(K.read, {});
     var open = ls(K.lvopen, null);
     var last = ls(K.last, null);
@@ -533,7 +536,8 @@ RENDER.course = function () {
         '</div>' + (p > 0 && p < 90 ? '<div class="bar"><i style="width:' + p + '%"></i></div>' : '') +
         '</div>';
     }
-    var html = '';
+    var plainDone = plain.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
+    var html = '<div class="qgrp lvg plain-group' + (open['白话初级'] ? ' open' : '') + '" data-g="白话初级"><button class="qgh"><span class="ar">›</span><span class="nm">初级白话课 · 生活里的八字（试读）</span><span class="ct">' + plainDone + '/' + plain.length + '</span></button><div class="qgb"><p class="muted" style="padding:4px 14px 12px;line-height:1.8">先试读前5课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材。</p>' + plain.map(function (c) { return '<div class="card tap" data-bh="' + c.n + '"><div class="row spread"><div style="flex:1"><b>' + String(c.n).padStart(2, '0') + ' · ' + esc(c.title) + '</b><div class="muted" style="margin-top:5px">对应原课：' + esc(c.sourceTitle) + '</div></div>' + ((read[c.id] || 0) >= 90 ? '<span class="pill">已读</span>' : '<span>›</span>') + '</div></div>'; }).join('') + '</div></div>';
     (META.levels || []).forEach(function (L) {
       var lv = L.name;
       var tb = list.filter(function (x) { return x.level === lv && !x.raw; });
@@ -562,9 +566,27 @@ RENDER.course = function () {
         ev.stopPropagation();
       };
     });
+    $$('[data-bh]', box).forEach(function (el) { el.onclick = function () { show('plain', +el.dataset.bh); }; });
     $$('[data-ch]', box).forEach(function (el) {
       el.onclick = function () { show('chapter', +el.dataset.ch); };
     });
+  });
+};
+
+/* 白话课独立阅读，不占用原教材的c编号。 */
+RENDER.plain = function (n) {
+  needPlain().then(function (list) {
+    var c = list.filter(function (x) { return x.n === +n; })[0]; if (!c) return;
+    curDoc = c; $('#ttl').textContent = '白话 ' + c.n + ' · ' + c.title;
+    var root = $('#plainBody');
+    root.innerHTML = '<h1>' + esc(c.title) + '</h1><p class="plain-intro">初级白话课 · 第 ' + c.n + ' / ' + list.length + ' 课。生活故事均为教学假设，用于理解关系；具体八字仍按原课条件判断。</p>' + c.html;
+    foldChapterSections(root, c.id); bindDoc(root);
+    $('#plainSource').textContent = '回看原教材 · ' + c.sourceTitle;
+    $('#plainSource').onclick = function () { show('chapter', c.sourceN); };
+    $('#prevPlain').disabled = c.n === 1; $('#nextPlain').disabled = c.n === list.length;
+    $('#prevPlain').onclick = function () { show('plain', c.n - 1); };
+    $('#nextPlain').onclick = function () { show('plain', c.n + 1); };
+    trackRead(c.id); addReadToggle(c.id, '#prevPlain'); afterDoc(root, c.id);
   });
 };
 
@@ -1844,7 +1866,7 @@ var readTimer = null;
 function trackRead(id) {
   clearInterval(readTimer);
   readTimer = setInterval(function () {
-    if (cur.scr !== 'chapter' && cur.scr !== 'note' && cur.scr !== 'qnote') { clearInterval(readTimer); return; }
+    if (cur.scr !== 'chapter' && cur.scr !== 'note' && cur.scr !== 'qnote' && cur.scr !== 'plain') { clearInterval(readTimer); return; }
     var h = document.documentElement;
     var max = h.scrollHeight - h.clientHeight;
     var p = max <= 0 ? 100 : Math.min(100, Math.round((h.scrollTop / max) * 100));
@@ -2264,6 +2286,7 @@ function saveMyNotes(v) { save(K.notes, v); }
 function noteCtx() {
   if (cur.scr === 'chapter') return { root: $('#chapterBody'), from: '第' + cur.id + '章' };
   if (cur.scr === 'note')    return { root: $('#noteBody'),    from: '笔记 ' + cur.id };
+  if (cur.scr === 'plain')   return { root: $('#plainBody'), from: '初级白话课 ' + cur.id };
   if (cur.scr === 'qnote')   return { root: $('#qnoteBody'),   from: '我的提问 ' + cur.id };
   if (cur.scr === 'quiz')    return { root: $('#quizBody'),    from: '题 ' + cur.id };
   if (cur.scr === 'index')   return { root: $('#indexBody'),   from: '问题清单' };
@@ -2462,7 +2485,7 @@ function doSearch() {
   var main = terms[0];
   var rest = terms.slice(1);
 
-  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw), needRef().catch(function () { return null; }), needQna().catch(function () { return []; })]).then(function (r) {
+  Promise.all([needCourse(), needNotes(), needQuiz(), needAllBodies(searchRaw), needRef().catch(function () { return null; }), needQna().catch(function () { return []; }), needPlain().catch(function () { return []; })]).then(function (r) {
     if (r[3]) fillRaw(r[0], r[3]);
     var curCat = 'chapter';
     var hits = [], total = 0, capped = false;
@@ -2523,6 +2546,7 @@ function doSearch() {
       if (c.raw && !searchRaw) return;
       scan(c.text, (c.raw ? '原稿 · ' : '') + c.title, 'chapter', c.n);
     });
+    (r[6] || []).forEach(function (c) { scan(c.text, '白话课 · ' + c.title, 'plain', c.n); });
     curCat = 'ref';
     if (r[4]) {
       r[4].kou.forEach(function (k) { scan(k.text, '口诀 · ' + k.chapter, 'chapter', k.n); });

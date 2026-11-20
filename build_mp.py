@@ -291,6 +291,26 @@ def build_qna():
     return docs
 
 
+def build_plain(courses):
+    """独立白话教程：稳定ID，不插入原教材的章节序号。"""
+    folder = os.path.join(CONTENT, '白话课')
+    manifest = json.loads(read(os.path.join(folder, '课程目录.json')))
+    originals = [c for c in courses if c['level'] == '初级' and not c['raw']]
+    assert 0 < len(manifest) <= len(originals), '白话课按初级教材顺序分批试读'
+    docs = []
+    for i, item in enumerate(manifest, 1):
+        source = next(c for c in originals if os.path.basename(PATHS[c['id']]) == item['source'])
+        assert item['id'] == 'bh%02d' % i and item['n'] == i
+        assert source['id'] == originals[i - 1]['id'], '白话课与原初级教材顺序必须一致'
+        path = os.path.join(folder, '初级', item['file'])
+        doc = build_doc(path, item['id'], i, read(path).split('\n', 1)[0].lstrip('# ').strip(),
+                        {'sourceN': source['n'], 'sourceTitle': source['title'], 'level': '初级白话课'}, manual='light')
+        assert not doc['html'].count('class="ichart"'), '白话课不编造命盘'
+        docs.append(doc)
+    assert len({d['sourceN'] for d in docs}) == len(manifest)
+    return docs
+
+
 def build_notes():
     docs, d = [], os.path.join(CONTENT, '专题')
     for k, fn in enumerate(sorted(os.listdir(d)), 1):
@@ -969,13 +989,14 @@ def main():
     courses = build_courses()
     notes = build_notes()
     qna = build_qna()
+    plain = build_plain(courses)
     quiz = build_quiz()
     link_related(courses, quiz)
     ref = build_ref(courses)
     st = build_selftest(courses)
     meta = {
         'name': '盲派八字', 'built': time.strftime('%Y-%m-%d %H:%M'),
-        'counts': {'qna': len(qna), 'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
+        'counts': {'plain': len(plain), 'qna': len(qna), 'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
                    'quizChart': len(quiz['items']), 'quizChai': len(quiz['items'])},
         'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
@@ -997,6 +1018,7 @@ def main():
         ('data-course.js', write_js('data-course.js', 'DATA_COURSE', courses)),
         ('data-ref.js', write_js('data-ref.js', 'DATA_REF', ref)),
         ('data-qna.js', write_js('data-qna.js', 'DATA_QNA', qna)),
+        ('data-plain.js', write_js('data-plain.js', 'DATA_PLAIN', plain)),
         ('data-st.js', write_js('data-st.js', 'DATA_ST', st)),
         ('data-notes.js', write_js('data-notes.js', 'DATA_NOTES', notes)),
         ('data-quiz.js', write_js('data-quiz.js', 'DATA_QUIZ', quiz)),

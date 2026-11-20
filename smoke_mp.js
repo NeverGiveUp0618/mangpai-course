@@ -12,7 +12,7 @@ const { window } = dom;
 window.scrollTo = () => {};
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 const run = f => window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
-['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-st.js', 'data/data-qna.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
+['data/data-meta.js', 'data/data-course.js', 'data/data-notes.js', 'data/data-quiz.js', 'data/data-raw.js', 'data/data-ref.js', 'data/data-st.js', 'data/data-qna.js', 'data/data-plain.js', 'data/data-body-chu.js', 'data/data-body-zhong.js', 'data/data-body-gao.js', 'data/data-body-zhuan.js'].forEach(run);
 window.eval(`
   window.__oc = document.createElement.bind(document);
   document.createElement = function(t){ const el = window.__oc(t);
@@ -55,11 +55,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
   console.log('课程');
   click($('[data-tab="course"]')); await wait(120);
-  ok($$('.lvg').length === 4, '初/中/高/专题四个折叠组');
+  ok($$('.lvg:not(.plain-group)').length === 4 && $$('.plain-group').length === 1, '原四级课程与独立白话试读组');
   ok($$('.lvg.open').length === 1, '默认只展开一级');
-  click($$('.lvg > .qgh')[1]); await wait(30);
+  click($$('.lvg:not(.plain-group) > .qgh')[1]); await wait(30);
   ok($$('.lvg.open').length === 2, '点击可展开另一级');
-  click($$('.lvg > .qgh')[1]); await wait(30);
+  click($$('.lvg:not(.plain-group) > .qgh')[1]); await wait(30);
   ok($$('.lvg.open').length === 1, '再点折叠');
   ok($$('[data-ch]').length === M.counts.course + M.counts.rawCourse, '课程卡片数（含原稿）');
   click($('[data-ch="1"]')); await wait(150);
@@ -73,6 +73,30 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok(Object.values(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}'))[0] >= 90, '手动「标记为已读」才记录');
   click($('#readToggle')); await wait(30);
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}')).length === 0, '再点取消');
+
+  console.log('初级白话课试读');
+  ok(M.counts.plain === 5 && window.DATA_PLAIN.length === 5, '仅前5课试读，原课程78章及936命例保留');
+  click($('[data-tab="course"]')); await wait(100);
+  click($('.plain-group > .qgh')); await wait(20);
+  ok($$('[data-bh]').length === 5 && $('.plain-group').classList.contains('open'), '独立入口展开5课');
+  click($('[data-bh="1"]')); await wait(130);
+  ok($('#prevPlain').disabled && !$('#nextPlain').disabled, '首课翻页边界');
+  for (let n=1;n<=5;n++) {
+    if(n>1){click($('#nextPlain'));await wait(130);}
+    const c=window.DATA_PLAIN[n-1];
+    ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===c.title && !$('#plainBody .ichart'), '第'+n+'课完整正文可达，无虚构命盘');
+    ok($('#plainSource').textContent.includes(c.sourceTitle) && !!$('#plainBody details'), '第'+n+'课有原课对照及分节阅读');
+  }
+  ok($('#nextPlain').disabled, '第5课停住，不出现第6课');
+  click($('#readToggle')); await wait(20);
+  ok(JSON.parse(window.localStorage.getItem('mp_course_read')).bh05 === 100 && !JSON.parse(window.localStorage.getItem('mp_course_read')).c5, '白话已读与原教材进度隔离');
+  click($('#readToggle')); await wait(20);
+  const whiteLoc=window.YGN_HOOK.loc();
+  ok(whiteLoc.scr==='plain' && whiteLoc.id===5 && $('[data-tab="course"]').classList.contains('on'), '全科笔记保存白话课位置，底栏仍归课程');
+  click($('#plainSource')); await wait(180);
+  ok($('#chapterBody h1').textContent.includes('十天干'), '回看原教材跳到正确第5章');
+  window.YGN_HOOK.go(whiteLoc); await wait(200);
+  ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent.includes('五行'), '全科笔记出处钩子可返回白话课');
 
   const rawCard = $('.rawg [data-ch]');
   ok(!!rawCard, '有原稿讲义卡片');
@@ -199,6 +223,10 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   if (scq) { click(scq); await wait(30); ok($$('#hits .hit').length > 0 && $$('#hits [data-sc].sel').length === 1, '点「命例」只看命例结果'); }
   $('#q').value = '八字盘'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(1800);
   ok(/没有「八字盘」，已改搜「命局」/.test($('#hits').textContent), '别名：搜「八字盘」自动改搜「命局」并提示');
+  $('#q').value = '木桌'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(1100);
+  const whiteHit=$$('#hits .hit').find(e=>e.textContent.includes('白话课'));
+  ok(!!whiteHit, '搜索可检索白话生活故事');
+  if(whiteHit){click(whiteHit);await wait(200);ok($('#s-plain').classList.contains('active') && /木桌/.test($('#plainBody').textContent), '搜索结果跳回白话课');}
   console.log('隔离');
   const keys = Object.keys(window.localStorage);
   ok(keys.every(k => !/^bazi_/.test(k)), '没有写 bazi_ 前缀的键：' + keys.join(','));
