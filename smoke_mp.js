@@ -54,8 +54,10 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   ok(['mp_course_read', 'mp_course_seen', 'mp_course_gap'].every(k => Object.keys(JSON.parse(window.localStorage.getItem(k) || '{}')).length === 0), '「清除全部标记」清空已读/已学/已掌握');
 
   console.log('课程');
+  window.localStorage.setItem('mp_course_lvopen', JSON.stringify({'初级':1,'白话初级':1}));
   click($('[data-tab="course"]')); await wait(120);
-  ok($$('.lvg:not(.plain-group)').length === 4 && $$('.plain-group').length === 1, '原四级课程与独立白话试读组');
+  ok($$('.lvg:not(.plain-group)').length === 4 && $$('.plain-group').length === 1, '原四级课程与独立白话课组');
+  ok(!$('.plain-group').classList.contains('open') && !$('.plain-group').textContent.includes('试读'), '默认折叠且旧预览展开状态已迁移，入口去试读');
   ok($$('.lvg.open').length === 1, '默认只展开一级');
   click($$('.lvg:not(.plain-group) > .qgh')[1]); await wait(30);
   ok($$('.lvg.open').length === 2, '点击可展开另一级');
@@ -74,30 +76,33 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click($('#readToggle')); await wait(30);
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}')).length === 0, '再点取消');
 
-  console.log('初级白话课试读');
-  ok(M.counts.plain === 5 && window.DATA_PLAIN.length === 5, '仅前5课试读，原课程78章及936命例保留');
+  console.log('完整初级白话课');
+  ok(M.counts.plain === 19 && window.DATA_PLAIN.length === 19, '初级19课齐全，原课程78章及936命例保留');
   click($('[data-tab="course"]')); await wait(100);
   click($('.plain-group > .qgh')); await wait(20);
-  ok($$('[data-bh]').length === 5 && $('.plain-group').classList.contains('open'), '独立入口展开5课');
+  ok($$('[data-bh]').length === 19 && $('.plain-group').classList.contains('open'), '独立入口展开19课');
+  click($('[data-tab="home"]')); await wait(50);
+  click($('[data-tab="course"]')); await wait(100);
+  ok($('.plain-group').classList.contains('open'), '手动展开后返目录仍保留选择');
   click($('[data-bh="1"]')); await wait(130);
   ok($('#prevPlain').disabled && !$('#nextPlain').disabled, '首课翻页边界');
-  for (let n=1;n<=5;n++) {
+  for (let n=1;n<=19;n++) {
     if(n>1){click($('#nextPlain'));await wait(130);}
     const c=window.DATA_PLAIN[n-1];
     ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===c.title && !$('#plainBody .ichart'), '第'+n+'课完整正文可达，无虚构命盘');
     ok($('#plainSource').textContent.includes(c.sourceTitle) && !!$('#plainBody details'), '第'+n+'课有原课对照及分节阅读');
     ok($$('#plainBody .plain-flow').length >= 1 && !$('#plainBody pre.lang-关系图') && $$('#plainBody .pf-key').every(e=>e.textContent.trim()), '第'+n+'课关系图为可选取的正文文字');
   }
-  ok($('#nextPlain').disabled, '第5课停住，不出现第6课');
+  ok($('#nextPlain').disabled, '第19课停住，无越界下一课');
   click($('#readToggle')); await wait(20);
-  ok(JSON.parse(window.localStorage.getItem('mp_course_read')).bh05 === 100 && !JSON.parse(window.localStorage.getItem('mp_course_read')).c5, '白话已读与原教材进度隔离');
+  ok(JSON.parse(window.localStorage.getItem('mp_course_read')).bh19 === 100 && !JSON.parse(window.localStorage.getItem('mp_course_read')).c19, '白话已读与原教材进度隔离');
   click($('#readToggle')); await wait(20);
   const whiteLoc=window.YGN_HOOK.loc();
-  ok(whiteLoc.scr==='plain' && whiteLoc.id===5 && $('[data-tab="course"]').classList.contains('on'), '全科笔记保存白话课位置，底栏仍归课程');
+  ok(whiteLoc.scr==='plain' && whiteLoc.id===19 && $('[data-tab="course"]').classList.contains('on'), '全科笔记保存白话课位置，底栏仍归课程');
   click($('#plainSource')); await wait(180);
-  ok($('#chapterBody h1').textContent.includes('十天干'), '回看原教材跳到正确第5章');
+  ok($('#chapterBody h1').textContent.includes(window.DATA_PLAIN[18].sourceTitle), '回看原教材跳到正确对应章');
   window.YGN_HOOK.go(whiteLoc); await wait(200);
-  ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent.includes('五行'), '全科笔记出处钩子可返回白话课');
+  ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===window.DATA_PLAIN[18].title, '全科笔记出处钩子可返回白话课');
 
   const rawCard = $('.rawg [data-ch]');
   ok(!!rawCard, '有原稿讲义卡片');
@@ -233,6 +238,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   const diagramHit=$$('#hits .hit').find(e=>e.textContent.includes('白话课'));
   ok(!!diagramHit, '图内独有文字进入搜索索引');
   if(diagramHit){click(diagramHit);await wait(200);ok($('#s-plain').classList.contains('active') && !!$('#plainBody .plain-flow'), '搜索图内文字可返回对应白话课');}
+  click($('#btnSearch')); await wait(80);
+  $('#q').value = '独立团队'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(1100);
+  const newDiagramHit=$$('#hits .hit').find(e=>e.textContent.includes('白话课') && e.textContent.includes('制净'));
+  ok(!!newDiagramHit, '新增制净课图内文字可检索');
+  if(newDiagramHit){click(newDiagramHit);await wait(200);ok(window.YGN_HOOK.loc().scr==='plain' && window.YGN_HOOK.loc().id===15, '检索跳到新增第15课');}
   console.log('隔离');
   const keys = Object.keys(window.localStorage);
   ok(keys.every(k => !/^bazi_/.test(k)), '没有写 bazi_ 前缀的键：' + keys.join(','));

@@ -318,7 +318,7 @@ def build_plain(courses):
     folder = os.path.join(CONTENT, '白话课')
     manifest = json.loads(read(os.path.join(folder, '课程目录.json')))
     originals = [c for c in courses if c['level'] == '初级' and not c['raw']]
-    assert 0 < len(manifest) <= len(originals), '白话课按初级教材顺序分批试读'
+    assert len(manifest) == len(originals), '白话初级必须完整对应初级教材'
     docs = []
     for i, item in enumerate(manifest, 1):
         source = next(c for c in originals if os.path.basename(PATHS[c['id']]) == item['source'])

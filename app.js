@@ -518,6 +518,11 @@ RENDER.course = function () {
     var list = sets[0], plain = sets[1] || [];
     var read = ls(K.read, {});
     var open = ls(K.lvopen, null);
+    // 完整初级上线时，将旧预览版的展开记忆收起一次；之后尊重手动选择。
+    if (!ls('mp_course_plain_full', 0)) {
+      if (open && open['白话初级']) { delete open['白话初级']; save(K.lvopen, open); }
+      save('mp_course_plain_full', 1);
+    }
     var last = ls(K.last, null);
     if (!open) {
       open = {};
@@ -537,7 +542,7 @@ RENDER.course = function () {
         '</div>';
     }
     var plainDone = plain.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
-    var html = '<div class="qgrp lvg plain-group' + (open['白话初级'] ? ' open' : '') + '" data-g="白话初级"><button class="qgh"><span class="ar">›</span><span class="nm">初级白话课 · 生活里的八字（试读）</span><span class="ct">' + plainDone + '/' + plain.length + '</span></button><div class="qgb"><p class="muted" style="padding:4px 14px 12px;line-height:1.8">先试读前5课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材。</p>' + plain.map(function (c) { return '<div class="card tap" data-bh="' + c.n + '"><div class="row spread"><div style="flex:1"><b>' + String(c.n).padStart(2, '0') + ' · ' + esc(c.title) + '</b><div class="muted" style="margin-top:5px">对应原课：' + esc(c.sourceTitle) + '</div></div>' + ((read[c.id] || 0) >= 90 ? '<span class="pill">已读</span>' : '<span>›</span>') + '</div></div>'; }).join('') + '</div></div>';
+    var html = '<div class="qgrp lvg plain-group' + (open['白话初级'] ? ' open' : '') + '" data-g="白话初级"><button class="qgh"><span class="ar">›</span><span class="nm">初级白话课 · 生活里的八字</span><span class="ct">' + plainDone + '/' + plain.length + '</span></button><div class="qgb"><p class="muted" style="padding:4px 14px 12px;line-height:1.8">共' + plain.length + '课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材。</p>' + plain.map(function (c) { return '<div class="card tap" data-bh="' + c.n + '"><div class="row spread"><div style="flex:1"><b>' + String(c.n).padStart(2, '0') + ' · ' + esc(c.title) + '</b><div class="muted" style="margin-top:5px">对应原课：' + esc(c.sourceTitle) + '</div></div>' + ((read[c.id] || 0) >= 90 ? '<span class="pill">已读</span>' : '<span>›</span>') + '</div></div>'; }).join('') + '</div></div>';
     (META.levels || []).forEach(function (L) {
       var lv = L.name;
       var tb = list.filter(function (x) { return x.level === lv && !x.raw; });
