@@ -86,6 +86,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
     const c=window.DATA_PLAIN[n-1];
     ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===c.title && !$('#plainBody .ichart'), '第'+n+'课完整正文可达，无虚构命盘');
     ok($('#plainSource').textContent.includes(c.sourceTitle) && !!$('#plainBody details'), '第'+n+'课有原课对照及分节阅读');
+    ok($$('#plainBody .plain-flow').length >= 1 && !$('#plainBody pre.lang-关系图') && $$('#plainBody .pf-key').every(e=>e.textContent.trim()), '第'+n+'课关系图为可选取的正文文字');
   }
   ok($('#nextPlain').disabled, '第5课停住，不出现第6课');
   click($('#readToggle')); await wait(20);
@@ -227,6 +228,11 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   const whiteHit=$$('#hits .hit').find(e=>e.textContent.includes('白话课'));
   ok(!!whiteHit, '搜索可检索白话生活故事');
   if(whiteHit){click(whiteHit);await wait(200);ok($('#s-plain').classList.contains('active') && /木桌/.test($('#plainBody').textContent), '搜索结果跳回白话课');}
+  click($('#btnSearch')); await wait(80);
+  $('#q').value = '施展余地'; $('#q').dispatchEvent(new window.Event('input', { bubbles: true })); await wait(1100);
+  const diagramHit=$$('#hits .hit').find(e=>e.textContent.includes('白话课'));
+  ok(!!diagramHit, '图内独有文字进入搜索索引');
+  if(diagramHit){click(diagramHit);await wait(200);ok($('#s-plain').classList.contains('active') && !!$('#plainBody .plain-flow'), '搜索图内文字可返回对应白话课');}
   console.log('隔离');
   const keys = Object.keys(window.localStorage);
   ok(keys.every(k => !/^bazi_/.test(k)), '没有写 bazi_ 前缀的键：' + keys.join(','));

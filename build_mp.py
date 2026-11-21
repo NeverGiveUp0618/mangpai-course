@@ -5,6 +5,7 @@
 data/*.js 全是产物，别手改。
 """
 import os, re, io, json, sys, time
+import html as html_lib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
@@ -291,6 +292,27 @@ def build_qna():
     return docs
 
 
+def render_plain_flows(html):
+    """白话课的关系图围栏转为可选取文字的分支图，不依赖图形库。"""
+    def render(m):
+        lines = [s.strip() for s in html_lib.unescape(m.group(1)).splitlines() if s.strip()]
+        assert len(lines) >= 4 and lines[-1].startswith('= '), '关系图需主题、分支与读图提示'
+        branches = lines[1:-1]
+        assert 2 <= len(branches) <= 5 and all(' → ' in s for s in branches), '关系图分支格式：条件 → 含义'
+        esc = html_lib.escape
+        rows = []
+        for line in branches:
+            key, value = line.split(' → ', 1)
+            assert key and value, '关系图分支两侧均须有文字'
+            rows.append('<li><span class="pf-key">' + esc(key) + '</span>' +
+                        '<span class="pf-arrow" aria-hidden="true">→</span>' +
+                        '<span class="pf-value">' + esc(value) + '</span></li>')
+        return ('<figure class="plain-flow"><figcaption>' + esc(lines[0]) +
+                '</figcaption><ul class="pf-branches">' + ''.join(rows) +
+                '</ul><p class="pf-note">' + esc(lines[-1][2:]) + '</p></figure>')
+    return re.sub(r'<pre class="lang-关系图"><code>(.*?)</code></pre>', render, html, flags=re.S)
+
+
 def build_plain(courses):
     """独立白话教程：稳定ID，不插入原教材的章节序号。"""
     folder = os.path.join(CONTENT, '白话课')
@@ -305,6 +327,9 @@ def build_plain(courses):
         path = os.path.join(folder, '初级', item['file'])
         doc = build_doc(path, item['id'], i, read(path).split('\n', 1)[0].lstrip('# ').strip(),
                         {'sourceN': source['n'], 'sourceTitle': source['title'], 'level': '初级白话课'}, manual='light')
+        doc['html'] = render_plain_flows(doc['html'])
+        # strip_md会略过代码围栏；关系图是教学正文，须进入搜索索引。
+        doc['text'] = re.sub(r'\s+', ' ', html_lib.unescape(re.sub(r'<[^>]+>', ' ', doc['html']))).strip()
         assert not doc['html'].count('class="ichart"'), '白话课不编造命盘'
         docs.append(doc)
     assert len({d['sourceN'] for d in docs}) == len(manifest)

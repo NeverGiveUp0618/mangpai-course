@@ -1189,3 +1189,16 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .pr-row .pill{min-width:32px;text-align:center;padding:5px 8px}
 
 .plain-group{border-color:var(--gold,#b69562)}.plain-intro{line-height:1.85;padding:14px 16px;border-left:3px solid var(--gold,#b69562);background:rgba(185,150,98,.07);margin:20px 0}
+
+/* 生活关系图：原生文字与分支连线，窄屏在节点内换行，不缩字、不裁切。 */
+.doc .plain-flow{margin:18px 0;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--bg2);min-width:0}
+.plain-flow figcaption{font-weight:650;color:var(--ink);line-height:1.7}
+.doc .pf-branches{list-style:none;margin:12px 0 0;padding:0}
+.doc .pf-branches>li{position:relative;display:grid;grid-template-columns:minmax(0,12em) 1.1em minmax(0,1fr);gap:8px;margin:0;padding:7px 0 7px 18px;border-left:1px solid var(--ink3);line-height:1.8}
+.pf-branches>li::before{content:"";position:absolute;left:0;top:1.35em;width:12px;border-top:1px solid var(--ink3)}
+.doc .pf-branches>li:last-child{border-left-color:transparent}
+.pf-branches>li:last-child::after{content:"";position:absolute;left:-1px;top:0;height:1.35em;border-left:1px solid var(--ink3)}
+.pf-key,.pf-value{min-width:0;overflow-wrap:anywhere;word-break:normal}
+.pf-key{color:var(--ink2)}.pf-arrow{color:var(--ink3)}
+.doc .plain-flow .pf-note{font-size:.9em;line-height:1.8;color:var(--ink2);margin:14px 0 0}
+@media(max-width:560px){.doc .plain-flow{padding:15px 13px}.doc .pf-branches>li{grid-template-columns:minmax(0,1fr) 1em minmax(0,1.35fr);gap:5px;padding-left:14px}.pf-branches>li::before{width:9px}}
