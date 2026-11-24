@@ -581,6 +581,7 @@ def attach_case_reasoning(items):
     total = approved['approvedTotal']
     batches = approved['batches']
     assert sum(b['count'] for b in batches) == total == len(rows), '必须按已授权批次完整交付'
+    assert all(b['count'] == len(b['caseIds']) for b in batches), '批次数量须与实际集合一致'
     ids = [i for b in batches for i in b['caseIds']]
     assert len(ids) == len(set(ids)) == total
     assert {r['caseId'] for r in rows} == set(ids)
