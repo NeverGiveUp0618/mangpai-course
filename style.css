@@ -1202,3 +1202,6 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .pf-key{color:var(--ink2)}.pf-arrow{color:var(--ink3)}
 .doc .plain-flow .pf-note{font-size:.9em;line-height:1.8;color:var(--ink2);margin:14px 0 0}
 @media(max-width:560px){.doc .plain-flow{padding:15px 13px}.doc .pf-branches>li{grid-template-columns:minmax(0,1fr) 1em minmax(0,1.35fr);gap:5px;padding-left:14px}.pf-branches>li::before{width:9px}}
+
+/* Long source labels must wrap inside narrow case-answer panels. */
+#s-quiz .src-line .src{white-space:normal;overflow-wrap:anywhere}

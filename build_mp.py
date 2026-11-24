@@ -573,6 +573,37 @@ def strip_dayun(body):
     return '\n'.join(out), (caps[0] if caps else dy)
 
 
+def attach_case_reasoning(items):
+    """Five reviewed, authored supplements; original answers and stable IDs stay intact."""
+    folder = os.path.join(CONTENT, '命例拆解')
+    rows = json.loads(read(os.path.join(folder, '目录.json')))
+    assert len(rows) == 5, '本轮只做五例，继续扩写须先取得用户反馈'
+    assert sorted(r['order'] for r in rows) == [1, 2, 3, 4, 5]
+    assert len({r['caseId'] for r in rows}) == 5
+    assert {r['file'] for r in rows} == {f for f in os.listdir(folder) if f.endswith('.md')}
+    by_id = {it['id']: it for it in items}
+    norm = lambda t: re.sub(r'\s+', '', t)
+    for row in rows:
+        it = by_id[row['caseId']]
+        path = os.path.join(folder, row['file'])
+        assert os.path.dirname(os.path.abspath(path)) == os.path.abspath(folder)
+        text = read(path)
+        assert 'AI推理拆解' in text and '推断' in text and len(text) > 900, row['file']
+        assert not re.search(r'视频|奇门|六爻', text), row['file']
+        assert len(row['evidence']) >= 2
+        evidence = ''
+        for e in row['evidence']:
+            source = os.path.abspath(os.path.join(ROOT, e['file']))
+            assert source.startswith(os.path.abspath(CONTENT) + os.sep)
+            assert len(norm(e['quote'])) >= 6 and norm(e['quote']) in norm(read(source)), e
+            label = os.path.splitext(os.path.basename(source))[0]
+            evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(e['quote']), html_lib.escape(label))
+        body = re.sub(r'^#\s+.*?\n', '', text, count=1)
+        it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), md2html(body), evidence)
+        it['reasoningTitle'] = row['title']
+        it['reasoningOrder'] = row['order']
+
+
 def build_quiz():
     cases = json.load(io.open(os.path.join(ROOT, '_src', 'cases.json'), encoding='utf-8'))
     best = {}
@@ -678,6 +709,7 @@ def build_quiz():
         it['n'] = i
         it['seq'] = i
         it['jie'] += '<p class="src-line"><span class="src">出处：%s</span></p>' % it.pop('_src').rstrip('：: ')
+    attach_case_reasoning(items)
     topics = []
     for t in TOPIC_ORDER:
         k = sum(1 for x in items if x['topic'] == t)

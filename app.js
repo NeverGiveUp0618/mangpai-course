@@ -191,10 +191,11 @@ function _apply(scr, id) {
 }
 
 /* 笔记位置钩子（易术堂共用 notes.js 用）：存笔记时记下「现在在哪一节」，笔记本里点「回到出处」就能回来。
- * loc 只放 {scr,id}（站内路由两件套），不放别的，免得以后路由改了存档失效。 */
+ * 保留原 {scr,id} 路由；新拆解可选 layer=chai，回出处时展开该层，不改变学习标记键。 */
+var caseNoteLayer = null;
 window.YGN_HOOK = {
-  loc: function () { return (cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') ? null : { scr: cur.scr, id: cur.id }; },
-  go: function (l) { if (l && l.scr) show(l.scr, l.id === undefined ? null : l.id); }
+  loc: function () { if(cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') return null; var l={scr:cur.scr,id:cur.id}; if(cur.scr==='quiz' && $('#L3 .case-reasoning')) l.layer='chai'; return l; },
+  go: function (l) { if(l && l.scr){var same=cur.scr===l.scr&&cur.id===l.id;caseNoteLayer=l.scr==='quiz'&&l.layer==='chai'?+l.id:null;show(l.scr,l.id===undefined?null:l.id);if(same&&caseNoteLayer!==null) RENDER.quiz(+l.id);} }
 };
 function show(scr, id, find) {
   // find＝{kw,occ}：从搜索结果跳过来时，渲染完要滚到那一处并高亮
@@ -2050,14 +2051,15 @@ RENDER.qlist = function () {
       ['all', '全部 ' + Q.items.length],
       ['new', '未标记已学'],
       ['star', '精读 ' + Q.items.filter(function (x) { return x.star > 0; }).length],
-      ['chart', '有完整盘']
+      ['chart', '有完整盘'],
+      ['reasoning', 'AI推理拆解 · ' + Q.items.filter(function(it){return it.reasoningOrder;}).length + '例']
     ];
     $('#qFilters').innerHTML = modes.map(function (m) {
       return '<span class="pill' + (qFilter.mode === m[0] ? ' sel' : '') +
         '" data-m="' + m[0] + '">' + m[1] + '</span>';
     }).join('');
     $$('[data-m]').forEach(function (el) {
-      el.onclick = function () { qFilter.mode = el.dataset.m; RENDER.qlist(); };
+      el.onclick = function () { qFilter.mode = el.dataset.m; if(qFilter.mode==='reasoning')qFilter.tag=null; RENDER.qlist(); };
     });
 
     /* 考点标签：45 个全都要能筛到。
@@ -2093,6 +2095,7 @@ RENDER.qlist = function () {
         case 'new': return !seen[qk(it)];
         case 'star': return it.star > 0;
         case 'chart': return it.nCharts > 0;
+        case 'reasoning': return !!it.reasoningOrder;
       }
       return true;
     });
@@ -2105,9 +2108,11 @@ RENDER.qlist = function () {
        ⚠️ 一旦筛了考点或模式，全部展开——否则筛出来的结果藏在折叠里，等于没筛。 */
     var filtering = !!(qFilter.tag || qFilter.mode !== 'all');
     var open = ls(K.qopen, {});
+    if(qFilter.mode==='reasoning') list.sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;});
     var byTopic = {};
-    list.forEach(function (it) { (byTopic[it.topic] = byTopic[it.topic] || []).push(it); });
-    box.innerHTML = (Q.topics || []).map(function (tp, i) {
+    list.forEach(function (it) { (byTopic[qFilter.mode==='reasoning'?'5例AI推理拆解':it.topic] = byTopic[qFilter.mode==='reasoning'?'5例AI推理拆解':it.topic] || []).push(it); });
+    var displayTopics=qFilter.mode==='reasoning'?[{name:'5例AI推理拆解'}]:(Q.topics||[]);
+    box.innerHTML = displayTopics.map(function (tp, i) {
       var its = byTopic[tp.name] || [];
       if (!its.length) return '';
       var isOpen = filtering || !!open[tp.name];
@@ -2121,7 +2126,7 @@ RENDER.qlist = function () {
           //    **不是 it.n**——n 是内容源锚点，跳号乱序，2026-08-24 就是因为它「看着晕」才撤掉的。
           return '<div class="qrow" data-q="' + it.n + '">' +
             '<span class="qn">' + it.seq + '</span>' +
-            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(it.title) +
+            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(qFilter.mode==='reasoning'?(it.reasoningOrder+' · '+it.reasoningTitle):it.title) +
             (it.noAnswer ? ' <span class="pill g" style="font-size:10px">反推</span>' : '') + '</span>' +
             '<span class="s"><i class="dot ' + (seen[qk(it)] ? 'ok' : 'new') + '"></i></span></div>';
         }).join('') + '</div></div>';
@@ -2186,11 +2191,12 @@ RENDER.quiz = function (n) {
       bindDoc($('#L2'));
       if (it.chai) {
         $('#L3').innerHTML = '<button class="btn" id="bChai" style="width:100%;margin-top:10px">' +
-          '🔍 还是不懂 · 看拆解</button>';
+          (it.reasoningOrder ? 'AI推理拆解 · 为什么这样断' : '🔍 还是不懂 · 看拆解') + '</button>';
         $('#bChai').onclick = openChai;
       }
     }
     $('#bJie').onclick = openJie;
+    if(caseNoteLayer===n){caseNoteLayer=null;openJie();openChai();}
 
     /* 从搜索跳进来：命中可能落在「解」或「拆解」里，那两层默认是收着的，
        不展开的话点进来只看见题面，等于没搜到。按命中位置自动拆到那一层。 */
@@ -2253,10 +2259,11 @@ function setupSticky(it) {
 
 function navBar(it) {
   needQuiz().then(function (Q) {
+    var navItems=qFilter.mode==='reasoning'&&it.reasoningOrder?Q.items.filter(function(q){return q.reasoningOrder;}).sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;}):Q.items;
     var i = -1;
-    for (var k = 0; k < Q.items.length; k++) if (Q.items[k].n === it.n) { i = k; break; }
-    var prev = i > 0 ? Q.items[i - 1] : null;
-    var next = i >= 0 && i < Q.items.length - 1 ? Q.items[i + 1] : null;
+    for (var k = 0; k < navItems.length; k++) if (navItems[k].n === it.n) { i = k; break; }
+    var prev = i > 0 ? navItems[i - 1] : null;
+    var next = i >= 0 && i < navItems.length - 1 ? navItems[i + 1] : null;
     var isSeen = !!ls(K.seen, {})[qk(it)];
     var relHtml = (it.rel && it.rel.length) ? '<div class="card" style="margin-top:14px"><b style="font-size:14px">相关教材章节</b><div style="margin-top:6px;line-height:2">' + it.rel.map(function (r) { return '<a class="chlink" data-ch="' + r.n + '">' + esc(r.t) + '</a>'; }).join('<br>') + '</div></div>' : '';
     $('#L4').innerHTML = relHtml +
