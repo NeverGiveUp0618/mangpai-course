@@ -574,12 +574,18 @@ def strip_dayun(body):
 
 
 def attach_case_reasoning(items):
-    """Five reviewed, authored supplements; original answers and stable IDs stay intact."""
+    """Approved batches of authored supplements; original answers and IDs stay intact."""
     folder = os.path.join(CONTENT, '命例拆解')
     rows = json.loads(read(os.path.join(folder, '目录.json')))
-    assert len(rows) == 5, '本轮只做五例，继续扩写须先取得用户反馈'
-    assert sorted(r['order'] for r in rows) == [1, 2, 3, 4, 5]
-    assert len({r['caseId'] for r in rows}) == 5
+    approved = json.loads(read(os.path.join(folder, '批次.json')))
+    total = approved['approvedTotal']
+    batches = approved['batches']
+    assert sum(b['count'] for b in batches) == total == len(rows), '必须按已授权批次完整交付'
+    ids = [i for b in batches for i in b['caseIds']]
+    assert len(ids) == len(set(ids)) == total
+    assert {r['caseId'] for r in rows} == set(ids)
+    assert sorted(r['order'] for r in rows) == list(range(1, total + 1))
+    assert len({r['caseId'] for r in rows}) == total
     assert {r['file'] for r in rows} == {f for f in os.listdir(folder) if f.endswith('.md')}
     by_id = {it['id']: it for it in items}
     norm = lambda t: re.sub(r'\s+', '', t)
@@ -596,12 +602,13 @@ def attach_case_reasoning(items):
             source = os.path.abspath(os.path.join(ROOT, e['file']))
             assert source.startswith(os.path.abspath(CONTENT) + os.sep)
             assert len(norm(e['quote'])) >= 6 and norm(e['quote']) in norm(read(source)), e
-            label = os.path.splitext(os.path.basename(source))[0]
+            label = e.get('label') or os.path.splitext(os.path.basename(source))[0]
             evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(e['quote']), html_lib.escape(label))
         body = re.sub(r'^#\s+.*?\n', '', text, count=1)
         it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), md2html(body), evidence)
         it['reasoningTitle'] = row['title']
         it['reasoningOrder'] = row['order']
+    return batches
 
 
 def build_quiz():
@@ -709,7 +716,7 @@ def build_quiz():
         it['n'] = i
         it['seq'] = i
         it['jie'] += '<p class="src-line"><span class="src">出处：%s</span></p>' % it.pop('_src').rstrip('：: ')
-    attach_case_reasoning(items)
+    reasoning_batches = attach_case_reasoning(items)
     topics = []
     for t in TOPIC_ORDER:
         k = sum(1 for x in items if x['topic'] == t)
@@ -723,7 +730,7 @@ def build_quiz():
         legacy = {k: v for k, v in json.load(io.open(os.path.join(ROOT, '_src', 'legacy_ids.json'), encoding='utf-8')).items() if v in _ids}
     except Exception:
         legacy = {}
-    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics, 'legacy': legacy}
+    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics, 'legacy': legacy, 'reasoningBatches': reasoning_batches}
 
 
 THEMES = [

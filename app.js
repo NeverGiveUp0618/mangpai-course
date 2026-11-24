@@ -2037,6 +2037,11 @@ function addReadToggle(id, anchor) {
 }
 
 /* ---------- 题库 ---------- */
+function reasoningList(Q,mode){
+  var ids=null,batches=Q.reasoningBatches||[];
+  if(mode==='reasoning-new'&&batches.length)ids=batches[batches.length-1].caseIds;
+  return Q.items.filter(function(q){return q.reasoningOrder&&(!ids||ids.indexOf(q.id)>=0);}).sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;});
+}
 var qFilter = { mode: 'all', tag: null };
 var tagsOpen = false;
 
@@ -2052,14 +2057,15 @@ RENDER.qlist = function () {
       ['new', '未标记已学'],
       ['star', '精读 ' + Q.items.filter(function (x) { return x.star > 0; }).length],
       ['chart', '有完整盘'],
-      ['reasoning', 'AI推理拆解 · ' + Q.items.filter(function(it){return it.reasoningOrder;}).length + '例']
+      ['reasoning', 'AI推理拆解 · ' + reasoningList(Q,'reasoning').length + '例'],
+      ['reasoning-new', '本次新增 · ' + reasoningList(Q,'reasoning-new').length + '例']
     ];
     $('#qFilters').innerHTML = modes.map(function (m) {
       return '<span class="pill' + (qFilter.mode === m[0] ? ' sel' : '') +
         '" data-m="' + m[0] + '">' + m[1] + '</span>';
     }).join('');
     $$('[data-m]').forEach(function (el) {
-      el.onclick = function () { qFilter.mode = el.dataset.m; if(qFilter.mode==='reasoning')qFilter.tag=null; RENDER.qlist(); };
+      el.onclick = function () { qFilter.mode = el.dataset.m; if(qFilter.mode.indexOf('reasoning')===0)qFilter.tag=null; RENDER.qlist(); };
     });
 
     /* 考点标签：45 个全都要能筛到。
@@ -2089,6 +2095,8 @@ RENDER.qlist = function () {
       $('#tagsMore').onclick = function () { tagsOpen = !tagsOpen; RENDER.qlist(); };
     }
 
+    var reasoningMode=qFilter.mode.indexOf('reasoning')===0;
+    var chosenReasoning=reasoningMode?reasoningList(Q,qFilter.mode):[];
     var list = Q.items.filter(function (it) {
       if (qFilter.tag && it.tags.indexOf(qFilter.tag) < 0) return false;
       switch (qFilter.mode) {
@@ -2096,6 +2104,7 @@ RENDER.qlist = function () {
         case 'star': return it.star > 0;
         case 'chart': return it.nCharts > 0;
         case 'reasoning': return !!it.reasoningOrder;
+        case 'reasoning-new': return chosenReasoning.some(function(q){return q.id===it.id;});
       }
       return true;
     });
@@ -2108,10 +2117,10 @@ RENDER.qlist = function () {
        ⚠️ 一旦筛了考点或模式，全部展开——否则筛出来的结果藏在折叠里，等于没筛。 */
     var filtering = !!(qFilter.tag || qFilter.mode !== 'all');
     var open = ls(K.qopen, {});
-    if(qFilter.mode==='reasoning') list.sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;});
+    if(reasoningMode) list.sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;});
     var byTopic = {};
-    list.forEach(function (it) { (byTopic[qFilter.mode==='reasoning'?'5例AI推理拆解':it.topic] = byTopic[qFilter.mode==='reasoning'?'5例AI推理拆解':it.topic] || []).push(it); });
-    var displayTopics=qFilter.mode==='reasoning'?[{name:'5例AI推理拆解'}]:(Q.topics||[]);
+    list.forEach(function (it) { (byTopic[reasoningMode?'AI推理拆解':it.topic] = byTopic[reasoningMode?'AI推理拆解':it.topic] || []).push(it); });
+    var displayTopics=reasoningMode?[{name:'AI推理拆解'}]:(Q.topics||[]);
     box.innerHTML = displayTopics.map(function (tp, i) {
       var its = byTopic[tp.name] || [];
       if (!its.length) return '';
@@ -2126,7 +2135,7 @@ RENDER.qlist = function () {
           //    **不是 it.n**——n 是内容源锚点，跳号乱序，2026-08-24 就是因为它「看着晕」才撤掉的。
           return '<div class="qrow" data-q="' + it.n + '">' +
             '<span class="qn">' + it.seq + '</span>' +
-            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(qFilter.mode==='reasoning'?(it.reasoningOrder+' · '+it.reasoningTitle):it.title) +
+            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(reasoningMode?(it.reasoningOrder+' · '+it.reasoningTitle):it.title) +
             (it.noAnswer ? ' <span class="pill g" style="font-size:10px">反推</span>' : '') + '</span>' +
             '<span class="s"><i class="dot ' + (seen[qk(it)] ? 'ok' : 'new') + '"></i></span></div>';
         }).join('') + '</div></div>';
@@ -2259,7 +2268,8 @@ function setupSticky(it) {
 
 function navBar(it) {
   needQuiz().then(function (Q) {
-    var navItems=qFilter.mode==='reasoning'&&it.reasoningOrder?Q.items.filter(function(q){return q.reasoningOrder;}).sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;}):Q.items;
+    var navItems=qFilter.mode.indexOf('reasoning')===0&&it.reasoningOrder?reasoningList(Q,qFilter.mode):Q.items;
+    if(it.reasoningOrder&&navItems.indexOf(it)<0)navItems=reasoningList(Q,'reasoning');
     var i = -1;
     for (var k = 0; k < navItems.length; k++) if (navItems[k].n === it.n) { i = k; break; }
     var prev = i > 0 ? navItems[i - 1] : null;
