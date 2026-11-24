@@ -604,7 +604,9 @@ def attach_case_reasoning(items):
             assert source.startswith(os.path.abspath(CONTENT) + os.sep)
             assert len(norm(e['quote'])) >= 6 and norm(e['quote']) in norm(read(source)), e
             label = e.get('label') or os.path.splitext(os.path.basename(source))[0]
-            evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(e['quote']), html_lib.escape(label))
+            # New batch excerpts retain source Markdown for exact matching; show readable quote text.
+            quote_text = e['quote'].replace('**', '') if row['order'] > 125 else e['quote']
+            evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(quote_text), html_lib.escape(label))
         body = re.sub(r'^#\s+.*?\n', '', text, count=1)
         it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), md2html(body), evidence)
         it['reasoningTitle'] = row['title']
