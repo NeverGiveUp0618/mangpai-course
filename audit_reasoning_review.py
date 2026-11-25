@@ -24,7 +24,7 @@ for m in maps:
  assert m['basis']=='authored-reading-map'
  assert text.count('<div data-reasoning-map-slot></div>')==1
  rendered=render_reasoning_map(m,r,text)
- assert 'reasoning-map' in rendered and 'crm-node' in rendered
+ assert 'reasoning-map' in rendered and '<pre><code>' in rendered
 for c in report['changes']:
  assert rewrites.get(c['file'],{}).get('beforeSha256',sha(D/c['file']))==c['afterSha256']
  assert rows[c['order']-1]==c['updatedRow']
@@ -41,3 +41,9 @@ for order in (889,926):
  t=(D/rows[order-1]['file']).read_text();assert '站内题盘四柱' in t and '撤回' in t and '文字版' in t
 assert '盘源对照' in (D/rows[925]['file']).read_text()
 print(f'通过：936正文版本与结构图溯源、25篇正文重写/专写图、911折叠提纲已移除、{len(report["changes"])}例订正记录及关键错误回归。')
+
+flows=load(R/'reviews/reasoning-flow-20261125.json')
+assert flows['scope']==25
+for m,c in zip(maps,flows['cases']):
+ assert m['caseId']==c['caseId'] and hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
+ assert 'nodes' not in m

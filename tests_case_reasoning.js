@@ -74,13 +74,19 @@ const maps=JSON.parse(fs.readFileSync('content/命例拆解/结构图.json'));
 ok(maps.length===25&&maps.every(m=>m.basis==='authored-reading-map'),'源文件中也已删除911份提纲');
 const authored=qs.find(q=>q.id===maps[0].caseId),ordinary=qs.find(q=>!maps.some(m=>m.caseId===q.id));
 w.YGN_HOOK.go({scr:'quiz',id:ordinary.n,layer:'chai'});await wait(10);ok(!$('.reasoning-map')&&!!$('.case-reasoning'),'普通案例直接读正文，不再显示无用提纲');
-w.YGN_HOOK.go({scr:'quiz',id:authored.n,layer:'chai'});await wait(10);ok($('.reasoning-map').open,'专写推演图仍默认展开');
+w.YGN_HOOK.go({scr:'quiz',id:authored.n,layer:'chai'});await wait(10);ok(!!$('.reasoning-map pre code')&&!$('.reasoning-map summary'),'正文内直接显示箭头图，不使用卡片或折叠框');
 const mapLoc=w.YGN_HOOK.loc();ok(mapLoc.id===authored.n&&mapLoc.layer==='chai'&&mapLoc.map===true,'笔记记录专写图位置');
 w.YGN_HOOK.go({scr:'quiz',id:ordinary.n,layer:'chai',map:true});await wait(30);ok(!$('.reasoning-map')&&!!$('.case-reasoning'),'旧提纲笔记回到正文不报错');
-w.YGN_HOOK.go(mapLoc);await wait(30);ok($('.reasoning-map').open,'专写图笔记回出处仍展开');
+w.YGN_HOOK.go(mapLoc);await wait(30);ok(!!$('.reasoning-map pre code'),'图中文字笔记回出处直接可见');
 ok([889,926].every(order=>qs.find(q=>q.reasoningOrder===order).chai.includes('盘源待核 · 旧补解已撤回')),'两篇盘源未对齐的案例在入口明确标注');
 ok(styleReview.changes.length===25&&styleReview.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'25篇实质重写具前后版本记录');
-for(const m of maps){const q=qs.find(q=>q.id===m.caseId),frag=new JSDOM(q.chai).window.document,body=frag.querySelector('.case-reasoning');ok(body.querySelectorAll('h2').length>=4&&!body.textContent.includes('data-reasoning-map-slot'),'重写'+m.order+'图位解析正确、保留分层讲解');}
+for(const m of maps){const q=qs.find(q=>q.id===m.caseId),frag=new JSDOM(q.chai).window.document,body=frag.querySelector('.case-reasoning');ok(body.querySelectorAll('.reasoning-step').length>=3&&!body.textContent.includes('data-reasoning-map-slot'),'重写'+m.order+'图位解析正确、保留分层讲解');}
+w.YGN_HOOK.go({scr:'qlist',id:null});await wait(10);click($('[data-m="reasoning-style"]'));await wait(10);
+ok(d.querySelectorAll('#qRows [data-q]').length===25,'本轮图解筛选只含25篇');
+const styleFirst=qs.find(q=>q.id===Q.reasoningStyleCaseIds[0]);click($('#qRows [data-q="'+styleFirst.n+'"]'));await wait(10);
+ok(!!$('.case-reasoning .reasoning-map pre code'),'从25例入口直接打开新推理');click($('#bNext'));await wait(10);
+ok(w.YGN_HOOK.loc().id===qs.find(q=>q.id===Q.reasoningStyleCaseIds[1]).n&&!!$('.reasoning-map pre code'),'本轮图解下一例在25篇中翻页且直接显示推理');
+ok(all.every(q=>!q.chai.includes('crm-node')&&!q.chai.includes('crm-number')),'卡片及圆圈序号全部移除');
 ok(errors.length===0,'无脚本异常');ok(!Object.keys(w.localStorage).some(k=>/^bazi_/.test(k)),'仍只写盲派记录，不串命理精讲');
 console.log('通过',checks,'项批次、936例及回查检查');dom.window.close();
 })().catch(e=>{console.error(e);dom.window.close();process.exitCode=1});

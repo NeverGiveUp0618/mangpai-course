@@ -195,8 +195,8 @@ function _apply(scr, id) {
 var caseNoteLayer = null;
 var caseNoteMap = null;
 window.YGN_HOOK = {
-  blocks: '.crm-text',
-  loc: function () { if(cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') return null; var l={scr:cur.scr,id:cur.id}; if(cur.scr==='quiz' && $('#L3 .case-reasoning')) { l.layer='chai'; if($('#L3 .reasoning-map[open]')) l.map=true; } return l; },
+  blocks: '.reasoning-map code',
+  loc: function () { if(cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') return null; var l={scr:cur.scr,id:cur.id}; if(cur.scr==='quiz' && $('#L3 .case-reasoning')) { l.layer='chai'; if($('#L3 .reasoning-map')) l.map=true; } return l; },
   go: function (l) { if(l && l.scr){var same=cur.scr===l.scr&&cur.id===l.id;caseNoteLayer=l.scr==='quiz'&&l.layer==='chai'?+l.id:null;caseNoteMap=l.map&&l.scr==='quiz'?+l.id:null;show(l.scr,l.id===undefined?null:l.id);if(same&&caseNoteLayer!==null) RENDER.quiz(+l.id);} }
 };
 function show(scr, id, find) {
@@ -2042,6 +2042,7 @@ function addReadToggle(id, anchor) {
 function reasoningList(Q,mode){
   var ids=null,batches=Q.reasoningBatches||[];
   if(mode==='reasoning-new'&&batches.length)ids=batches[batches.length-1].caseIds;
+  if(mode==='reasoning-style')ids=Q.reasoningStyleCaseIds||[];
   return Q.items.filter(function(q){return q.reasoningOrder&&(!ids||ids.indexOf(q.id)>=0);}).sort(function(a,b){return a.reasoningOrder-b.reasoningOrder;});
 }
 var qFilter = { mode: 'all', tag: null };
@@ -2059,6 +2060,7 @@ RENDER.qlist = function () {
       ['new', '未标记已学'],
       ['star', '精读 ' + Q.items.filter(function (x) { return x.star > 0; }).length],
       ['chart', '有完整盘'],
+      ['reasoning-style', '本轮图解 · ' + reasoningList(Q,'reasoning-style').length + '例'],
       ['reasoning', 'AI推理拆解 · ' + reasoningList(Q,'reasoning').length + '例'],
       ['reasoning-new', '本次新增 · ' + reasoningList(Q,'reasoning-new').length + '例']
     ];
@@ -2106,6 +2108,7 @@ RENDER.qlist = function () {
         case 'star': return it.star > 0;
         case 'chart': return it.nCharts > 0;
         case 'reasoning': return !!it.reasoningOrder;
+        case 'reasoning-style':
         case 'reasoning-new': return chosenReasoning.some(function(q){return q.id===it.id;});
       }
       return true;
@@ -2137,7 +2140,7 @@ RENDER.qlist = function () {
           //    **不是 it.n**——n 是内容源锚点，跳号乱序，2026-08-24 就是因为它「看着晕」才撤掉的。
           return '<div class="qrow" data-q="' + it.n + '">' +
             '<span class="qn">' + it.seq + '</span>' +
-            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(reasoningMode?(it.reasoningOrder+' · '+it.reasoningTitle):it.title) +
+            '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(reasoningMode?((qFilter.mode==='reasoning-style'?'命例 '+it.n:it.reasoningOrder)+' · '+it.reasoningTitle):it.title) +
             (it.reasoningOrder >= 481 ? ' <span class="pill g" style="font-size:10px">google</span>' : '') +
             (it.noAnswer ? ' <span class="pill g" style="font-size:10px">反推</span>' : '') + '</span>' +
             '<span class="s"><i class="dot ' + (seen[qk(it)] ? 'ok' : 'new') + '"></i></span></div>';
@@ -2154,7 +2157,7 @@ RENDER.qlist = function () {
       };
     });
     $$('[data-q]', box).forEach(function (el) {
-      el.onclick = function () { show('quiz', +el.dataset.q); };
+      el.onclick = function () { if(qFilter.mode==='reasoning-style')caseNoteLayer=+el.dataset.q;show('quiz', +el.dataset.q); };
     });
   });
 };
@@ -2192,7 +2195,7 @@ RENDER.quiz = function (n) {
       $('#L3').innerHTML = '<div class="reveal chai doc">' +
         '<div class="muted" style="margin-bottom:8px">我补的推理，非原文，可推翻。</div>' +
         it.chai + '</div>';
-      if(caseNoteMap===n){$$('.reasoning-map', $('#L3')).forEach(function(m){m.open=true;});caseNoteMap=null;}
+      if(caseNoteMap===n)caseNoteMap=null;
       bindDoc($('#L3'));
     }
     function openJie() {
@@ -2293,8 +2296,8 @@ function navBar(it) {
       var on = !!sv[qk(it)]; this.className = 'btn' + (on ? ' pri' : ''); this.textContent = on ? '✓ 已学（点一下取消）' : '☐ 标记为已学';
     };
     $('#bList').onclick = function () { show('qlist', null); };
-    if (prev) $('#bPrev').onclick = function () { show('quiz', prev.n); };
-    if (next) $('#bNext').onclick = function () { show('quiz', next.n); };
+    if (prev) $('#bPrev').onclick = function () { if(qFilter.mode==='reasoning-style')caseNoteLayer=prev.n;show('quiz', prev.n); };
+    if (next) $('#bNext').onclick = function () { if(qFilter.mode==='reasoning-style')caseNoteLayer=next.n;show('quiz', next.n); };
   });
 }
 

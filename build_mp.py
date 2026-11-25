@@ -621,6 +621,10 @@ def attach_case_reasoning(items):
             g_badge += ' <span class="pill">盘源待核 · 旧补解已撤回</span>'
         rendered = md2html(body)
         if row['caseId'] in map_by_id:
+            # Match the companion course: a bold step, its text, then an inline arrow block.
+            rendered = re.sub(r'<h2\b[^>]*>(.*?)</h2>', r'<p class="reasoning-step"><strong>\1</strong></p>', rendered)
+            if row['order'] not in (889, 926):
+                rendered = re.sub(r'<blockquote>.*?</blockquote>', '<p class="muted">（以下为AI推断，非原文，可推翻）</p>', rendered, count=1, flags=re.S)
             diagram = render_reasoning_map(map_by_id[row['caseId']], row, text)
             slot = '<div data-reasoning-map-slot></div>'
             assert rendered.count(slot) == 1, ('推演图须放在实际讲解位置', row['order'])
@@ -752,7 +756,7 @@ def build_quiz():
         legacy = {k: v for k, v in json.load(io.open(os.path.join(ROOT, '_src', 'legacy_ids.json'), encoding='utf-8')).items() if v in _ids}
     except Exception:
         legacy = {}
-    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics, 'legacy': legacy, 'reasoningBatches': reasoning_batches}
+    return {'intro': intro, 'items': items, 'tags': sorted(tagcount.items(), key=lambda x: -x[1]), 'topics': topics, 'legacy': legacy, 'reasoningBatches': reasoning_batches, 'reasoningStyleCaseIds': [m['caseId'] for m in json.loads(read(os.path.join(CONTENT, '命例拆解', '结构图.json')))]}
 
 
 THEMES = [
