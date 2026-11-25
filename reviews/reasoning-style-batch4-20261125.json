@@ -1,0 +1,1118 @@
+{
+  "date": "2026-11-25",
+  "baseline": "2f98a82",
+  "scope": "第四批补齐最后111篇正文重写与正文内箭头图（g29–g33，含43篇成熟期与68篇早期用神口径）；全库936篇全部收齐（其中889/926仍维持盘源待核对照）。",
+  "totalStyled": 936,
+  "changes": [
+    {
+      "order": 820,
+      "caseId": "坤戊甲乙乙戌子酉酉",
+      "file": "820-命例578-庚运出名为何申运乙酉年心疾猝逝.md",
+      "beforeSha256": "10a1e8563d0c8a870b9b81e999a12238ed1ae94069a4696d8d0dea53cd284234",
+      "afterSha256": "3aed0dc0f5690b52853607bdb8311c3c57a812a8390edf5745a44e3ba17dbb19",
+      "beforeLength": 1131,
+      "afterLength": 689,
+      "lintCount": 0
+    },
+    {
+      "order": 821,
+      "caseId": "乾癸己癸戊巳未亥午",
+      "file": "821-命例579-坐下亥水强根为何仍主心疾逝世.md",
+      "beforeSha256": "6d66ef66b9e7b94725e68ca855c1d2e488952e3f2d29b5792079b27bd2e3ab83",
+      "afterSha256": "cc0c50b589f693aa4c07ef292b552901164c82cf203ea9c79ea30d2112c4062f",
+      "beforeLength": 1082,
+      "afterLength": 612,
+      "lintCount": 0
+    },
+    {
+      "order": 822,
+      "caseId": "乾丁壬癸甲酉子亥寅",
+      "file": "822-命例580-壬子癸亥水势浩荡为何脑溢血亡.md",
+      "beforeSha256": "78e77244f3d53e8676b9ca9f2117f3b5794f5728dbcdafa83f1c832c21706b91",
+      "afterSha256": "e04a034c994370a7aa8ef444a8e5a7a338c0ad266779b7448d542ff9e3114983",
+      "beforeLength": 1090,
+      "afterLength": 598,
+      "lintCount": 0
+    },
+    {
+      "order": 823,
+      "caseId": "乾乙甲辛丁卯申亥酉",
+      "file": "823-命例581-辛酉坐禄有申劫为何午运脑出血.md",
+      "beforeSha256": "007398c5ef9bdff999f64103b186224d53f549bd1729da560a84f7001ef41cf9",
+      "afterSha256": "3ff49b893b666485ac595ba801e3928252e2dad808d78a8348b0b3dd7f67f0e7",
+      "beforeLength": 1015,
+      "afterLength": 630,
+      "lintCount": 0
+    },
+    {
+      "order": 824,
+      "caseId": "坤甲甲乙己辰戌卯卯",
+      "file": "824-命例582-木气连体坐双禄为何四十二岁脑溢血.md",
+      "beforeSha256": "f80f9113df89a8e919e03f153bf978d2ce393222717ccb5e8d5810f2b94c141a",
+      "afterSha256": "d4af8ec38545261376869db23eb22ea2cef51ca39f41cb7d68af52773b742b23",
+      "beforeLength": 1149,
+      "afterLength": 711,
+      "lintCount": 0
+    },
+    {
+      "order": 825,
+      "caseId": "坤辛辛己丁酉卯丑卯",
+      "file": "825-命例583-甲午大运见禄为何反穿丑土猝逝.md",
+      "beforeSha256": "7ec35dd3b2c42ac4357bad4a4ebbd71c0f7f281f67d34df90f39afca85f1754a",
+      "afterSha256": "8c073d929f1d54e15814e904178f5d7efae28b634e4b791641bdb16fc4f13339",
+      "beforeLength": 1146,
+      "afterLength": 713,
+      "lintCount": 0
+    },
+    {
+      "order": 826,
+      "caseId": "乾丙乙己乙午未卯丑",
+      "file": "826-命例585-年柱丙午生身为何仍主心梗逝世.md",
+      "beforeSha256": "ae1fccfeb5aaa3f181796f7fe3810e3f990219ed4b5079fceb4c181025c5b867",
+      "afterSha256": "6dba79f25b4016caf14ac77d602c541953495c76012bc75da51d0594574a4aa7",
+      "beforeLength": 1017,
+      "afterLength": 700,
+      "lintCount": 0
+    },
+    {
+      "order": 827,
+      "caseId": "乾癸辛庚乙亥酉戌酉",
+      "file": "827-命例586-双酉阳刃助身为何反患精神疾病.md",
+      "beforeSha256": "a3dda90893f0e24d37d2624d029adeee79f3d311afd49fe826b04166f8afba66",
+      "afterSha256": "5fdc887b1a3857032a039c91d43b526ea59626445e2255f0015fefedf3d127f4",
+      "beforeLength": 976,
+      "afterLength": 646,
+      "lintCount": 0
+    },
+    {
+      "order": 828,
+      "caseId": "乾戊乙甲庚申丑申午",
+      "file": "828-命例589-乙木劫财贴身帮扶为何仍患肝癌.md",
+      "beforeSha256": "802052c47294f4f0e5cc10163b7ca524ebf1f79cad6e0c067a8576e870bbf932",
+      "afterSha256": "f4bd2b99631dd8c377a4718c46e348e6d8fb9a1ccb0e448cb198a5c5ea4da2b0",
+      "beforeLength": 1121,
+      "afterLength": 692,
+      "lintCount": 0
+    },
+    {
+      "order": 829,
+      "caseId": "乾甲丁辛甲子卯酉午",
+      "file": "829-命例590-辛酉坐禄见子水为何不主肺病.md",
+      "beforeSha256": "95c85f51c942c0105224b8b422b9825c96e0afb6eb02f5a7354148c254024a05",
+      "afterSha256": "d058966c4dc939fa1ab734d32fe42f481358c05948eccd3c3227db0fa473598a",
+      "beforeLength": 1065,
+      "afterLength": 703,
+      "lintCount": 0
+    },
+    {
+      "order": 830,
+      "caseId": "坤壬壬癸壬寅子卯子",
+      "file": "830-命例592-水木清纯坐食神为何高热起斑.md",
+      "beforeSha256": "9e893f3cce624041e9e470d741b432cb6fe779253698f5d851d1ab98f0856cd1",
+      "afterSha256": "450f4f70c785c6f1115a02f0f12c04cc3985c886c42acdb9e2caa90d8bf5f91f",
+      "beforeLength": 1046,
+      "afterLength": 696,
+      "lintCount": 0
+    },
+    {
+      "order": 831,
+      "caseId": "乾丁庚庚庚酉戌辰辰",
+      "file": "831-命例595-三庚坐双辰冲戌为何代谢停滞.md",
+      "beforeSha256": "f81d50afd546c5b53a70cf0cd5b346b52f396f382ac7db18921f4387e28751f7",
+      "afterSha256": "977886a1034ea77482a283819456a32b1449ffefdcbd1a0f5ecdb799bd0119f0",
+      "beforeLength": 1109,
+      "afterLength": 736,
+      "lintCount": 0
+    },
+    {
+      "order": 833,
+      "caseId": "乾戊甲甲戊申子子辰",
+      "file": "833-命例599-水旺木漂为何在申运会局后才发头晕.md",
+      "beforeSha256": "70fd05800a066ee0812c9067da59edb43bb9cfdd4a2648f1d749f98d664bbd88",
+      "afterSha256": "e3a8f5501853ded336a318d2164a8f721a734cee9c5ecfa198a76e6e315aacaa",
+      "beforeLength": 1180,
+      "afterLength": 674,
+      "lintCount": 0
+    },
+    {
+      "order": 834,
+      "caseId": "乾甲丁庚丁寅卯戌亥",
+      "file": "834-命例600-官星夹克与戌克亥食为何在癸未年应灾.md",
+      "beforeSha256": "c65c039792395790da96e9757765f13fe07ed37c08be1b1467279668fb9a3908",
+      "afterSha256": "dc6b922e27d019743ea8723cca7ec4fedf2ab6df907ae36270b54cb2b6223f4d",
+      "beforeLength": 1214,
+      "afterLength": 797,
+      "lintCount": 0
+    },
+    {
+      "order": 835,
+      "caseId": "乾甲乙癸丙辰亥未辰",
+      "file": "835-命例602-禄神在子为何卯运丙子年反主枪击身亡.md",
+      "beforeSha256": "e40fa214f78e3e13451b5c9183ee322529efa3f313b54050b7f3f601bd027248",
+      "afterSha256": "857c3d1c593c3b765b63efb3b05612a6d95b3f74ccec9d3659344451e66b125f",
+      "beforeLength": 1209,
+      "afterLength": 745,
+      "lintCount": 0
+    },
+    {
+      "order": 836,
+      "caseId": "乾庚己庚己午卯寅卯",
+      "file": "836-命例603-庚辰运不死为何辛巳长生运反在丁亥年骨癌亡.md",
+      "beforeSha256": "109bb81222d82a1836c9027d62f603b8f9d906d3ce389ed82c665e8c7ce9a958",
+      "afterSha256": "0fa64b2bcc2f7e10ab43099397fe60f043b84bd163d3434ad253fbdf92a3e651",
+      "beforeLength": 1182,
+      "afterLength": 783,
+      "lintCount": 0
+    },
+    {
+      "order": 837,
+      "caseId": "坤戊壬甲丙申戌子寅",
+      "file": "837-命例613-申子拱夫宫为何未运丙子年反主婚变.md",
+      "beforeSha256": "3ddca024c870b702ed07533dcaf0edbd59a3dd47da21d53454fcb7fdd7e636e8",
+      "afterSha256": "c7bbdcc8146776451af5d4f69dfe974a16281969e3150e434d9db037237c50ca",
+      "beforeLength": 1205,
+      "afterLength": 713,
+      "lintCount": 0
+    },
+    {
+      "order": 838,
+      "caseId": "乾丙乙庚甲辰未午申",
+      "file": "838-命例618-戊戌运乙酉年为何在午月未日遭遇车祸.md",
+      "beforeSha256": "f093cb89918e2f93bc8587ed2ab599e42657f989dce8e51987e57ea65bebfc76",
+      "afterSha256": "26fb63634813f9997c137b883759b0e1356321d89928beda0fbb978d2cbb1b1f",
+      "beforeLength": 1182,
+      "afterLength": 721,
+      "lintCount": 0
+    },
+    {
+      "order": 839,
+      "caseId": "乾乙丁乙己未亥丑卯",
+      "file": "839-命例636-年时见禄为何既是绝色魅人又主掌权克夫.md",
+      "beforeSha256": "af873732a6e80ca70b417540c7325d4d6a6a67ffcc5fdd0c1bad50eaedd14760",
+      "afterSha256": "817c08cb81fba1bd70a7848f0311d6fe1969c465dbd3e41b7a6ece97460e7ee3",
+      "beforeLength": 1251,
+      "afterLength": 893,
+      "lintCount": 0
+    },
+    {
+      "order": 841,
+      "caseId": "坤己戊甲癸卯辰辰酉",
+      "file": "841-命例647-酉在门户辰酉合为何主导游奔走.md",
+      "beforeSha256": "5b8e4e592dd968378009002581726ee52ee372dd4979e512b9e7909c4553926e",
+      "afterSha256": "ce573cf63f928cbedd84ef51812c6793d6498c35eff54cd719611970427505ea",
+      "beforeLength": 1205,
+      "afterLength": 720,
+      "lintCount": 0
+    },
+    {
+      "order": 842,
+      "caseId": "乾癸丙戊丁未辰申巳",
+      "file": "842-命例651-年时包围且见丁未半禄为何反主伪政权.md",
+      "beforeSha256": "fe520d62f489b530fa924aef8c569d5f7a87e62d024fcfda392977914559af66",
+      "afterSha256": "7eae358c19f45830f64510aebf355196c8e02ca600f83ea95600a3a66273f642",
+      "beforeLength": 1219,
+      "afterLength": 713,
+      "lintCount": 0
+    },
+    {
+      "order": 843,
+      "caseId": "乾庚己丙庚戌卯戌寅",
+      "file": "843-命例655-年上食神戌为何定为岳母且辰运母亡.md",
+      "beforeSha256": "10925731f8af928b841c80544e2f2fbb9bc8840d712f9e42746f2b65cac8965c",
+      "afterSha256": "e6cc64dea2e1ba0990f795eaca8456193a428f0706821e08cb93e889fa497ed7",
+      "beforeLength": 1239,
+      "afterLength": 797,
+      "lintCount": 0
+    },
+    {
+      "order": 844,
+      "caseId": "乾癸癸丁丙卯亥巳午",
+      "file": "844-命例664-无财以禄当财为何既克父母又克子且伤手.md",
+      "beforeSha256": "55b34ab5004e7b792c3a8c14f137f4b8a2f3d3cb2a0742b5ca5388fc27c0465a",
+      "afterSha256": "5a341f1651d641aa295579bfaaceeeb814fd477528f2df6fe4f00f848d506591",
+      "beforeLength": 1331,
+      "afterLength": 915,
+      "lintCount": 0
+    },
+    {
+      "order": 845,
+      "caseId": "坤庚己庚乙戌卯寅酉",
+      "file": "845-命例667-戌穿酉刃为何在丙子运庚辰年应弟被枪毙.md",
+      "beforeSha256": "5fc493da68f29dcea624d0c7436cd37d351be330c6f819343420f28368d5ec1f",
+      "afterSha256": "0b454cbe7b40172b89af0929cdee52b323ccd0a70b8bd92dbe105a00a3ded65c",
+      "beforeLength": 1137,
+      "afterLength": 682,
+      "lintCount": 0
+    },
+    {
+      "order": 846,
+      "caseId": "乾庚辛庚丙申巳子戌",
+      "file": "846-命例668-无戌酉穿却在辛未年得狂犬病而亡的象法链.md",
+      "beforeSha256": "6c27efb172c2e6939d0f7fbe879b93207001374b41442d401b3ac75c682f092a",
+      "afterSha256": "c4c86156fba27f0b9023c0e9c3ab93e781a2826fba88aaa90a2a6cdcca104f57",
+      "beforeLength": 1228,
+      "afterLength": 826,
+      "lintCount": 0
+    },
+    {
+      "order": 847,
+      "caseId": "乾丙丁丁庚午酉亥戌",
+      "file": "847-命例673-丁亥暗合制为何止步于处级而未再高.md",
+      "beforeSha256": "e7628dca0d2527ece7da906ebcfc751e10266503dd7e267ad41c9e9a2b6c0508",
+      "afterSha256": "018b64da2803e868e83b5cc0a88281b3ddec21f21b567ac5db7938a58a0847ba",
+      "beforeLength": 1148,
+      "afterLength": 718,
+      "lintCount": 0
+    },
+    {
+      "order": 848,
+      "caseId": "乾甲癸癸辛午酉未酉",
+      "file": "848-命例689-水木伤官为何戊运见官反而年年升格.md",
+      "beforeSha256": "9e76b9474f69d11ecc88524f4fcc44911a4664624e7605d86525ac9fab0f0870",
+      "afterSha256": "56a343ca7cd2099fbc33f0d5901e1f602ede182d32a66224515918f966bd8cc1",
+      "beforeLength": 1187,
+      "afterLength": 763,
+      "lintCount": 0
+    },
+    {
+      "order": 849,
+      "caseId": "乾己甲甲丁酉戌戌卯",
+      "file": "849-命例690-木火伤官有财无印为何断为摇滚歌手.md",
+      "beforeSha256": "7b13da8496b90a33b612af10dad2bdcf9eee9c4424c88638704bc0de9869f3d8",
+      "afterSha256": "203a0695a3c553afb245e9c55562a0dc12aec701805e8bdeb3525c08128a895f",
+      "beforeLength": 1204,
+      "afterLength": 747,
+      "lintCount": 0
+    },
+    {
+      "order": 850,
+      "caseId": "坤甲甲戊辛申戌午酉",
+      "file": "850-命例696-夫亡子丧之后为何戊辰运反得老伴养老送终.md",
+      "beforeSha256": "4095527cef75fdebd6ae0448f385d0f4ccf5e8b40e4de7238f3ad512261e1956",
+      "afterSha256": "4c16c4ddf5eabb970998e56db916c0e5b80f333c36906ea5c84b2f138baff19b",
+      "beforeLength": 1309,
+      "afterLength": 863,
+      "lintCount": 0
+    },
+    {
+      "order": 851,
+      "caseId": "乾丁辛戊丁未亥子巳",
+      "file": "851-命例704-年时包围为何既断半个主子又不得善终.md",
+      "beforeSha256": "6c077a533d93f2e0a65128ebb15e4974c812b0cb4f65492a0a041bbdea7ddb5b",
+      "afterSha256": "594e924c8ddc8556b9df528a55956fc8b9d8a87d2e451e9be5d2d01bf5e092b5",
+      "beforeLength": 1191,
+      "afterLength": 734,
+      "lintCount": 0
+    },
+    {
+      "order": 852,
+      "caseId": "乾癸壬癸辛丑戌未酉",
+      "file": "852-命例706-戌穿酉印为何反成哲学法学博士教授.md",
+      "beforeSha256": "1b1e59aac70a2c97453e14b7a42e1a0928f5ed0d0b19d05838134376d147c0a1",
+      "afterSha256": "ab1fc1d25b70c1b3493758140bf71e87f06002cc1445a424a7c7336824da0223",
+      "beforeLength": 1147,
+      "afterLength": 701,
+      "lintCount": 0
+    },
+    {
+      "order": 853,
+      "caseId": "乾丙己辛庚寅亥卯寅",
+      "file": "853-命例709-水多金沉之忌为何寅亥合与丙辛合反成核心.md",
+      "beforeSha256": "a918e7e12d73d0f9bb06af08e6c6ffb4195ea52c53ff17f4b0b07596d4b13233",
+      "afterSha256": "0366862279cafca7b87034b61b066a110653970f4186740da79176bcbdf61b6e",
+      "beforeLength": 1157,
+      "afterLength": 675,
+      "lintCount": 0
+    },
+    {
+      "order": 854,
+      "caseId": "乾乙戊己丙未子未寅",
+      "file": "854-命例723-两未穿子为何还需戊土透干才定死妻.md",
+      "beforeSha256": "8801592c5bb16bedec9cfe366d779595c73b7e8b3c3af88c589d60dae1e9b14c",
+      "afterSha256": "a2a00d7aac8037d07cc2f87b75e0af56199b321ddc7270a3b869317d4ac87480",
+      "beforeLength": 1267,
+      "afterLength": 726,
+      "lintCount": 0
+    },
+    {
+      "order": 855,
+      "caseId": "乾丁壬丁丙未子巳午",
+      "file": "855-命例735-时辰换作丙午为何能保住教研室主任之职.md",
+      "beforeSha256": "06526e75fe3bfe4a8fd470e1ea53ab7eee614c88d769f6ee1a5351e75205ee1b",
+      "afterSha256": "a60ea18261c9ba63223dac9d7de73828df8eea4b43c2663ae5119dccfff6cd51",
+      "beforeLength": 1214,
+      "afterLength": 723,
+      "lintCount": 0
+    },
+    {
+      "order": 856,
+      "caseId": "坤甲戊壬辛寅辰午丑",
+      "file": "856-命例742-乙丑运辛巳年为何在煤气中毒中丧生.md",
+      "beforeSha256": "ea3c0ff5f83460b9c87d810daf222aa8cb6af0e92edfcf5c591ca194767156b3",
+      "afterSha256": "4c90e0616842cdf0f0ec957ddcc15fec29a8084bb08de90bfb8b78a005f8136a",
+      "beforeLength": 1124,
+      "afterLength": 611,
+      "lintCount": 0
+    },
+    {
+      "order": 858,
+      "caseId": "乾乙戊乙乙未寅卯酉",
+      "file": "858-命例786-乙木生春为何因时支酉冲卯禄而为农民.md",
+      "beforeSha256": "83b0119d9149f7244efb794fef0b77efab37416893f7e23c93512401b8e20645",
+      "afterSha256": "d838db96470d8160d492a74e61bad6ff0b3f651b500a47b4f8724edf8c9caab7",
+      "beforeLength": 1214,
+      "afterLength": 673,
+      "lintCount": 0
+    },
+    {
+      "order": 859,
+      "caseId": "乾戊甲甲甲寅寅戌子",
+      "file": "859-命例787-身旺为何不取辛金官星而用火.md",
+      "beforeSha256": "c653c78956730d8f3c9eb1e2df54d4ee5dbef4b1aa31c5c55b1690d958a31b04",
+      "afterSha256": "c086ccaeea6799e33d54683ef8246baa437cebac1d94e77f76400a7c7d8281be",
+      "beforeLength": 1293,
+      "afterLength": 733,
+      "lintCount": 0
+    },
+    {
+      "order": 860,
+      "caseId": "乾乙己壬壬卯卯子寅",
+      "file": "860-命例800-壬水坐刃通源为何早夭.md",
+      "beforeSha256": "1fb3845de6a7beea74d691fcf639172566c8642c5d03b980a28d752aa152981d",
+      "afterSha256": "93b4626680fb940bb5dff96977e4517ff38a9c080e5116f3512adb349080c236",
+      "beforeLength": 1249,
+      "afterLength": 725,
+      "lintCount": 0
+    },
+    {
+      "order": 861,
+      "caseId": "坤壬癸癸甲子卯卯寅",
+      "file": "861-命例803-癸水年上见禄为何反主早亡.md",
+      "beforeSha256": "149c18010b274ed76ea92b83e39fb0bd1ca9f0b285e4e6cff619ca788a58900d",
+      "afterSha256": "df7f5f4432bef43cb987ba88722baf470bc845759ae8f77ff3037aaaf207dc54",
+      "beforeLength": 1295,
+      "afterLength": 737,
+      "lintCount": 0
+    },
+    {
+      "order": 862,
+      "caseId": "乾乙乙丙己未酉戌丑",
+      "file": "862-命例820-酉财被戌穿为何不应戌年死父.md",
+      "beforeSha256": "5c0b9ad5dbdd81b0d8d2f7137b9d2297d416a571b06a510ca148d61db60ce254",
+      "afterSha256": "388a388cf8143df78c80295ba754bc895d20b36f06025477003aa11ac895a506",
+      "beforeLength": 1243,
+      "afterLength": 785,
+      "lintCount": 0
+    },
+    {
+      "order": 863,
+      "caseId": "乾己丁乙癸卯卯酉未",
+      "file": "863-命例831-春木坐杀究竟用禄用火还是用水.md",
+      "beforeSha256": "f8e5939e8d833a2684554b586dbf403d0c5bfce2216adbfa05e54fc2ee7ea66b",
+      "afterSha256": "5e8d8800dbfa2141477674d9b81b3e267d911b89da9fa1f1197a4de16ceaa784",
+      "beforeLength": 1201,
+      "afterLength": 709,
+      "lintCount": 0
+    },
+    {
+      "order": 864,
+      "caseId": "乾庚辛辛癸寅巳酉巳",
+      "file": "864-命例833-癸食到地支为何不受天干之生.md",
+      "beforeSha256": "98f1e21000ab56179e0382279616c2faacf5c72cbf65b7100601bd98ea8ebc7f",
+      "afterSha256": "af506e6ea152a6ca1bfb0426183c16e79b032e14163a50c0d37eb7880e705816",
+      "beforeLength": 1343,
+      "afterLength": 791,
+      "lintCount": 0
+    },
+    {
+      "order": 866,
+      "caseId": "乾丁丙乙辛酉午丑巳",
+      "file": "866-命例863-火势虽旺为何反在寅运损寿.md",
+      "beforeSha256": "05b809e0b0dcade85c79c42b6b01d26ccbc656003322593e167fbec0001e7344",
+      "afterSha256": "288a2839ccbd3f1a88b14103210e4d9e631ed7eeb6f29e9dccdbe1c200fb67d9",
+      "beforeLength": 1290,
+      "afterLength": 749,
+      "lintCount": 0
+    },
+    {
+      "order": 867,
+      "caseId": "乾辛丙己壬亥申巳申",
+      "file": "867-命例867-巳印为用为何反喜亥年冲巳.md",
+      "beforeSha256": "df1cdd33d1e29208fd1aada7d5088a87a835f5fd7424caf3bb3c96081d865e67",
+      "afterSha256": "9e7bb4a9eaa319ef249d36278bb31c43ab2e9264474e3a102e3c3cc011254e0a",
+      "beforeLength": 1272,
+      "afterLength": 688,
+      "lintCount": 0
+    },
+    {
+      "order": 868,
+      "caseId": "乾辛癸己丙亥巳亥寅",
+      "file": "868-命例868-寅亥合既主吉为何庚寅运丢工作.md",
+      "beforeSha256": "9de3a12ac857b8d3b62f31dbebc9c5c0f730a0fc2cf261882054c085ec3ea3d8",
+      "afterSha256": "022a13ae7af15803aac0695ebd218806b7ed3f2523da8489d541253fb9f1ab90",
+      "beforeLength": 1420,
+      "afterLength": 713,
+      "lintCount": 0
+    },
+    {
+      "order": 869,
+      "caseId": "坤己己辛丙卯巳未申",
+      "file": "869-命例869-夫星在火旺之年为何反亡.md",
+      "beforeSha256": "0e870efef77e0752b75707b2a55b51270c368b1a3ca1e3a79630f532ea092317",
+      "afterSha256": "db0dce6acef2adc2dde5a1888e7f60ddd1d4ef0a004ca6a4f8bf535eb36403a8",
+      "beforeLength": 1360,
+      "afterLength": 715,
+      "lintCount": 0
+    },
+    {
+      "order": 870,
+      "caseId": "命庚庚庚戊子辰辰寅",
+      "file": "870-命例870-偏财格为何断为算命打卦.md",
+      "beforeSha256": "0a84c3806e863716f8c4586681b532751747cd4b85e4b469c6088b3015b87117",
+      "afterSha256": "2b137c26737210d1286bf6670ec616b1266168a24eeb1d772ca64a950c5ab9ad",
+      "beforeLength": 1346,
+      "afterLength": 666,
+      "lintCount": 0
+    },
+    {
+      "order": 871,
+      "caseId": "乾丙辛己戊辰卯巳辰",
+      "file": "871-命例871-癸巳运为何因姐姐之事坐牢.md",
+      "beforeSha256": "e1b4ebb6855cfd2cd532f81bc4ac0a5c483d30a6473ff92f552c8857f125f43d",
+      "afterSha256": "e2694d108f7bfcd49591c876d34a744e823e48a4687379de10b8ec64ad8be4be",
+      "beforeLength": 1293,
+      "afterLength": 711,
+      "lintCount": 0
+    },
+    {
+      "order": 872,
+      "caseId": "坤庚辛乙壬寅巳丑午",
+      "file": "872-命例872-官杀混杂为何乙卯年冲杀反成婚.md",
+      "beforeSha256": "bc296745502f39e3caaaef62cc4706e70df52fa67e38d09b54e95da8244b7a3a",
+      "afterSha256": "d744166fd5fbfcd47399b1bf8851bceb1c90c0fef17aeaaa027cebbd836a0760",
+      "beforeLength": 1304,
+      "afterLength": 708,
+      "lintCount": 0
+    },
+    {
+      "order": 873,
+      "caseId": "坤己癸甲甲亥酉寅子",
+      "file": "873-命例873-从强格为何以水润木主贵.md",
+      "beforeSha256": "85a12ad7c54dcc9cbcf7c77d44d0352f1a933acd9ab7d5ffc76c6ee223583492",
+      "afterSha256": "bd4733980065e94c50cee9c03538f24648b0cb53d751e75d6238102c413e2b44",
+      "beforeLength": 1275,
+      "afterLength": 667,
+      "lintCount": 0
+    },
+    {
+      "order": 874,
+      "caseId": "坤乙丙丙丙巳戌申申",
+      "file": "874-命例874-申财旺无原神为何应庚辰年死父.md",
+      "beforeSha256": "a6ebf2df7950ede7dfa729165164673b6eb84ade5945fc6ec68ade8658859006",
+      "afterSha256": "cea358d77e818e503081ae2088a1b505a8240c83293892ce805377cf1a47b8b8",
+      "beforeLength": 1256,
+      "afterLength": 800,
+      "lintCount": 0
+    },
+    {
+      "order": 875,
+      "caseId": "命丁甲庚丙未辰戌子",
+      "file": "875-命例875-印星明合为何断母嫁二夫.md",
+      "beforeSha256": "dcaa1c0c7ed17a777e9fe0cd9f4603332e7d1b0e9c56ef273dbb6caab1559573",
+      "afterSha256": "cdab532c7a62a1941344fc2c30be6a102153003967fe652c8f9b2ef0871ceb1b",
+      "beforeLength": 1202,
+      "afterLength": 793,
+      "lintCount": 0
+    },
+    {
+      "order": 876,
+      "caseId": "乾丙甲辛壬戌午巳辰",
+      "file": "876-命例876-伤官去官格为何不论日主衰旺.md",
+      "beforeSha256": "5b41efc66cfbd5c265e02e1b26e133b07fc09997c645aa12a1fd5c8b092552c1",
+      "afterSha256": "6230c89e41e6257409ebcbe7d144d6b2eab7fe6171c65310c8eae03251a6c619",
+      "beforeLength": 1284,
+      "afterLength": 788,
+      "lintCount": 0
+    },
+    {
+      "order": 877,
+      "caseId": "乾庚丁己乙子亥巳丑",
+      "file": "877-命例877-巳印贴身为何反起厌世极端之念.md",
+      "beforeSha256": "fdb8f124943dcf68c6b52d478895769c84a738b5144c8ff996905aabfaf413a0",
+      "afterSha256": "3211f4fb16c826541401f2a914c09a4311a6b8767bf4139da5ef29bdc79ccbcb",
+      "beforeLength": 1321,
+      "afterLength": 841,
+      "lintCount": 0
+    },
+    {
+      "order": 878,
+      "caseId": "乾庚丁甲乙子亥子亥",
+      "file": "878-命例878-寒极暖有气为何官运顺而婚姻离.md",
+      "beforeSha256": "1c87b2fb99d80d2f6504285da8344cc31f12ade7e8ae8ee2d7bb7efdb8fc3513",
+      "afterSha256": "0d0c980526330fc4be2c875a7c64a2dad0502b98920fef59ce9f7993f52f739d",
+      "beforeLength": 1411,
+      "afterLength": 773,
+      "lintCount": 0
+    },
+    {
+      "order": 879,
+      "caseId": "乾壬庚己庚午戌酉午",
+      "file": "879-命例879-伤官带金刃为何能统领兵权.md",
+      "beforeSha256": "6b94da79dbaebd94fcb22be619e8f4d5089725133574e3afae04075d8eb9ae4e",
+      "afterSha256": "afa3cccedb0371ef5294a96b51e39174a99f69224d5d391e7de1fde504260c0b",
+      "beforeLength": 1299,
+      "afterLength": 748,
+      "lintCount": 0
+    },
+    {
+      "order": 880,
+      "caseId": "乾壬癸己壬午丑巳申",
+      "file": "880-命例880-金伤官有丑根为何断台湾将军.md",
+      "beforeSha256": "93fa0557a8ea0d787edb7b115a34ac65743b28423dd260a49ea852856f0a8ce4",
+      "afterSha256": "50c9761109954fd603e55b9a042c876f0bef6c89e2707f2e0ea6231b3ff6c7af",
+      "beforeLength": 1283,
+      "afterLength": 748,
+      "lintCount": 0
+    },
+    {
+      "order": 881,
+      "caseId": "乾癸辛庚丁丑酉申丑",
+      "file": "881-命例881-羊刃逢冲拿刀杀人为何未出大事.md",
+      "beforeSha256": "6b732cdff488e2edb78ed0c8567a2c930b0c69adc5d19c2bc9c343c3d7a0dbd0",
+      "afterSha256": "c6c3a36986046dd79ef922ba90bf46590146f34e11b920a5d3031441a52dd9e1",
+      "beforeLength": 1287,
+      "afterLength": 771,
+      "lintCount": 0
+    },
+    {
+      "order": 882,
+      "caseId": "乾辛丁庚己亥酉戌卯",
+      "file": "882-命例882-走私坐牢为何反说卯戌合救了命.md",
+      "beforeSha256": "6b5903e2abb5904c0164cb138992642af067c64fabbbb5ebfed2a295e06c038e",
+      "afterSha256": "877911b6c31f392ef18632013a8d85c3d5e1278337aa7fc092a73fe32d54a54b",
+      "beforeLength": 1349,
+      "afterLength": 724,
+      "lintCount": 0
+    },
+    {
+      "order": 883,
+      "caseId": "乾己丙丙戊丑子子戌",
+      "file": "883-命例883-日主入墓为何新疆坐牢二十年.md",
+      "beforeSha256": "095e08945b62191d0803ae302afbf0e5203ecaf67c30ea76172239ad49d95163",
+      "afterSha256": "d440d4176ccab867782a5f64d402f060dc0777f5c785f72afe0053058a303253",
+      "beforeLength": 1466,
+      "afterLength": 771,
+      "lintCount": 0
+    },
+    {
+      "order": 884,
+      "caseId": "乾丙庚丁丁午子亥未",
+      "file": "884-命例884-同年起兵同年败落为何只得半壁江山.md",
+      "beforeSha256": "dcc8dd126fcfa1da1387c0ac8eeb09478acc377857e30310e96d3d88f6b8c0ae",
+      "afterSha256": "76ccb5ca29d92bcc744e6a243fb129aadb04be5d8d6c2f4c1137f9ec194ceb45",
+      "beforeLength": 1525,
+      "afterLength": 865,
+      "lintCount": 0
+    },
+    {
+      "order": 885,
+      "caseId": "坤庚癸甲甲辰未午戌",
+      "file": "885-命例885-癸印透干为何仍难救日主夭折.md",
+      "beforeSha256": "ce9f8b5c05173d6ac4a5124b72937563e3f0118b2d05e18d67070db7f17e104e",
+      "afterSha256": "75d319aa23ad0bc8df6edf249276a2f6de24e822adf26845c832a31da6eda949",
+      "beforeLength": 1174,
+      "afterLength": 792,
+      "lintCount": 0
+    },
+    {
+      "order": 886,
+      "caseId": "乾己乙甲壬卯亥子申",
+      "file": "886-命例886-杀刃俱全为何不是武将而是教练.md",
+      "beforeSha256": "783541ab87d95cfeb57dd485328a41aef4c009bfb51d540cd30d4d26b51fdc2c",
+      "afterSha256": "61b3d9c785a0e2606ff6977345aaee2fa8d5f9297d99a5dff852ff3812ea0fea",
+      "beforeLength": 1101,
+      "afterLength": 762,
+      "lintCount": 0
+    },
+    {
+      "order": 887,
+      "caseId": "乾丁丙庚己卯午午卯",
+      "file": "887-命例887-官杀混杂为何不从反以印星调候为贵.md",
+      "beforeSha256": "d084b9ec58dd3276010163ed848b421e51cb36cfb826812849d0e2c2950633a4",
+      "afterSha256": "a0588a5498d4abc64665ad4c848994f114c0ba66dd3626fa8a15c99583c8b392",
+      "beforeLength": 1083,
+      "afterLength": 806,
+      "lintCount": 0
+    },
+    {
+      "order": 888,
+      "caseId": "乾辛庚辛丁卯寅丑酉",
+      "file": "888-命例888-比劫重重为何丁杀反主聪明有名气.md",
+      "beforeSha256": "f68d5325320d3124fa76d32464a07643d96ec850dec2d4b4b890a79c12e92985",
+      "afterSha256": "000d43fd02de42a92d487451c9a48055fb726997cffd859595e61bb5b9df1518",
+      "beforeLength": 1154,
+      "afterLength": 776,
+      "lintCount": 0
+    },
+    {
+      "order": 890,
+      "caseId": "乾庚己癸甲午丑酉寅",
+      "file": "890-命例890-伤官入墓为何下台而忌神入墓反获特赦.md",
+      "beforeSha256": "ede650148515d169afeca68691bcf82026707ef290ea3ab4b635c8275233efa2",
+      "afterSha256": "6130638995cdac41e8f6ff273d9c320cd03b546d4bad4c4469fe99f8222af572",
+      "beforeLength": 1202,
+      "afterLength": 830,
+      "lintCount": 0
+    },
+    {
+      "order": 891,
+      "caseId": "乾庚壬辛丁午午卯酉",
+      "file": "891-命例891-伤官合杀为何在己丑运入狱.md",
+      "beforeSha256": "7f65771ff8ac115af1a04ece798b04d5dce09cde6ce95539e122e91de95a6221",
+      "afterSha256": "3f1229f8d140ac2e0384ac79be75426c6066bffa0b1fc68749c2ae54405ca036",
+      "beforeLength": 1153,
+      "afterLength": 821,
+      "lintCount": 1
+    },
+    {
+      "order": 892,
+      "caseId": "乾乙壬辛丁巳午卯酉",
+      "file": "892-命例892-同为伤官合杀为何只作秘书且随主倒台.md",
+      "beforeSha256": "7375751ab77be3d578d21fe5dac139d628bc854a62746f8e6461b162506311f0",
+      "afterSha256": "87d99921709a6b5fb3d27aec274b0149bdbb2d9961ab2707d70fd0d5286ff822",
+      "beforeLength": 1128,
+      "afterLength": 826,
+      "lintCount": 0
+    },
+    {
+      "order": 893,
+      "caseId": "乾乙庚戊甲巳辰午寅",
+      "file": "893-命例893-伤官合杀与时上七杀为何既发财又两次婚姻且入狱.md",
+      "beforeSha256": "a0c043337eef08599ff9ce5dcfa910f7042ffb3ca5b65fef809473a74a500ff2",
+      "afterSha256": "ecefd01475ff5314bacf2c0d640fb2003067e05ce34a296a528715015539cdd5",
+      "beforeLength": 1159,
+      "afterLength": 906,
+      "lintCount": 0
+    },
+    {
+      "order": 894,
+      "caseId": "乾丙辛甲丁子丑辰卯",
+      "file": "894-命例894-伤官泄秀为何成名却又离异且子息疏离.md",
+      "beforeSha256": "9fe4f2ec0c6e25d1cecf2c8eaddb8a5445caa6d5f2446e159db7ab44cc53f30a",
+      "afterSha256": "d041529e4e28283484b3d0320e6112c1dbdc750fcaf14da68624149c4d4acad7",
+      "beforeLength": 1207,
+      "afterLength": 813,
+      "lintCount": 0
+    },
+    {
+      "order": 895,
+      "caseId": "坤庚己庚己子卯子卯",
+      "file": "895-命例895-伤官生财为何大运一见官星即遭官灾被捕.md",
+      "beforeSha256": "7740b0b13634eadc4f7f32448826b48a8406be857e4e293a28095081d8587c33",
+      "afterSha256": "6bf7f5edb0e946fe56bd039dfe2cf71fae48d8af86ec87caeb74b5d0d95bf112",
+      "beforeLength": 1137,
+      "afterLength": 798,
+      "lintCount": 4
+    },
+    {
+      "order": 896,
+      "caseId": "乾壬戊戊辛子申戌酉",
+      "file": "896-命例896-申酉戌会西方金局为何不从反主壬子运穷.md",
+      "beforeSha256": "f142ecc3ca43aed52d8d9628046a6e0beb316d57f2f230fc078550ec4fa562b7",
+      "afterSha256": "7776eb839cd259679520b57801532567990c4686b03d6259b01c14463e26e571",
+      "beforeLength": 1112,
+      "afterLength": 765,
+      "lintCount": 0
+    },
+    {
+      "order": 897,
+      "caseId": "坤壬己癸戊寅酉酉午",
+      "file": "897-命例897-官杀混杂为何反作喜神且应甲子同居戊辰换人.md",
+      "beforeSha256": "8a59825f9465954400089ec994cb728f0be2c43edc95104185a1ec17e3f0e40b",
+      "afterSha256": "ff6c6e0b3f54b45faa2c9a8378b21563841704d43df11c5f7a92184b46832608",
+      "beforeLength": 1269,
+      "afterLength": 868,
+      "lintCount": 0
+    },
+    {
+      "order": 898,
+      "caseId": "坤丁丁辛己未未卯亥",
+      "file": "898-命例898-从财格为何离婚却带女赴美高薪留学.md",
+      "beforeSha256": "be418df050a3fd71bb8e47a68d0d5445dd8c5118b6b888c92c1b47a1089a99e6",
+      "afterSha256": "3f1edeb80cd5687e86d647560ae44d34623d70aa67c9ce33ba6d4a846fbe7ffd",
+      "beforeLength": 1267,
+      "afterLength": 873,
+      "lintCount": 1
+    },
+    {
+      "order": 899,
+      "caseId": "乾甲丙庚庚寅子申辰",
+      "file": "899-命例899-七杀佩印为何纯武无文且丁巳年复辟.md",
+      "beforeSha256": "f99f5a70ea33a5cce0c8065fab358ad9eb8e52d4460f4d4c5bf255ff4231580c",
+      "afterSha256": "9feeade9c9a112308b9691e697f1a8894d47eac936558971c8316353a5d45473",
+      "beforeLength": 1334,
+      "afterLength": 857,
+      "lintCount": 0
+    },
+    {
+      "order": 900,
+      "caseId": "坤丁甲乙乙未辰丑酉",
+      "file": "900-命例900-财杀为忌为何父早逝且连损三子.md",
+      "beforeSha256": "14fdcaa4f8f43bf43e68e7ab092cbe795c34325afe8f086c58d5625c96be5a7b",
+      "afterSha256": "d7877cd56b075ddaefa41ddaccc5a8fde36783e0eb4db3806fe11191c6c41889",
+      "beforeLength": 1311,
+      "afterLength": 891,
+      "lintCount": 1
+    },
+    {
+      "order": 901,
+      "caseId": "乾癸甲乙丁亥子丑亥",
+      "file": "901-命例901-丁亥暗合食神为何早年放牛48岁后名贯中外.md",
+      "beforeSha256": "b1f1b4c63d8d3beeedc0830a8e98a97e0189b7de0ba63d39061551f2e72abb29",
+      "afterSha256": "510a3f25617f1bebbf5d36aa8d9de3794cf3a45b0704eee2989fe6a157d513cd",
+      "beforeLength": 1248,
+      "afterLength": 825,
+      "lintCount": 0
+    },
+    {
+      "order": 902,
+      "caseId": "乾乙丁乙癸卯亥卯未",
+      "file": "902-命例902-从禄格为何文革受困而庚辰运掌权巳卯运病逝.md",
+      "beforeSha256": "923f5c052580bd7607e7ae1757949d1416f34312e233581b0c1440bcb54b64e3",
+      "afterSha256": "90e3112066fc31f960d0d64b79f788098e1388c2455cfd9419dca9efa8784ef8",
+      "beforeLength": 1262,
+      "afterLength": 853,
+      "lintCount": 0
+    },
+    {
+      "order": 903,
+      "caseId": "乾丁辛癸甲亥亥卯子",
+      "file": "903-命例903-伤官泄秀为何早子难存却成几亿富翁.md",
+      "beforeSha256": "d7ad111c7ac39a9b69a4bc1c7c8030223f5bcd2dd4745cf032f36026c86a46b5",
+      "afterSha256": "e1b7ac9aa28d48b344ea58d046c14bff0da65acb238cd1644b3fa7a13cd4cccc",
+      "beforeLength": 1198,
+      "afterLength": 769,
+      "lintCount": 0
+    },
+    {
+      "order": 904,
+      "caseId": "乾丁戊戊戊酉申申午",
+      "file": "904-命例904-土金伤官无官为何反成探花大贵格.md",
+      "beforeSha256": "6434efb70a797523f9881eaf8c6abed944dd73777dde6ea232ef9994bab993e5",
+      "afterSha256": "138ad6ae911ebe39bff6e2aa6f9ef3723185747fb5a8083332107735aa5cb67c",
+      "beforeLength": 1263,
+      "afterLength": 808,
+      "lintCount": 0
+    },
+    {
+      "order": 905,
+      "caseId": "乾辛癸乙壬巳巳亥午",
+      "file": "905-命例905-伤官佩印为何己丑运逃亡戊子运坐牢庚午年出狱.md",
+      "beforeSha256": "d1aba178f6412e504cc03e486db769c9b49dcf56bcd6a43926b65fc4e7cfe0c0",
+      "afterSha256": "d1ee1732897a71eb9f974d92339928199cc30a403d13548826027375c2b20e5f",
+      "beforeLength": 1202,
+      "afterLength": 891,
+      "lintCount": 1
+    },
+    {
+      "order": 906,
+      "caseId": "乾丙庚辛丁申寅未酉",
+      "file": "906-命例906-癸巳运穿倒酉禄入狱为何甲午运反发大财.md",
+      "beforeSha256": "5468c600c119be6a1c42069e179ff2cc68c14f631480c56dcc45344e8a831a16",
+      "afterSha256": "a68b534f434634131eb6a8017afb94b87613e63db07b7947feed71b5fea9c710",
+      "beforeLength": 1238,
+      "afterLength": 856,
+      "lintCount": 0
+    },
+    {
+      "order": 907,
+      "caseId": "乾丙乙辛丁戌未丑酉",
+      "file": "907-命例907-同样禄上顶杀为何无牢狱反当官且行医.md",
+      "beforeSha256": "b9a433b51915e4ffd90364b516a0aa36c971d1c1bbf4df80bc494deab57e8a27",
+      "afterSha256": "e6f3fbb18b577616d986fda023a1354b9b609fe1a0744df313c07445006c1681",
+      "beforeLength": 1176,
+      "afterLength": 829,
+      "lintCount": 0
+    },
+    {
+      "order": 908,
+      "caseId": "乾丁壬己丁亥寅未卯",
+      "file": "908-命例908-忌神壬财合丁印为何反主癸亥年发财.md",
+      "beforeSha256": "e2454327d290934162645d7ec638f714ee05d3799b5201052e9557026e9d2ac2",
+      "afterSha256": "9484ccee288a0980fe0a5da211838cc2098fa53c6ac58684a9e3db36c08ff39c",
+      "beforeLength": 1206,
+      "afterLength": 821,
+      "lintCount": 0
+    },
+    {
+      "order": 909,
+      "caseId": "乾己癸乙壬亥酉巳午",
+      "file": "909-命例909-乙木秋生用火为何见水如秋收霉烂.md",
+      "beforeSha256": "cbd10a818c3711f366a8495a12cf7d08d9192edc9a5da9af8921d1b853a8a6bd",
+      "afterSha256": "4427391654d35935907d52584763e88199ce835512e70ce60cc3250628bb88c1",
+      "beforeLength": 1177,
+      "afterLength": 810,
+      "lintCount": 0
+    },
+    {
+      "order": 910,
+      "caseId": "乾癸甲乙己未寅亥卯",
+      "file": "910-命例910-禄印旺极为何戊申运权力最大而丙午运辛丑年亡.md",
+      "beforeSha256": "9b431e023bb8a9373f6ec1d7367be0df94d89e4d7fddd07242d83846bbc32299",
+      "afterSha256": "aadd97706a505231e93ec1dc08f07eb9ab6d804aa7161c74a7a4efdc71f14771",
+      "beforeLength": 1213,
+      "afterLength": 812,
+      "lintCount": 0
+    },
+    {
+      "order": 911,
+      "caseId": "乾丁丙庚庚未午申辰",
+      "file": "911-命例911-官禄格见官杀为何仍可为富人.md",
+      "beforeSha256": "49630fa19fe3049e63b5aca159b12c8279d40aea911d2ba8c78a685d6579e341",
+      "afterSha256": "c14697db577bb5c7aaa009267ec7bb9c11e7e685a584a2076933a85f794b1c7d",
+      "beforeLength": 1263,
+      "afterLength": 867,
+      "lintCount": 0
+    },
+    {
+      "order": 912,
+      "caseId": "乾丙辛丙辛戌卯午卯",
+      "file": "912-命例912-两辛争合为何主妻位互换.md",
+      "beforeSha256": "9817022dbe86988db2732c2f2d8f4acfa639ad526564725ba41778f1676f01e9",
+      "afterSha256": "ea8a4c4860deb1b17e762eccd2ca748d76ce8476c70362265a9f364529dda3c4",
+      "beforeLength": 1216,
+      "afterLength": 791,
+      "lintCount": 0
+    },
+    {
+      "order": 913,
+      "caseId": "乾辛丁丁辛丑酉巳丑",
+      "file": "913-命例913-巳酉丑合财局为何主比劫顺从.md",
+      "beforeSha256": "dfffaba488d0f70122ba5a6352b9e39fbf53c627da4ddba288cb94746d8797ce",
+      "afterSha256": "fc6c8b5ca6226f0d92969936d7a2cf3530ee189c2f0f94191a859c008f1acd5d",
+      "beforeLength": 1260,
+      "afterLength": 772,
+      "lintCount": 0
+    },
+    {
+      "order": 914,
+      "caseId": "坤丙辛丙己申丑申亥",
+      "file": "914-命例914-从财格见亥官为何反成拖累.md",
+      "beforeSha256": "0349b810481b2b04eb97a85aee35ed70279d00013340e8c87876732150b4e217",
+      "afterSha256": "4b9e010ae1f0dd964134dcad964eac1a1fc8e729a4343183015aef83ba2766f6",
+      "beforeLength": 1234,
+      "afterLength": 830,
+      "lintCount": 1
+    },
+    {
+      "order": 915,
+      "caseId": "坤庚己丁乙申丑亥巳",
+      "file": "915-命例915-从官行丁亥运为何入公门又换夫.md",
+      "beforeSha256": "7c40183388812ece7436e80d8b7eef09947470d5dfbc8d1b486f0a82b4b06ed4",
+      "afterSha256": "fa3a6dafe48410e1c064a63da30f5d14bd90b86289b957715006aec1b6514639",
+      "beforeLength": 1308,
+      "afterLength": 805,
+      "lintCount": 0
+    },
+    {
+      "order": 916,
+      "caseId": "坤庚辛己乙戌巳亥亥",
+      "file": "916-命例916-巳火印星为何当父又主再嫁.md",
+      "beforeSha256": "4a282b52c68f46bf888c0a987268e19802ef95fab7d56d5e1ad13cabc6466e3f",
+      "afterSha256": "9c5530ba463a9e4c77c23b2796cdc7f53a82e292f66f9a623b6f315e8c4e4cea",
+      "beforeLength": 1326,
+      "afterLength": 832,
+      "lintCount": 0
+    },
+    {
+      "order": 917,
+      "caseId": "乾乙丙壬庚未戌戌戌",
+      "file": "917-命例917-庚印为忌为何丙火财星反成枢纽.md",
+      "beforeSha256": "3c53fbc15405831bf4e50515cfb83a59034dcc8113a5e2c09e9c9173517d3118",
+      "afterSha256": "d7fcbe27fb6aad6453eed02ba4dfc3a1b1e47dc388e0d1d4d86bf749e21355ea",
+      "beforeLength": 1344,
+      "afterLength": 849,
+      "lintCount": 0
+    },
+    {
+      "order": 918,
+      "caseId": "坤庚己乙甲戌丑巳申",
+      "file": "918-命例918-藤萝系甲为何不从反论伤官见官.md",
+      "beforeSha256": "43f4ea75b167efb530ae972d98cedca4f570fef17d527864ecb8a670d5ac2bcf",
+      "afterSha256": "37f8d715e32e1e507bc564bc0f53370d91ae7001f290bbdaecac7b67f2b80fc6",
+      "beforeLength": 1240,
+      "afterLength": 838,
+      "lintCount": 0
+    },
+    {
+      "order": 919,
+      "caseId": "坤庚戊戊庚子寅申申",
+      "file": "919-命例919-夫宫冲克夫星为何反成女企业家.md",
+      "beforeSha256": "efeb370c57044e92c385a2369707e2f575af058a689f540132fb2abc974732bd",
+      "afterSha256": "1cec34bd9f61ed18336c4b462bef9c8c8399c49320a0aa64c743d56540b4ae7d",
+      "beforeLength": 1298,
+      "afterLength": 874,
+      "lintCount": 0
+    },
+    {
+      "order": 920,
+      "caseId": "乾癸丁壬壬丑巳寅寅",
+      "file": "920-命例920-从儿喜见财为何丙辰运反患软骨病.md",
+      "beforeSha256": "44d7f076e2f300d6b971c60bb59c96fefbf5f9642c6c44f6ffb3be2044963933",
+      "afterSha256": "fa3ec3b290f3c6bf035288e92ea2bb790a4197a7d34a671bb56ffb9d63522e7b",
+      "beforeLength": 1217,
+      "afterLength": 810,
+      "lintCount": 0
+    },
+    {
+      "order": 921,
+      "caseId": "乾庚戊己庚寅寅丑午",
+      "file": "921-命例921-以禄当官为何甲子年午禄受冲伤臂.md",
+      "beforeSha256": "76ef09246089d42c7a5e3a6f9211fa06013072c5122535dfd7a924e6630106a9",
+      "afterSha256": "f98cb1788c7967b30ab2dea69a70d1b85b2e693f9da75b45775c5f685accc9cd",
+      "beforeLength": 1318,
+      "afterLength": 844,
+      "lintCount": 2
+    },
+    {
+      "order": 922,
+      "caseId": "乾壬丁庚庚辰未辰辰",
+      "file": "922-命例922-归禄为用为何丙子年损财又伤手腕.md",
+      "beforeSha256": "69a00c7b58ad009bbbbfb7f57f175d9fdd929aadd0094416650080cbef87f5e4",
+      "afterSha256": "44d01499e0f4c0691b561a633a1e4860b6039feef60cbda7044980c0511efeba",
+      "beforeLength": 1304,
+      "afterLength": 861,
+      "lintCount": 0
+    },
+    {
+      "order": 923,
+      "caseId": "乾癸甲丙癸酉寅午巳",
+      "file": "923-命例923-巳午禄刃齐聚为何亥运流亡戌运掌权.md",
+      "beforeSha256": "4ede93b5e77421b1fdfa554f50f5afa2201abb3a03b318f3dc3042f5749edcb8",
+      "afterSha256": "3359c05dc27c7357333c8052207ec7d5eaa7e793484ff2f8712e617239b62a16",
+      "beforeLength": 1348,
+      "afterLength": 868,
+      "lintCount": 0
+    },
+    {
+      "order": 924,
+      "caseId": "乾辛己丙己未亥辰亥",
+      "file": "924-命例924-伤官虚透亥杀暗藏为何反掌重权.md",
+      "beforeSha256": "8a24b002e3fe40c70719cadaf4c78c0dcd2618ea01ab3618c4d9d889f2de81b4",
+      "afterSha256": "2d7b989c799d387bd71b9312da859004c00e95d5518e8b239d269394044b44ec",
+      "beforeLength": 1277,
+      "afterLength": 827,
+      "lintCount": 0
+    },
+    {
+      "order": 925,
+      "caseId": "乾甲丙戊丙午寅午辰",
+      "file": "925-命例925-以禄当官为何早年夺魁又于巳运丧父.md",
+      "beforeSha256": "151f527c44e3d7194cc2b64244535441e0febd962721340e05326b41cd1a072c",
+      "afterSha256": "f7133198f9131178ec5ddf44ff0ecc4021bf0efcc36ae59adefc701417a2575d",
+      "beforeLength": 1292,
+      "afterLength": 859,
+      "lintCount": 0
+    },
+    {
+      "order": 927,
+      "caseId": "坤丙辛丁癸午卯丑卯",
+      "file": "927-命例927-身旺用丑财为何父早逝且夫移门户.md",
+      "beforeSha256": "b5665e0a4f4cee790682340840db7226735955d289569ee7386da6415a755672",
+      "afterSha256": "50500926de345275546c08c51dfaa1f67098e638a68fcc6ff8d1718bad31f435",
+      "beforeLength": 1348,
+      "afterLength": 892,
+      "lintCount": 0
+    },
+    {
+      "order": 928,
+      "caseId": "坤丙戊辛壬午戌亥辰",
+      "file": "928-命例928-日坐伤官为何反断夫妻关系尚可.md",
+      "beforeSha256": "43f3d77b39a74bf6c2cf7b63d57cd71a8bbc871dc97419e7683db1e8490d4b0f",
+      "afterSha256": "95e678afa0f3322cd641b8b0db743213b5ab0a7385409e9d89ac11d169447a39",
+      "beforeLength": 1345,
+      "afterLength": 838,
+      "lintCount": 0
+    },
+    {
+      "order": 929,
+      "caseId": "乾甲戊己丁戌辰酉卯",
+      "file": "929-命例929-食神空亡又逢卯冲为何仍掌兵权.md",
+      "beforeSha256": "4b6030d6f7dac194e467ffb39565491b02fbc025bef667c86f8405b98f122935",
+      "afterSha256": "faa252ead25e360c27e20f11bd4d4b7a12f4047a589ba5e9ab7dc550e3d15fd7",
+      "beforeLength": 1346,
+      "afterLength": 912,
+      "lintCount": 0
+    },
+    {
+      "order": 930,
+      "caseId": "乾丁甲丙丙卯辰子申",
+      "file": "930-命例930-申子辰合官局为何反以日主作寿元星.md",
+      "beforeSha256": "2967858e86742e3b25ae70868f4dd4a861f7799462d6262f6816417bbd39b332",
+      "afterSha256": "daa85e968ea438eb6c21ed535d48dae5a1640699ec850e695f91710f6aa390c2",
+      "beforeLength": 1304,
+      "afterLength": 794,
+      "lintCount": 0
+    },
+    {
+      "order": 931,
+      "caseId": "乾丁庚乙己亥戌丑卯",
+      "file": "931-命例931-庚官合身为何丙午运暴富乙巳运入狱.md",
+      "beforeSha256": "08258bbe36975c315b7d8a19d5633ada395d48456f2fdaf38bd722a3b0e0d7b1",
+      "afterSha256": "fe94f0b858debe271448cf3a35172fadda4cf75d634d6ba5ed01352d6649bd20",
+      "beforeLength": 1340,
+      "afterLength": 867,
+      "lintCount": 3
+    },
+    {
+      "order": 932,
+      "caseId": "乾癸丁壬庚卯巳申戌",
+      "file": "932-命例932-申禄原局受伤为何甲寅运冲反升官.md",
+      "beforeSha256": "a869161beacbf9138f7dfec449cafa18d906f93dfda89f56d7017834c2b81ee8",
+      "afterSha256": "c41d73b6a42812cde636d79b6f97a5b0eb48ab5aab8511a45607f42e852c190a",
+      "beforeLength": 1324,
+      "afterLength": 894,
+      "lintCount": 1
+    },
+    {
+      "order": 933,
+      "caseId": "乾甲丁戊甲午卯辰寅",
+      "file": "933-命例933-七杀重叠为何反成杀印相生逐级升迁.md",
+      "beforeSha256": "8868b389d14ea7881044da1049cfc41c1adb07bbedf06d7f9bdae3c7162e3b87",
+      "afterSha256": "e0fb3e21879738f5b1e48efa9b0e3b4ef779f5fa89b94473ab4fc651225b4ace",
+      "beforeLength": 1257,
+      "afterLength": 874,
+      "lintCount": 0
+    },
+    {
+      "order": 934,
+      "caseId": "乾戊甲丁甲辰子巳辰",
+      "file": "934-命例934-伤官佩印为何子官不旺反作关键用神.md",
+      "beforeSha256": "db996e415b1d8679cf11e650cce02b511a6142bdf87a7981aa9421f9bf7023c3",
+      "afterSha256": "f250b1970f951598e6d677fd883cd2f9c27d3be4a5a22c1bd74e48a4199d0704",
+      "beforeLength": 1277,
+      "afterLength": 787,
+      "lintCount": 0
+    },
+    {
+      "order": 935,
+      "caseId": "乾丁丙乙丁丑午未亥",
+      "file": "935-命例935-乙木生午月太燥为何亥水一神双用.md",
+      "beforeSha256": "fe26204d3e10feb1d791018209a0864a8fedb3f48966702343cfa9c29e33dfe1",
+      "afterSha256": "ed1060d8b6bdc9e41c86aefc6b0aef84da795573928a8b56076ac6814a01600a",
+      "beforeLength": 1302,
+      "afterLength": 896,
+      "lintCount": 0
+    },
+    {
+      "order": 936,
+      "caseId": "乾甲甲丁甲子戌巳辰",
+      "file": "936-命例936-伤官佩印用甲木为何子杀空亡主虚权.md",
+      "beforeSha256": "2ff1eb2ab7d5e9cbf8cb4f2f2b8ab18e9812432fc2e1277e7bef80f5bb00a923",
+      "afterSha256": "e9853b3d85c657f5619703e1ce350e5d9a5260ee70660b8172ab0681dbcacbd9",
+      "beforeLength": 1375,
+      "afterLength": 884,
+      "lintCount": 0
+    }
+  ]
+}
