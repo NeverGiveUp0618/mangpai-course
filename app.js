@@ -2108,14 +2108,12 @@ RENDER.qlist = function () {
   needQuiz().then(function (Q) {
     var seen = ls(K.seen, {});
 
+    if (qFilter.mode.indexOf('reasoning') === 0) qFilter.mode = 'all';
     var modes = [
       ['all', '全部 ' + Q.items.length],
       ['new', '未标记已学'],
       ['star', '精读 ' + Q.items.filter(function (x) { return x.star > 0; }).length],
-      ['chart', '有完整盘'],
-      ['reasoning-style', '本轮图解 · ' + reasoningList(Q,'reasoning-style').length + '例'],
-      ['reasoning', 'AI推理拆解 · ' + reasoningList(Q,'reasoning').length + '例'],
-      ['reasoning-new', '本次新增 · ' + reasoningList(Q,'reasoning-new').length + '例']
+      ['chart', '有完整盘']
     ];
     $('#qFilters').innerHTML = modes.map(function (m) {
       return '<span class="pill' + (qFilter.mode === m[0] ? ' sel' : '') +

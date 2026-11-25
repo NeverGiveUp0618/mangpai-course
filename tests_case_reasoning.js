@@ -60,19 +60,14 @@ for(const file of ['data-meta','data-course','data-notes','data-quiz','data-raw'
 w.eval(`window.__create=document.createElement.bind(document);document.createElement=function(t){let e=window.__create(t);if(t==='script')Object.defineProperty(e,'src',{set(v){setTimeout(()=>e.onload&&e.onload(),0)}});return e;}`);w.eval(fs.readFileSync('app.js','utf8'));
 const wait=ms=>new Promise(r=>setTimeout(r,ms)),click=e=>{assert(e,'missing element');e.dispatchEvent(new w.MouseEvent('click',{bubbles:true}))},$=s=>d.querySelector(s);
 (async()=>{
-await wait(50);w.YGN_HOOK.go({scr:'qlist',id:null});await wait(50);click($('[data-m="reasoning"]'));await wait(20);
-ok(d.querySelectorAll('#qRows [data-q]').length===936,'全部936例可单独筛选');
-click($('[data-m="reasoning-new"]'));await wait(20);ok(d.querySelectorAll('#qRows [data-q]').length===156,'本次新增156例一键可达');
-ok([...d.querySelectorAll('#qRows [data-q]')].map(e=>+e.dataset.q).join(',')===latest.map(q=>q.n).join(','),'新增批次顺序正确，保留原命例编号');
+await wait(50);w.YGN_HOOK.go({scr:'qlist',id:null});await wait(50);
+ok(!$('#qFilters [data-m="reasoning-style"]')&&!$('#qFilters [data-m="reasoning"]')&&!$('#qFilters [data-m="reasoning-new"]'),'本轮图解、AI推理拆解、本次新增三个筛选标签已移除');
+ok($('#qFilters [data-m="all"]').textContent.includes('936'),'全部936例入口保留');
 for(let i=0;i<all.length;i++){
  const q=all[i];w.YGN_HOOK.go({scr:'quiz',id:q.n});await wait(0);ok(!$('.case-reasoning'),'命例'+q.n+'默认不提前显示AI推理');click($('#bJie'));ok($('#L2').textContent.length>10&&!$('.case-reasoning'),'命例'+q.n+'原解先独立展示');click($('#bChai'));ok($('.case-reasoning').dataset.caseReasoning===q.id,'第'+(i+1)+'篇正确挂到固定命例');
  const loc=w.YGN_HOOK.loc();ok(loc.scr==='quiz'&&loc.id===q.n&&loc.layer==='chai','第'+(i+1)+'篇笔记位置可返回展开层');
 }
-// Latest-only navigation must not drop into an unexpanded original case.
-w.YGN_HOOK.go({scr:'qlist',id:null});await wait(10);click($('[data-m="reasoning-new"]'));await wait(10);click($('#qRows [data-q="'+latest[0].n+'"]'));await wait(10);ok($('#bPrev').disabled,'新增首例上一例边界');click($('#bNext'));await wait(10);ok(w.YGN_HOOK.loc().id===latest[1].n,'新增批次内下一例连续');
-w.YGN_HOOK.go({scr:'quiz',id:latest.at(-1).n});await wait(10);ok($('#bNext').disabled,'第156新增例到此停止');
-w.YGN_HOOK.go({scr:'quiz',id:all[0].n,layer:'chai'});await wait(10);ok($('#bPrev').disabled,'新增筛选下回看首批笔记，自动采用完整拆解序列');click($('#bNext'));await wait(10);ok(w.YGN_HOOK.loc().id===all[1].n,'首批笔记返回后的翻页仍在AI拆解序列');
-w.YGN_HOOK.go({scr:'qlist',id:null});await wait(10);click($('[data-m="reasoning"]'));await wait(10);w.YGN_HOOK.go({scr:'quiz',id:all.at(-1).n});await wait(10);ok($('#bNext').disabled,'完整936例末尾停止');
+w.YGN_HOOK.go({scr:'quiz',id:all[0].n,layer:'chai'});await wait(10);ok(!!$('.case-reasoning'),'笔记回出处自动展开对应推理');
 const target=latest[0],loc={scr:'quiz',id:target.n,layer:'chai'};w.YGN_HOOK.go(loc);await wait(10);ok($('.case-reasoning').dataset.caseReasoning===target.id,'笔记回出处自动展开对应推理');w.YGN_HOOK.go(loc);await wait(10);ok(!!$('.case-reasoning'),'同一命例的出处返回也可展开');
 click($('#btnSearch'));await wait(30);$('#q').value=target.reasoningTitle;$('#q').dispatchEvent(new w.Event('input',{bubbles:true}));await wait(1100);
 const hit=$('#hits .hit[data-h]');ok(!!hit,'新增文章的推理标题可全文搜索');click(hit);await wait(30);ok($('.case-reasoning')?.dataset.caseReasoning===target.id,'搜索进入正确新例并展开推理层');
@@ -88,11 +83,6 @@ ok(styleReview2.changes.length===100&&styleReview2.changes.every(r=>preservedOrR
 ok(styleReview3.changes.length===700&&styleReview3.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'第三批700篇实质重写具前后版本记录');
 ok(styleReview4.changes.length===111&&styleReview4.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'第四批111篇实质重写具前后版本记录');
 for(const m of maps){const q=qs.find(q=>q.id===m.caseId),frag=new JSDOM(q.chai).window.document,body=frag.querySelector('.case-reasoning');ok(body.querySelectorAll('.reasoning-step').length>=3&&!body.textContent.includes('data-reasoning-map-slot'),'重写'+m.order+'图位解析正确、保留分层讲解');}
-w.YGN_HOOK.go({scr:'qlist',id:null});await wait(10);click($('[data-m="reasoning-style"]'));await wait(10);
-ok(d.querySelectorAll('#qRows [data-q]').length===936,'本轮图解筛选含全部936篇');
-const styleFirst=qs.find(q=>q.id===Q.reasoningStyleCaseIds[0]);click($('#qRows [data-q="'+styleFirst.n+'"]'));await wait(10);
-ok(!!$('.case-reasoning .reasoning-map pre code'),'从936例入口直接打开新推理');click($('#bNext'));await wait(10);
-ok(w.YGN_HOOK.loc().id===qs.find(q=>q.id===Q.reasoningStyleCaseIds[1]).n&&!!$('.reasoning-map pre code'),'本轮图解下一例在936篇中翻页且直接显示推理');
 ok(all.every(q=>!q.chai.includes('crm-node')&&!q.chai.includes('crm-number')),'卡片及圆圈序号全部移除');
 ok(errors.length===0,'无脚本异常');ok(!Object.keys(w.localStorage).some(k=>/^bazi_/.test(k)),'仍只写盲派记录，不串命理精讲');
 // Course chapter inline reasoning buttons under matching .ichart elements
