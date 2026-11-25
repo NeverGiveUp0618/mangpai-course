@@ -646,6 +646,7 @@ RENDER.chapter = function (n) {
     $('#chapterBody').innerHTML = '<h1>' + esc(c.title) + '</h1>' + chapterMap(c) + c.html;
     foldChapterSections($('#chapterBody'), c.id);
     bindDoc($('#chapterBody'));
+    attachChapterReasoning($('#chapterBody'));
     $$('[data-mapa]', $('#chapterBody')).forEach(function (b) {
       b.onclick = function () {
         var el = document.getElementById(b.dataset.mapa);
@@ -1883,6 +1884,58 @@ function trackRead(id) {
 }
 
 
+
+function attachChapterReasoning(root) {
+  $$('.ichart[data-case-id]', root).forEach(function (el) {
+    if (el.nextElementSibling && el.nextElementSibling.classList.contains('ch-rs-wrap')) return;
+    var cid = el.dataset.caseId;
+    var cn = el.dataset.caseN;
+    var isG = el.dataset.caseG === '1';
+    var wrap = document.createElement('div');
+    wrap.className = 'ch-rs-wrap';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn ch-rs-btn';
+    btn.textContent = isG ? 'google推理拆解 · 为什么这样断' : 'AI推理拆解 · 为什么这样断';
+    var box = document.createElement('div');
+    box.className = 'ch-rs-box';
+    box.hidden = true;
+    wrap.appendChild(btn);
+    wrap.appendChild(box);
+    el.parentNode.insertBefore(wrap, el.nextSibling);
+    btn.onclick = function () {
+      if (!box.hidden) {
+        box.hidden = true;
+        btn.classList.remove('on');
+        return;
+      }
+      box.hidden = false;
+      btn.classList.add('on');
+      if (box.dataset.loaded === '1') return;
+      box.innerHTML = '<div class="muted">载入AI推理拆解中…</div>';
+      needQuiz().then(function (Q) {
+        var it = Q.items.filter(function (x) { return x.id === cid; })[0];
+        if (!it || !it.chai) {
+          box.innerHTML = '<div class="muted">暂未找到对应拆解。</div>';
+          return;
+        }
+        var marker = '<section class="case-reasoning"';
+        var idx = it.chai.indexOf(marker);
+        var html = idx >= 0 ? it.chai.slice(idx) : it.chai;
+        if (cn) {
+          html += '<p class="src-line" style="margin-top:10px"><a class="chlink" data-q="' + cn + '">在题库中打开命例 ' + cn + ' ›</a></p>';
+        }
+        box.innerHTML = html;
+        box.dataset.loaded = '1';
+        $$('[data-q]', box).forEach(function (a) {
+          a.onclick = function (e) { e.preventDefault(); show('quiz', +a.dataset.q); };
+        });
+      }).catch(function () {
+        box.innerHTML = '<div class="muted">载入失败，请稍后重试。</div>';
+      });
+    };
+  });
+}
 
 function addChapterExtras(c) {
   var old = $('#chExtras'); if (old) old.parentNode.removeChild(old);

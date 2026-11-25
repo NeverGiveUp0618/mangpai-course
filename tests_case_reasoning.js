@@ -95,5 +95,12 @@ ok(!!$('.case-reasoning .reasoning-map pre code'),'从936例入口直接打开�
 ok(w.YGN_HOOK.loc().id===qs.find(q=>q.id===Q.reasoningStyleCaseIds[1]).n&&!!$('.reasoning-map pre code'),'本轮图解下一例在936篇中翻页且直接显示推理');
 ok(all.every(q=>!q.chai.includes('crm-node')&&!q.chai.includes('crm-number')),'卡片及圆圈序号全部移除');
 ok(errors.length===0,'无脚本异常');ok(!Object.keys(w.localStorage).some(k=>/^bazi_/.test(k)),'仍只写盲派记录，不串命理精讲');
+// Course chapter inline reasoning buttons under matching .ichart elements
+w.YGN_HOOK.go({scr:'chapter',id:1});await wait(30);
+const chBtns=d.querySelectorAll('#chapterBody .ch-rs-btn');
+ok(chBtns.length>0,'课程教材匹配命例盘下方渲染AI推理拆解按钮（第1章共'+chBtns.length+'例）');
+click(chBtns[0]);await wait(50);
+const chMap=d.querySelector('#chapterBody .ch-rs-box .case-reasoning .reasoning-map pre code');
+ok(!!chMap,'课程内点击按钮展开AI推理及正文内箭头图');
 console.log('通过',checks,'项批次、936例及回查检查');dom.window.close();
 })().catch(e=>{console.error(e);dom.window.close();process.exitCode=1});

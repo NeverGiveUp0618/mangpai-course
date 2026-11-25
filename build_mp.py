@@ -1070,6 +1070,36 @@ def build_outline(courses, notes, quiz):
     return ''.join(h)
 
 
+def stamp_course_reasoning(courses, quiz):
+    """Stamp matching 936-case IDs onto textbook and raw-manuscript icharts."""
+    by_id = {q['id']: q for q in quiz['items']}
+    ichart_re = re.compile(r'<div class="ichart">(.*?)</div></div></div>', re.S)
+
+    def repl(m):
+        blk = m.group(1)
+        lb = re.search(r'<span class="lb">([^<]+)</span>', blk)
+        g = lb.group(1)[0] if lb and lb.group(1) and lb.group(1)[0] in '乾坤' else ''
+        stems = re.findall(r'<span class="a [^"]+">([^<]+)</span>', blk)[:4]
+        brs = re.findall(r'<span class="b [^"]+">([^<]+)</span>', blk)[:4]
+        if len(stems) == 4 and len(brs) == 4:
+            cid = g + ''.join(stems) + ''.join(brs)
+            q = by_id.get(cid)
+            if q:
+                is_g = '1' if (q.get('reasoningOrder') or 0) >= 481 else '0'
+                return '<div class="ichart" data-case-id="%s" data-case-n="%s" data-case-g="%s">%s</div></div></div>' % (
+                    html_lib.escape(cid, quote=True), q['n'], is_g, blk
+                )
+        return m.group(0)
+
+    stamped = 0
+    for c in courses:
+        new_html, cnt = ichart_re.subn(repl, c['html'])
+        if cnt:
+            c['html'] = new_html
+            stamped += new_html.count('data-case-id="')
+    return stamped
+
+
 def main():
     # 「我没学过」对照页随教材自动更新（读 ../bazi-course 只读）
     import subprocess
@@ -1082,6 +1112,7 @@ def main():
     plain = build_plain(courses)
     quiz = build_quiz()
     link_related(courses, quiz)
+    stamped_charts = stamp_course_reasoning(courses, quiz)
     ref = build_ref(courses)
     st = build_selftest(courses)
     meta = {
@@ -1115,6 +1146,7 @@ def main():
         ('data-meta.js', write_js('data-meta.js', 'DATA_META', meta)),
     ]
     print('== 构建完成 ==')
+    print('  courseReasoningStamped', stamped_charts)
     for k, v in meta['counts'].items():
         print('  %-10s %s' % (k, v))
     for nme, sz in sizes:

@@ -1214,3 +1214,8 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 .case-reasoning p{line-height:1.9;margin:12px 0}
 .case-reasoning li{line-height:1.9;margin:7px 0}
 .case-reasoning p strong,.case-reasoning li strong{font-weight:700}
+.ch-rs-wrap{margin:6px 0 18px}
+.ch-rs-btn{font-size:13px;padding:6px 12px}
+.ch-rs-btn.on{background:var(--indigo-soft);border-color:var(--indigo);color:var(--indigo)}
+.ch-rs-box{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);overflow-x:hidden}
+.ch-rs-box .case-reasoning h2{font-size:15.5px;margin:0 0 8px}
