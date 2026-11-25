@@ -10,6 +10,17 @@ var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 var META = window.DATA_META || {};
 
+// A reading-map jump stays within the current case; no hash-route or history change.
+document.addEventListener('click', function (event) {
+  var button = event.target.closest('[data-cr-jump]');
+  if (!button) return;
+  var section = button.closest('.case-reasoning');
+  var title = button.getAttribute('data-cr-jump');
+  var target = Array.prototype.find.call(section.querySelectorAll('h2,h3'), function (h) { return h.textContent.trim() === title; });
+  if (target) { target.scrollIntoView({block:'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }
+});
+
+
 /* 论命八步法入站自检：通过后 5 天内不再出现（2026-11-08 用户：已经记得差不多了，不用次次做）。 */
 
 
@@ -193,9 +204,11 @@ function _apply(scr, id) {
 /* 笔记位置钩子（易术堂共用 notes.js 用）：存笔记时记下「现在在哪一节」，笔记本里点「回到出处」就能回来。
  * 保留原 {scr,id} 路由；新拆解可选 layer=chai，回出处时展开该层，不改变学习标记键。 */
 var caseNoteLayer = null;
+var caseNoteMap = null;
 window.YGN_HOOK = {
-  loc: function () { if(cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') return null; var l={scr:cur.scr,id:cur.id}; if(cur.scr==='quiz' && $('#L3 .case-reasoning')) l.layer='chai'; return l; },
-  go: function (l) { if(l && l.scr){var same=cur.scr===l.scr&&cur.id===l.id;caseNoteLayer=l.scr==='quiz'&&l.layer==='chai'?+l.id:null;show(l.scr,l.id===undefined?null:l.id);if(same&&caseNoteLayer!==null) RENDER.quiz(+l.id);} }
+  blocks: '.crm-text',
+  loc: function () { if(cur.scr === 'home' || cur.scr === 'search' || cur.scr === 'mynotes' || cur.scr === 'review') return null; var l={scr:cur.scr,id:cur.id}; if(cur.scr==='quiz' && $('#L3 .case-reasoning')) { l.layer='chai'; if($('#L3 .reasoning-map[open]')) l.map=true; } return l; },
+  go: function (l) { if(l && l.scr){var same=cur.scr===l.scr&&cur.id===l.id;caseNoteLayer=l.scr==='quiz'&&l.layer==='chai'?+l.id:null;caseNoteMap=l.map&&l.scr==='quiz'?+l.id:null;show(l.scr,l.id===undefined?null:l.id);if(same&&caseNoteLayer!==null) RENDER.quiz(+l.id);} }
 };
 function show(scr, id, find) {
   // find＝{kw,occ}：从搜索结果跳过来时，渲染完要滚到那一处并高亮
@@ -2190,6 +2203,7 @@ RENDER.quiz = function (n) {
       $('#L3').innerHTML = '<div class="reveal chai doc">' +
         '<div class="muted" style="margin-bottom:8px">我补的推理，非原文，可推翻。</div>' +
         it.chai + '</div>';
+      if(caseNoteMap===n){$$('.reasoning-map', $('#L3')).forEach(function(m){m.open=true;});caseNoteMap=null;}
       bindDoc($('#L3'));
     }
     function openJie() {

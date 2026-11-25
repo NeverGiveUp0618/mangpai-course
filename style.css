@@ -1206,3 +1206,22 @@ li.red .dbox.on{background:#dc2626;border-color:#dc2626}
 
 /* Long source labels must wrap inside narrow case-answer panels. */
 #s-quiz .src-line .src{white-space:normal;overflow-wrap:anywhere}
+
+/* Case reasoning: authored diagrams and optional paragraph-grounded reading maps. */
+.reasoning-map{margin:18px 0;border:1px solid var(--line);border-radius:12px;background:var(--bg2);min-width:0}
+.reasoning-map>summary{padding:13px 15px;cursor:pointer;font-weight:700;color:var(--accent,var(--ink));overflow-wrap:anywhere}
+.reasoning-map>summary>span{display:inline-block;margin-left:10px;font-size:.8em;font-weight:400;color:var(--muted)}
+.crm-figure{margin:0;padding:0 14px 14px;min-width:0}
+.crm-figure figcaption{font-weight:600;font-size:.9em;margin:0 0 12px;line-height:1.65;overflow-wrap:anywhere}
+.crm-nodes{display:grid;gap:12px;min-width:0}
+.crm-node{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);border-left:3px solid var(--accent,#537e70);border-radius:8px;padding:12px;background:var(--card,var(--bg));min-width:0;position:relative}
+.crm-node>div{min-width:0;flex:1}.crm-node strong{display:block;font-size:.9em;line-height:1.6;overflow-wrap:anywhere}
+.crm-text{display:block;font-size:.88em;line-height:1.85;margin-top:5px;white-space:normal;overflow-wrap:anywhere}
+.crm-number{flex:none;border:1px solid var(--line);border-radius:50%;font-size:.72em;min-width:1.6em;line-height:1.6em;text-align:center;margin-top:3px;color:var(--muted)}
+.crm-counter{border-left-color:#b48c43}.crm-limit{border-left-style:dashed;border-left-color:var(--muted,#8d8d82)}
+.crm-note{font-size:.77em;line-height:1.8;color:var(--muted);border-top:1px dashed var(--line);margin-top:13px;padding-top:10px}
+.crm-jump{display:block;border:0;background:transparent;color:var(--accent,#537e70);font:inherit;font-size:.78em;padding:8px 0 0;cursor:pointer;text-align:left}
+.crm-jump:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.crm-chain .crm-node:not(:last-child)::after,.crm-timeline .crm-node:not(:last-child)::after{content:'↓';position:absolute;bottom:-17px;left:22px;z-index:1;line-height:18px;color:var(--muted);background:var(--bg2)}
+.case-reasoning h2:focus,.case-reasoning h3:focus{outline:2px solid var(--line);outline-offset:5px;scroll-margin-top:170px}
+@media(min-width:720px){.crm-parallel,.crm-compare,.crm-branches{grid-template-columns:repeat(2,minmax(0,1fr))}.crm-parallel .crm-limit:last-child,.crm-compare .crm-limit:last-child{grid-column:1/-1}}

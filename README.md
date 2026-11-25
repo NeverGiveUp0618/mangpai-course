@@ -54,3 +54,9 @@ _src/txt/*.txt（原始资料提取文本，不进 git）
 正文源为 `content/命例拆解/*.md`，`目录.json` 按固定命例ID绑定并登记可逐字核对的短据，`批次.json` 记录授权批次与集合。`build_mp.py` 校验并构建附加层。该层接入全文搜索、共享全科笔记；笔记位置保留原scr/id，可选layer=chai用于回出处时展开拆解。
 
 检查：`python3 audit_case_reasoning.py`、`python3 build_mp.py`、`NODE_PATH=../bazi-course/node_modules node smoke_mp.js`、`NODE_PATH=../bazi-course/node_modules node tests_case_reasoning.js`。自动审计核对结构和引文，内容推理另行逐项复核；强断词信号不直接当作错误。内容改变须提升SW版本。不重跑convert.py，不生成纸本PDF。本次范围止于新增5例，不默认扩写全库。
+
+## 2026-11-25 全库规则复查与结构图
+
+936篇均做结构、四柱、引文和领域断言信号检查；疑点回看原文裁定，订正详见`reviews/reasoning-review-maps-20261125.json`。全量机检与疑点复核不等于936篇全都重新人工逐字精读，也不证明每个AI推断已经成立。保留原断原解及早期口径分层。
+
+25篇复杂命例新增专写推演图，按追踪、并行、对照、岁运或反证组织；其余911篇提供默认折叠的段落阅读结构，摘原文句、可跳正文，不额外生成因果。源为`content/命例拆解/结构图.json`，构建逐篇校对正文哈希与摘句；正文改动后需重新核图。原936命例字段及编号不动；旧AI层修改必须有本轮前后哈希记录。

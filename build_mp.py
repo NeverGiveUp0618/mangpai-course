@@ -11,6 +11,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 from mdlite import md2html, strip_md, render_chart  # noqa
 from fmt import beautify, split_sent  # noqa
+from reasoning_maps import render_reasoning_map
 
 CONTENT = os.path.join(ROOT, 'content')
 OUT = os.path.join(ROOT, 'data')
@@ -589,6 +590,9 @@ def attach_case_reasoning(items):
     assert len({r['caseId'] for r in rows}) == total
     assert {r['file'] for r in rows} == {f for f in os.listdir(folder) if f.endswith('.md')}
     by_id = {it['id']: it for it in items}
+    map_rows = json.loads(read(os.path.join(folder, '结构图.json')))
+    assert len(map_rows) == total and {m['caseId'] for m in map_rows} == set(ids)
+    map_by_id = {m['caseId']: m for m in map_rows}
     norm = lambda t: re.sub(r'\s+', '', t)
     for row in rows:
         it = by_id[row['caseId']]
@@ -610,7 +614,10 @@ def attach_case_reasoning(items):
             evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(quote_text), html_lib.escape(label))
         body = re.sub(r'^#\s+.*?\n', '', text, count=1)
         g_badge = ' <span class="pill g" style="font-size:11px;vertical-align:middle;margin-left:6px">google推理拆解</span>' if row['order'] >= 481 else ''
-        it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), g_badge, md2html(body), evidence)
+        rendered = md2html(body)
+        diagram = render_reasoning_map(map_by_id[row['caseId']], row, text)
+        rendered = re.sub(r'(?=<h2\b)', lambda m: diagram, rendered, count=1)
+        it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), g_badge, rendered, evidence)
         it['reasoningTitle'] = row['title']
         it['reasoningOrder'] = row['order']
     return batches
