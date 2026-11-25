@@ -12,7 +12,9 @@ const styleReview=JSON.parse(fs.readFileSync('reviews/reasoning-style-20261125.j
 const styleChanges=new Map(styleReview.changes.map(r=>[r.file,r]));
 const styleReview2=JSON.parse(fs.readFileSync('reviews/reasoning-style-batch2-20261125.json'));
 const styleChanges2=new Map(styleReview2.changes.map(r=>[r.file,r]));
-const preservedOrReviewed=(file,expected)=>{let current=expected;for(const changes of [reviewedChanges,styleChanges,styleChanges2]){const r=changes.get(file);if(r&&r.beforeSha256===current)current=r.afterSha256;}return sha(fs.readFileSync('content/命例拆解/'+file))===current;};
+const styleReview3=JSON.parse(fs.readFileSync('reviews/reasoning-style-batch3-20261125.json'));
+const styleChanges3=new Map(styleReview3.changes.map(r=>[r.file,r]));
+const preservedOrReviewed=(file,expected)=>{let current=expected;for(const changes of [reviewedChanges,styleChanges,styleChanges2,styleChanges3]){const r=changes.get(file);if(r&&r.beforeSha256===current)current=r.afterSha256;}return sha(fs.readFileSync('content/命例拆解/'+file))===current;};
 const baselineManifest=manifest.map(r=>reviewedChanges.get(r.file)?.originalRow||r);
 ok(fullReview.scope===936&&fullReview.cases.every(r=>preservedOrReviewed(r.file,r.sha256)),'全936篇审校与后续改写版本逐篇可追溯');
 const firstHashes=['a513577303050edc8b2d6919581a020e897e4f79c0bd8a4d600695275a4d6748','cc2a0bfa9135ca4c619971494a62bac6a8fda900992819e2a66c8c41e12c6a76','1c58da1cf993a22b5bf352b78b3c1bee3c0cea3ea5f769e0d6d972a30d52b9ac','78c0e221fa3b2d5b8f912a61471fa995969f6f711242c2e6d71b226010f80808','acfde514ca0e8914145861390057f47e770aa3172b9c3e4ccffcaf61bfacc379'];
@@ -47,7 +49,7 @@ ok(previous780.items.length===200&&previous780.items.every(r=>preservedOrReviewe
 const all=qs.filter(q=>q.reasoningOrder).sort((a,b)=>a.reasoningOrder-b.reasoningOrder),latest=all.filter(q=>approved.batches.at(-1).caseIds.includes(q.id));
 ok(all.length===936&&latest.length===156&&all.map(q=>q.id).join('|')===manifest.map(r=>r.caseId).join('|'),'授权集合及936稳定ID与顺序一致');
 ok(Q.reasoningBatches.length===11&&Q.reasoningBatches.at(-1).count===156,'新旧批次独立记录');
-ok(all.filter(q=>q.chai.includes('class="reasoning-map"')).length===125&&!all.some(q=>/paragraph-excerpts|本篇阅读结构|data-cr-jump/.test(q.chai)),'811份阅读提纲全部移除，只留125篇专门设计图');
+ok(all.filter(q=>q.chai.includes('class="reasoning-map"')).length===825&&!all.some(q=>/paragraph-excerpts|本篇阅读结构|data-cr-jump/.test(q.chai)),'其余111份阅读提纲全部移除，只留825篇专门设计图');
 ok(all.every(q=>q.chai.includes('class="case-reasoning"')&&q.chai.includes('推断')&&q.chai.includes('核对依据短句')),'936例渲染推理层、推断标识与来源核对入口');
 ok(all.filter(q=>q.reasoningOrder>=481).every(q=>q.chai.includes('google推理拆解'))&&all.filter(q=>q.reasoningOrder<481).every(q=>!q.chai.includes('google推理拆解')),'481起加google推理拆解标识，前480不混加');
 ok(latest.every(q=>!q.chai.split('<details class="reasoning-evidence">')[1].includes('**')),'新短据不显示原Markdown加粗符号');
@@ -73,7 +75,7 @@ const target=latest[0],loc={scr:'quiz',id:target.n,layer:'chai'};w.YGN_HOOK.go(l
 click($('#btnSearch'));await wait(30);$('#q').value=target.reasoningTitle;$('#q').dispatchEvent(new w.Event('input',{bubbles:true}));await wait(1100);
 const hit=$('#hits .hit[data-h]');ok(!!hit,'新增文章的推理标题可全文搜索');click(hit);await wait(30);ok($('.case-reasoning')?.dataset.caseReasoning===target.id,'搜索进入正确新例并展开推理层');
 const maps=JSON.parse(fs.readFileSync('content/命例拆解/结构图.json'));
-ok(maps.length===125&&maps.every(m=>m.basis==='authored-reading-map'),'源文件中也已删除其余阅读提纲，共125篇专门设计图');
+ok(maps.length===825&&maps.every(m=>m.basis==='authored-reading-map'),'源文件中也已删除其余阅读提纲，共825篇专门设计图');
 const authored=qs.find(q=>q.id===maps[0].caseId),ordinary=qs.find(q=>!maps.some(m=>m.caseId===q.id));
 w.YGN_HOOK.go({scr:'quiz',id:ordinary.n,layer:'chai'});await wait(10);ok(!$('.reasoning-map')&&!!$('.case-reasoning'),'普通案例直接读正文，不再显示无用提纲');
 w.YGN_HOOK.go({scr:'quiz',id:authored.n,layer:'chai'});await wait(10);ok(!!$('.reasoning-map pre code')&&!$('.reasoning-map summary'),'正文内直接显示箭头图，不使用卡片或折叠框');
@@ -83,12 +85,13 @@ w.YGN_HOOK.go(mapLoc);await wait(30);ok(!!$('.reasoning-map pre code'),'图中�
 ok([889,926].every(order=>qs.find(q=>q.reasoningOrder===order).chai.includes('盘源待核 · 旧补解已撤回')),'两篇盘源未对齐的案例在入口明确标注');
 ok(styleReview.changes.length===25&&styleReview.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'首25篇实质重写具前后版本记录');
 ok(styleReview2.changes.length===100&&styleReview2.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'第二批100篇实质重写具前后版本记录');
+ok(styleReview3.changes.length===700&&styleReview3.changes.every(r=>preservedOrReviewed(r.file,r.beforeSha256)),'第三批700篇实质重写具前后版本记录');
 for(const m of maps){const q=qs.find(q=>q.id===m.caseId),frag=new JSDOM(q.chai).window.document,body=frag.querySelector('.case-reasoning');ok(body.querySelectorAll('.reasoning-step').length>=3&&!body.textContent.includes('data-reasoning-map-slot'),'重写'+m.order+'图位解析正确、保留分层讲解');}
 w.YGN_HOOK.go({scr:'qlist',id:null});await wait(10);click($('[data-m="reasoning-style"]'));await wait(10);
-ok(d.querySelectorAll('#qRows [data-q]').length===125,'本轮图解筛选含全部125篇');
+ok(d.querySelectorAll('#qRows [data-q]').length===825,'本轮图解筛选含全部825篇');
 const styleFirst=qs.find(q=>q.id===Q.reasoningStyleCaseIds[0]);click($('#qRows [data-q="'+styleFirst.n+'"]'));await wait(10);
-ok(!!$('.case-reasoning .reasoning-map pre code'),'从125例入口直接打开新推理');click($('#bNext'));await wait(10);
-ok(w.YGN_HOOK.loc().id===qs.find(q=>q.id===Q.reasoningStyleCaseIds[1]).n&&!!$('.reasoning-map pre code'),'本轮图解下一例在125篇中翻页且直接显示推理');
+ok(!!$('.case-reasoning .reasoning-map pre code'),'从825例入口直接打开新推理');click($('#bNext'));await wait(10);
+ok(w.YGN_HOOK.loc().id===qs.find(q=>q.id===Q.reasoningStyleCaseIds[1]).n&&!!$('.reasoning-map pre code'),'本轮图解下一例在825篇中翻页且直接显示推理');
 ok(all.every(q=>!q.chai.includes('crm-node')&&!q.chai.includes('crm-number')),'卡片及圆圈序号全部移除');
 ok(errors.length===0,'无脚本异常');ok(!Object.keys(w.localStorage).some(k=>/^bazi_/.test(k)),'仍只写盲派记录，不串命理精讲');
 console.log('通过',checks,'项批次、936例及回查检查');dom.window.close();

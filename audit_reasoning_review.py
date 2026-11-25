@@ -7,12 +7,14 @@ load=lambda p:json.loads(p.read_text())
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 rows=load(D/'目录.json');maps=load(D/'结构图.json');report=load(R/'reviews/reasoning-review-maps-20261125.json')
 assert len(rows)==len(report['cases'])==936
-assert len(maps)==125 and len({m['caseId'] for m in maps})==125
+assert len(maps)==825 and len({m['caseId'] for m in maps})==825
 style=load(R/'reviews/reasoning-style-20261125.json')
 style2=load(R/'reviews/reasoning-style-batch2-20261125.json')
+style3=load(R/'reviews/reasoning-style-batch3-20261125.json')
 rewrites={c['file']:c for c in style['changes']}
 rewrites2={c['file']:c for c in style2['changes']}
-assert len(rewrites)==25 and len(rewrites2)==100 and style['removedParagraphMaps']==911
+rewrites3={c['file']:c for c in style3['changes']}
+assert len(rewrites)==25 and len(rewrites2)==100 and len(rewrites3)==700 and style['removedParagraphMaps']==911
 cases={x['caseId']:x for x in report['cases']}
 for r in rows:
  p=D/r['file'];expected=cases[r['caseId']]['sha256']
@@ -21,6 +23,9 @@ for r in rows:
   expected=c['afterSha256']
  if r['file'] in rewrites2:
   c=rewrites2[r['file']];assert c['beforeSha256']==expected
+  expected=c['afterSha256']
+ if r['file'] in rewrites3:
+  c=rewrites3[r['file']];assert c['beforeSha256']==expected
   expected=c['afterSha256']
  assert sha(p)==expected,r['order']
 by_id={r['caseId']:r for r in rows}
@@ -31,7 +36,7 @@ for m in maps:
  rendered=render_reasoning_map(m,r,text)
  assert 'reasoning-map' in rendered and '<pre><code>' in rendered
 for c in report['changes']:
- cur_sha=rewrites.get(c['file'],{}).get('beforeSha256') or rewrites2.get(c['file'],{}).get('beforeSha256') or sha(D/c['file'])
+ cur_sha=rewrites.get(c['file'],{}).get('beforeSha256') or rewrites2.get(c['file'],{}).get('beforeSha256') or rewrites3.get(c['file'],{}).get('beforeSha256') or sha(D/c['file'])
  assert cur_sha==c['afterSha256']
  assert rows[c['order']-1]==c['updatedRow']
 # These prevent real errors found in the review from silently coming back.
@@ -41,12 +46,12 @@ for order,(good,bad) in checks.items():
 assert '原盘并无亥' in (D/rows[839]['file']).read_text()
 assert '现撤回' in (D/rows[846]['file']).read_text()
 assert '不能恢复成已证实的完整推理' in (D/rows[874]['file']).read_text()
-assert sum(m['basis']=='authored-reading-map' for m in maps)==125
+assert sum(m['basis']=='authored-reading-map' for m in maps)==825
 
 for order in (889,926):
  t=(D/rows[order-1]['file']).read_text();assert '站内题盘四柱' in t and '撤回' in t and '文字版' in t
 assert '盘源对照' in (D/rows[925]['file']).read_text()
-print(f'通过：936正文版本与结构图溯源、125篇正文重写/专写图、911折叠提纲已移除、{len(report["changes"])}例订正记录及关键错误回归。')
+print(f'通过：936正文版本与结构图溯源、825篇正文重写/专写图、911折叠提纲已移除、{len(report["changes"])}例订正记录及关键错误回归。')
 
 flows=load(R/'reviews/reasoning-flow-20261125.json')
 assert flows['scope']==25
@@ -57,6 +62,12 @@ for c in flows['cases']:
  assert 'nodes' not in m
 flows2=load(R/'reviews/reasoning-flow-batch2-20261125.json')
 assert flows2['scope']==125
-for m,c in zip(maps,flows2['cases']):
+for c in flows2['cases']:
+ m=by_map[c['caseId']]
+ assert hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
+ assert 'nodes' not in m
+flows3=load(R/'reviews/reasoning-flow-batch3-20261125.json')
+assert flows3['scope']==825
+for m,c in zip(maps,flows3['cases']):
  assert m['caseId']==c['caseId'] and hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
  assert 'nodes' not in m

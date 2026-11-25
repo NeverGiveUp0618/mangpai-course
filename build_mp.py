@@ -591,7 +591,7 @@ def attach_case_reasoning(items):
     assert {r['file'] for r in rows} == {f for f in os.listdir(folder) if f.endswith('.md')}
     by_id = {it['id']: it for it in items}
     map_rows = json.loads(read(os.path.join(folder, '结构图.json')))
-    assert len(map_rows) == len({m['caseId'] for m in map_rows}) == 125
+    assert len(map_rows) == len({m['caseId'] for m in map_rows}) == 825
     assert {m['caseId'] for m in map_rows} <= set(ids)
     assert all(m['basis'] == 'authored-reading-map' for m in map_rows)
     map_by_id = {m['caseId']: m for m in map_rows}
