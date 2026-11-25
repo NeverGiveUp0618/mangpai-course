@@ -45,12 +45,12 @@ _src/txt/*.txt（原始资料提取文本，不进 git）
 
 验证：`python3 build_mp.py`、`NODE_PATH=../bazi-course/node_modules node smoke_mp.js`。测试覆盖19课可达、原课映射、翻页边界、默认折叠及展开记忆、进度隔离、笔记出处和图内搜索。内容或入口变化须提升 `sw.js` 缓存版本。
 
-## AI推理拆解：475例（2026-11-25）
+## AI推理拆解：480例（2026-11-25）
 
-“练 → AI推理拆解·475例”查看全部，“本次新增·50例”单独查看这一批。内容围绕制净与漏洞、做功与归属、宾主和中神、原局与运年、职业与关系取象中的反直觉问题。进入原命例后先“对答案”，再展开“AI推理拆解”。筛选内上一题/下一题按拆解顺序前进，并在当前批次边界停止。
+“练 → AI推理拆解·480例”查看全部，“本次新增·5例”单独查看这一批。内容围绕制净与漏洞、做功与归属、宾主和中神、原局与运年、职业与关系取象中的反直觉问题。进入原命例后先“对答案”，再展开“AI推理拆解”。筛选内上一题/下一题按拆解顺序前进，并在当前批次边界停止。
 
-原936个命例及编号、固定ID、原断原解、盘面与大运保留；只在475个现有命例的拆解层追加文章。已上线的425篇逐字保留，本次再增50篇。AI推断与站内依据分清，保留未解问题和原文异说，不把案例反馈反推为通用公式。
+原936个命例及编号、固定ID、原断原解、盘面与大运保留；只在480个现有命例的拆解层追加文章。已上线的475篇逐字保留，本次再增5篇。AI推断与站内依据分清，保留未解问题和原文异说，不把案例反馈反推为通用公式。
 
 正文源为 `content/命例拆解/*.md`，`目录.json` 按固定命例ID绑定并登记可逐字核对的短据，`批次.json` 记录授权批次与集合。`build_mp.py` 校验并构建附加层。该层接入全文搜索、共享全科笔记；笔记位置保留原scr/id，可选layer=chai用于回出处时展开拆解。
 
-检查：`python3 audit_case_reasoning.py`、`python3 build_mp.py`、`NODE_PATH=../bazi-course/node_modules node smoke_mp.js`、`NODE_PATH=../bazi-course/node_modules node tests_case_reasoning.js`。自动审计核对结构和引文，内容推理另行逐项复核；强断词信号不直接当作错误。内容改变须提升SW版本。不重跑convert.py，不生成纸本PDF。本次范围止于新增50例，不默认扩写全库。
+检查：`python3 audit_case_reasoning.py`、`python3 build_mp.py`、`NODE_PATH=../bazi-course/node_modules node smoke_mp.js`、`NODE_PATH=../bazi-course/node_modules node tests_case_reasoning.js`。自动审计核对结构和引文，内容推理另行逐项复核；强断词信号不直接当作错误。内容改变须提升SW版本。不重跑convert.py，不生成纸本PDF。本次范围止于新增5例，不默认扩写全库。

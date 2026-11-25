@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-25",
+  "scope": "新增476—480五篇，逐篇核四柱、角色、推理与反问，11条短据读同盘上下文并核本地原始文字。原475篇保持。",
+  "reviewedFullArticles": [
+    476,
+    477,
+    478,
+    479,
+    480
+  ],
+  "correctionsAndLimits": [
+    "476分制巳劫、化杀与辰酉库病三路，不用局部完成为全盘盖章；不扩历史人物身份与亲属应事。",
+    "477丁巳连根不称丁禄巳；被制为根体，未净不等普通财官效率低，不补病寿。",
+    "478丁为日主，丙为年干，保留源后句误写日主丙的疑点；隔位与当期到位不量化。",
+    "479子为乙之偏印，兼数字与单位象；局部自合与全局杀无制的原说并列，投资亏损不作普遍规则。",
+    "480同盘男女性别与运序分开；职业入墓、有冲不入墓、婚姻见库得旺的未解不硬圆。",
+    "476与命例原解初级09的巳制癸方向不同，明确列异说，不把水制火与火制水强合。追加第三短据。"
+  ],
+  "items": [
+    {
+      "order": 476,
+      "caseId": "乾癸甲丁甲巳子酉辰",
+      "file": "476-命例48-劫财已制尽为何辰中七杀仍叫病-先问制尽的是哪一组.md",
+      "question": "劫财已制尽为何辰中七杀仍叫病-先问制尽的是哪一组",
+      "sha256": "91c7d896383ab604428af8b4d727c80908b71b1326f55a945eb557dac003d5a6",
+      "evidenceCount": 3
+    },
+    {
+      "order": 477,
+      "caseId": "坤壬辛丁辛子亥巳亥",
+      "file": "477-命例10-既说制不干净为何仍不能当普通低效率-被制的先是根体.md",
+      "question": "既说制不干净为何仍不能当普通低效率-被制的先是根体",
+      "sha256": "990e08ecbef6ae8b39f4495fdefaebcb8fe0b7f3e5ec4846e9dc5d1ee435a49b",
+      "evidenceCount": 2
+    },
+    {
+      "order": 478,
+      "caseId": "乾丙辛丁丁戌丑酉未",
+      "file": "478-命例109-远隔刑冲为何未年又加重-到位改变的是作用位置.md",
+      "question": "远隔刑冲为何未年又加重-到位改变的是作用位置",
+      "sha256": "f6e95fc9b73055fade158b9df07d146b8337255c2e04a6f1f56269b2fd986c2c",
+      "evidenceCount": 2
+    },
+    {
+      "order": 479,
+      "caseId": "坤辛庚乙辛酉子丑巳",
+      "file": "479-命例527-靠技术取财为何能细分会计-子水与单位怎样接到自己.md",
+      "question": "靠技术取财为何能细分会计-子水与单位怎样接到自己",
+      "sha256": "cd1a1cfb9ab5b21c26bf84be2ab6ed78524905675f2231c45b7c97209bb5d70e",
+      "evidenceCount": 2
+    },
+    {
+      "order": 480,
+      "caseId": "坤乙辛乙庚巳巳亥辰",
+      "file": "480-命例328-伤官印星都在为何不叫配印-工作路线和婚姻不能共判.md",
+      "question": "伤官印星都在为何不叫配印-工作路线和婚姻不能共判",
+      "sha256": "5be970511f8c74f6f73e3fe0c7df3a2c5043f299197ac47c99928b957c95d7be",
+      "evidenceCount": 2
+    }
+  ],
+  "validation": {
+    "contentAudit": {
+      "total": 480,
+      "sourceExcerpts": 964,
+      "newExcerpts": 11,
+      "unsourcedYears": 0,
+      "publicNamesOrPaths": 0
+    },
+    "smoke": {
+      "pass": 144,
+      "fail": 0
+    },
+    "caseReasoning": {
+      "pass": 1954,
+      "fail": 0
+    },
+    "chromeLocal": {
+      "layouts": 25,
+      "viewports": [
+        "320 dark 20px",
+        "390 dark",
+        "390 light",
+        "820 light",
+        "1440 dark"
+      ],
+      "pageOverflow": 0,
+      "screenshotsViewed": [
+        "390 light n48",
+        "1440 dark n109"
+      ]
+    },
+    "notebook": "n48 unique reasoning paragraph saved → old n766 → source return expanded and highlighted; temporary note removed",
+    "offline": "n48 genuine service-worker offline reload passed",
+    "cache": "mangpai-course-v65-reasoning-480",
+    "preserved": "old475 MD and directory prefix; all936 original fields",
+    "excluded": "no convert.py, PDF, _src/tmp commit"
+  }
+}

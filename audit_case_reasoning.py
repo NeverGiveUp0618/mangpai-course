@@ -6,11 +6,11 @@ R=Path(__file__).resolve().parent;D=R/'content/命例拆解'
 load=lambda p:json.loads(p.read_text())
 norm=lambda s:re.sub(r'\s+','',s)
 rows=load(D/'目录.json');approved=load(D/'批次.json');total=approved['approvedTotal']
-assert total==475 and len(rows)==total
+assert total==480 and len(rows)==total
 assert [r['order'] for r in rows]==list(range(1,total+1))
 ids=[i for b in approved['batches'] for i in b['caseIds']]
 assert len(ids)==len(set(ids))==total and set(ids)=={r['caseId'] for r in rows}
-assert [b['count'] for b in approved['batches']]==[5,100,20,100,100,100,50]
+assert [b['count'] for b in approved['batches']]==[5,100,20,100,100,100,50,5]
 assert len({r['file'] for r in rows})==total
 assert {r['file'] for r in rows}=={p.name for p in D.glob('*.md')}
 quiz_text=(R/'data/data-quiz.js').read_text()
@@ -42,8 +42,8 @@ for r in rows:
  if risky:flags.append({'order':r['order'],'file':r['file'],'signals':risky})
 repeats=[{'orders':v,'paragraph':k[:180]} for k,v in paragraphs.items() if len(v)>=3]
 assert not repeats,('长段落模板重复',repeats)
-print(f'通过：{total}例（5+100+20+100+100+100+50）、稳定ID/顺序、{quote_count}处可核短据、禁词、正文长度、无三篇共享长模板。')
+print(f'通过：{total}例（5+100+20+100+100+100+50+5）、稳定ID/顺序、{quote_count}处可核短据、禁词、正文长度、无三篇共享长模板。')
 print('篇长：',min(lengths),'—',max(lengths),'；中位数',statistics.median(lengths))
 print('需要语义复核的强断词条目：',len(flags),'（信号不等于错误）')
-if (R/'_src/reasoning_475').exists():
- (R/'_src/reasoning_475/audit-signals.json').write_text(json.dumps(flags,ensure_ascii=False,indent=2)+'\n')
+if (R/'_src/reasoning_480').exists():
+ (R/'_src/reasoning_480/audit-signals.json').write_text(json.dumps(flags,ensure_ascii=False,indent=2)+'\n')
