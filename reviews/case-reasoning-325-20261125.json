@@ -1,0 +1,971 @@
+{
+  "date": "2026-11-25",
+  "scope": "新增226—325共100篇；root逐项审阅机制/反问/边界提要和公开短据，并重点全文核源。原225篇与目录前225保持。",
+  "corrections": [
+    "根审必须查上下文指代，不能只凭引文命中。",
+    "A246/253与C318/321/322只论结构不扩实际伤害；相关机制若仍不足需换例。",
+    "226核源确认死木/隔位原神/主位三层；229原局冲开措辞保留不补辰；297原断身份错位不圆场。295输出过长截断，须补全文读。",
+    "234发现作者丙癸相合不成立，已发A要求重写；辰合癸只能核藏戊暗合口径或保留存疑。",
+    "243发现提要年月己应月己，通知A同步全文。",
+    "264丙财柱错误通知B修，金水伤官按组合称谓不强作十神错误。",
+    "246前置卯无用/印泄官疑邻盘，通知A重核本地同盘锚点。",
+    "309丁日原稿称巳禄，退C按禄表明示称谓疑点，不能默认为丁禄巳。",
+    "246根实读本地辅导站答疑汇编三次同盘戊辛壬癸/辰酉子卯，确认印泄官/卯无用确为同盘，允许保留但标另一轮同盘答疑。",
+    "A最终34篇新增角色核对段全部复看；B264最终已改组合统称/具体食神分层并纠正丙七杀。",
+    "初轮全325/653短据审计通过；新100源外年号0，公开路径0，强断词新信号均反问/否定/引用，不机械改。",
+    "C最终33篇AI推断末段再读，316新增把巳误称己禄退修；313删除写作指令式类比句，309末段去同禄误称。"
+  ],
+  "reviewedMatrixAndQuotes": [
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    241,
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287,
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    325
+  ],
+  "fullArticleReview": [
+    226,
+    229,
+    234,
+    236,
+    240,
+    242,
+    243,
+    246,
+    247,
+    252,
+    253,
+    256,
+    257,
+    264,
+    270,
+    277,
+    280,
+    282,
+    287,
+    290,
+    292,
+    295,
+    297,
+    299,
+    305,
+    307,
+    309,
+    314,
+    318,
+    319,
+    320,
+    321,
+    322,
+    325
+  ],
+  "items": [
+    {
+      "order": 226,
+      "caseId": "乾戊甲甲庚戌子子午",
+      "file": "226-命例784-两子冲午为何仍是子印受制.md",
+      "sha256": "6eff9c63013cd83debfe2f9e0f6b96b3b41f6518dfe004ad2e16e0c35137a88c",
+      "evidenceCount": 2,
+      "question": "两子冲午为何仍是子印受制"
+    },
+    {
+      "order": 227,
+      "caseId": "乾甲壬丁辛申申卯亥",
+      "file": "227-命例269-没有食伤为何仍能靠医术挣钱.md",
+      "sha256": "c4927a46dd6c3ebe7e03dfa046b0dd44cb5e35c3ad76d930d1b56ada1928e7d0",
+      "evidenceCount": 2,
+      "question": "没有食伤为何仍能靠医术挣钱"
+    },
+    {
+      "order": 228,
+      "caseId": "乾壬乙丙丁寅巳寅酉",
+      "file": "228-命例293-印与财相绝为何仍能在单位用手艺.md",
+      "sha256": "d1c7084c939363885be4a32145715a9c54b4d98313b83f0f6beb70b72d67c4ff",
+      "evidenceCount": 2,
+      "question": "印与财相绝为何仍能在单位用手艺"
+    },
+    {
+      "order": 229,
+      "caseId": "乾癸己癸壬丑未丑戌",
+      "file": "229-命例625-辰运能冲财库为何收入仍归单位.md",
+      "sha256": "91baabd5d715b124b9f5da9e85711fe4598eb18aa2f6fbcafeded84355883e3e",
+      "evidenceCount": 2,
+      "question": "辰运能冲财库为何收入仍归单位"
+    },
+    {
+      "order": 230,
+      "caseId": "坤癸乙戊己卯卯寅未",
+      "file": "230-命例819-乙能克己为何到未运仍救不了财局.md",
+      "sha256": "5b2e516797feb2d0d7a127ef7f1f5bd8e81131ef930f22b2ef89587567580e02",
+      "evidenceCount": 2,
+      "question": "乙能克己为何到未运仍救不了财局"
+    },
+    {
+      "order": 231,
+      "caseId": "乾丁辛辛辛亥亥丑卯",
+      "file": "231-命例837-比肩多为何能转成伤官的艺术功.md",
+      "sha256": "9eb28fde49add83fc13bc1bd6cae27c4f58b9fa9a11e83a29c1788e84e2ddfa5",
+      "evidenceCount": 2,
+      "question": "比肩多为何能转成伤官的艺术功"
+    },
+    {
+      "order": 232,
+      "caseId": "乾丙甲丁庚午午酉戌",
+      "file": "232-命例866-同是戌穿酉为何透丙就改变功的归属.md",
+      "sha256": "585b1d11b7e3b50f326d97ab30813c679778299f25869238f03716f932ce56b2",
+      "evidenceCount": 2,
+      "question": "同是戌穿酉为何透丙就改变功的归属"
+    },
+    {
+      "order": 233,
+      "caseId": "乾甲丙己庚辰寅亥午",
+      "file": "233-命例24-官印相生又合身为何寅亥合仍坏工作.md",
+      "sha256": "1dc6ed9e4dc9feb9ce3d4d37e655fb3f90e7fd4b534caed1428447fa58945f40",
+      "evidenceCount": 2,
+      "question": "官印相生又合身为何寅亥合仍坏工作"
+    },
+    {
+      "order": 234,
+      "caseId": "乾庚丁癸丙申亥丑辰",
+      "file": "234-命例624-辰在主位合身为何仍是合伙而非独资.md",
+      "sha256": "e26037080f46b77dd58d980cd82389fc0022e446060006d022d1fc97b6426c9b",
+      "evidenceCount": 2,
+      "question": "辰在主位合身为何仍是合伙而非独资"
+    },
+    {
+      "order": 235,
+      "caseId": "乾丁壬辛己酉寅亥亥",
+      "file": "235-命例52-财伤都归己为何先做小股东后办厂.md",
+      "sha256": "228b7cba46f0f1682f3d22ca7ee8448421ecb904ee4d62bb7ad08dfc00a72a7a",
+      "evidenceCount": 2,
+      "question": "财伤都归己为何先做小股东后办厂"
+    },
+    {
+      "order": 236,
+      "caseId": "乾乙丙丁庚巳戌未戌",
+      "file": "236-命例79-戌中辛已制为何庚合乙仍未入贼捕.md",
+      "sha256": "9c24933ac059f0004eca58471cc7e82923eac6c1537b9432423e13469714e549",
+      "evidenceCount": 2,
+      "question": "戌中辛已制为何庚合乙仍未入贼捕"
+    },
+    {
+      "order": 237,
+      "caseId": "乾戊辛丙庚申酉申寅",
+      "file": "237-命例80-丙辛合财身弱为何反以制印得权.md",
+      "sha256": "cc71f7cb9b6a69d775546432ca7fabb833b5917856df636eeedf4e64d944d563",
+      "evidenceCount": 2,
+      "question": "丙辛合财身弱为何反以制印得权"
+    },
+    {
+      "order": 238,
+      "caseId": "乾甲丙己戊辰子未辰",
+      "file": "238-命例101-婚姻宫失用为何甲己合仍可保身份.md",
+      "sha256": "7634a20b5eca56800a4703243d484f5af96bc3df9ad1a9399a81178a73bc8e92",
+      "evidenceCount": 2,
+      "question": "婚姻宫失用为何甲己合仍可保身份"
+    },
+    {
+      "order": 239,
+      "caseId": "乾甲丁丙壬子卯午辰",
+      "file": "239-命例116-无明财为何辰土能被取作妻星.md",
+      "sha256": "f0c69b6137c0977d1d80e86bcb85c8a826a084e631acef0482ae0a5073ae8a28",
+      "evidenceCount": 2,
+      "question": "无明财为何辰土能被取作妻星"
+    },
+    {
+      "order": 240,
+      "caseId": "乾己甲丁丙酉戌丑午",
+      "file": "240-命例130-午合未为何是引动开库而非绊住功神.md",
+      "sha256": "d77b8814eab5bf99d85a1653e138a454ec1e8081f380b36bc14868bcadc19257",
+      "evidenceCount": 2,
+      "question": "午合未为何是引动开库而非绊住功神"
+    },
+    {
+      "order": 241,
+      "caseId": "乾癸戊己甲卯午酉戌",
+      "file": "241-命例174-戊劫财能取财为何又为亲属损财.md",
+      "sha256": "fd51f10712c1ca84e8bd269fed8d99584fe9964e8fddb2f4584e7a0b8f0b23fc",
+      "evidenceCount": 2,
+      "question": "戊劫财能取财为何又为亲属损财"
+    },
+    {
+      "order": 242,
+      "caseId": "坤癸辛戊戊亥酉午午",
+      "file": "242-命例298-伤官生财为何仍可落到高校教职.md",
+      "sha256": "d62525ace2b5728fbb8333303cb5317bf217b5b6b24d768e8f3c6fd2f2f4cb12",
+      "evidenceCount": 2,
+      "question": "伤官生财为何仍可落到高校教职"
+    },
+    {
+      "order": 243,
+      "caseId": "乾乙己辛己卯丑酉亥",
+      "file": "243-命例299-辛禄入丑墓为何卯酉冲反可帮助教职.md",
+      "sha256": "08446a139dcca8449b478727d6d8e02662c121557ba49d84a4b8daa8cc4306a7",
+      "evidenceCount": 2,
+      "question": "辛禄入丑墓为何卯酉冲反可帮助教职"
+    },
+    {
+      "order": 244,
+      "caseId": "乾甲甲丙己寅戌午丑",
+      "file": "244-命例312-三合火制财库为何还要看甲己合.md",
+      "sha256": "b0181f65f06a633168918b97158b90d31c78ee9cc622bd19411e6df2a8e8f37d",
+      "evidenceCount": 2,
+      "question": "三合火制财库为何还要看甲己合"
+    },
+    {
+      "order": 245,
+      "caseId": "乾丁辛戊癸酉亥子亥",
+      "file": "245-命例813-戊癸已合自己的财为何仍要官来统财.md",
+      "sha256": "2196e0e3bd908adacaa6ae85320ac84ee69c4f746c8f6e37e087aa6eed80fcd8",
+      "evidenceCount": 2,
+      "question": "戊癸已合自己的财为何仍要官来统财"
+    },
+    {
+      "order": 246,
+      "caseId": "乾戊辛壬癸辰酉子卯",
+      "file": "246-命例815-癸合戊又卯穿辰为何要合看主位作用.md",
+      "sha256": "42dc4dab1c84ef70ae6f5cb3afba7be5d3ebf3993e874c4d23df5b3cc7263024",
+      "evidenceCount": 2,
+      "question": "癸合戊又卯穿辰为何要合看主位作用"
+    },
+    {
+      "order": 247,
+      "caseId": "乾壬癸壬丙子卯子午",
+      "file": "247-命例113-水势能制午为何卯破午反使取财失效.md",
+      "sha256": "44d266cc4a14ecb90aa4ff5b21c428a2e9b490635143c6b32f3448ae44bea249",
+      "evidenceCount": 2,
+      "question": "水势能制午为何卯破午反使取财失效"
+    },
+    {
+      "order": 248,
+      "caseId": "坤己己壬乙酉巳午巳",
+      "file": "248-命例124-己官两现为何一甲合留还要戌合午.md",
+      "sha256": "13da15b91d2f6d2e8f5936333da7533fc3c8ee54febbba43d2766fa569fec76e",
+      "evidenceCount": 2,
+      "question": "己官两现为何一甲合留还要戌合午"
+    },
+    {
+      "order": 249,
+      "caseId": "乾辛丙己甲亥申丑戌",
+      "file": "249-命例146-己合时官为何必须保住甲下的戌.md",
+      "sha256": "9fa427bcdb138b31be4fb78523fc1b6ad4ed839b3fd0a51cb2ffa370c2264744",
+      "evidenceCount": 2,
+      "question": "己合时官为何必须保住甲下的戌"
+    },
+    {
+      "order": 250,
+      "caseId": "坤壬丁戊己子未申未",
+      "file": "250-命例254-子未穿制财为何断会计而非自己发财.md",
+      "sha256": "d0e8421edd0d9a0147618733e05fb02fe9a766b581258eb18ab572eb2249b263",
+      "evidenceCount": 2,
+      "question": "子未穿制财为何断会计而非自己发财"
+    },
+    {
+      "order": 251,
+      "caseId": "乾辛庚丙丁卯子申酉",
+      "file": "251-命例660-官统财为何未穿子得的是财不是官.md",
+      "sha256": "579f04cfec7e8e6d033fade6c0944e3821fd0f023e39cdb3b4980cfbcc27a635",
+      "evidenceCount": 2,
+      "question": "官统财为何未穿子得的是财不是官"
+    },
+    {
+      "order": 252,
+      "caseId": "乾庚壬壬甲戌午午辰",
+      "file": "252-命例717-辰可冲财库为何甲坐辰反不能去辰.md",
+      "sha256": "606563df7699afcf3992b0af11711c431b821dfa7109aba22d8c052bf9f86361",
+      "evidenceCount": 2,
+      "question": "辰可冲财库为何甲坐辰反不能去辰"
+    },
+    {
+      "order": 253,
+      "caseId": "坤壬辛己丙寅亥未寅",
+      "file": "253-命例758-寅官带财入未为何不能直接判管财有权.md",
+      "sha256": "74c47ff59b3bdd3b79b96a0d614886f7d0c61472fc3cff2ac9cf84131eb3c9f3",
+      "evidenceCount": 2,
+      "question": "寅官带财入未为何不能直接判管财有权"
+    },
+    {
+      "order": 254,
+      "caseId": "乾庚庚癸癸寅辰未亥",
+      "file": "254-命例804-水有源又有库为何寅入未仍是小功.md",
+      "sha256": "8620354d4d21cd9b4994a2d1c81c8e99b1f5f48fee6a21bde852236417ec0ee5",
+      "evidenceCount": 2,
+      "question": "水有源又有库为何寅入未仍是小功"
+    },
+    {
+      "order": 255,
+      "caseId": "坤辛辛丁乙卯卯卯巳",
+      "file": "255-命例807-同为丁壬合为何一处婚缘一处财务争议.md",
+      "sha256": "c14617fc8dd78d761f13f2a7c2e1c36352b927d1d90963c47b5eaf9b3b5960fd",
+      "evidenceCount": 2,
+      "question": "同为丁壬合为何一处婚缘一处财务争议"
+    },
+    {
+      "order": 256,
+      "caseId": "乾乙乙戊乙丑酉寅卯",
+      "file": "256-命例824-卯酉冲很显眼为何老师只认寅丑合有功.md",
+      "sha256": "c78d7262646b3bc998ccb3243fe94a4f57bee8a3ef60718a39c81889baea46b8",
+      "evidenceCount": 2,
+      "question": "卯酉冲很显眼为何老师只认寅丑合有功"
+    },
+    {
+      "order": 257,
+      "caseId": "乾丁辛丙戊酉亥戌子",
+      "file": "257-命例77-丙辛合财为何戌根受穿就难成取财功.md",
+      "sha256": "e6b151a81fd1fb56bb4d9999a3d9a8813ac0938c467344443a2ac4287e0eab66",
+      "evidenceCount": 2,
+      "question": "丙辛合财为何戌根受穿就难成取财功"
+    },
+    {
+      "order": 258,
+      "caseId": "乾丙辛丁壬午卯卯子",
+      "file": "258-命例123-丁壬合官为何子卯破使合意难落实.md",
+      "sha256": "62a293664f1c751e437000a0892ab1c4061fb06fbd7fcf9bdf825aa2ee673f31",
+      "evidenceCount": 2,
+      "question": "丁壬合官为何子卯破使合意难落实"
+    },
+    {
+      "order": 259,
+      "caseId": "乾辛壬壬癸亥辰戌卯",
+      "file": "259-命例134-辰已冲戌为何近卯合库还能扭转得财.md",
+      "sha256": "9ff9ba8139e89803154fd210ab3f19c3a857eb22a64d5ad73a8d06a9fbaa1d77",
+      "evidenceCount": 2,
+      "question": "辰已冲戌为何近卯合库还能扭转得财"
+    },
+    {
+      "order": 260,
+      "caseId": "乾戊戊戊甲戌午午寅",
+      "file": "260-命例141-寅午戌一个不少，为什么反而没有合局做功.md",
+      "sha256": "e0cabf6efbc5e7d18e632c8b83e7653554160488765bd7f7cc3615047cac0b77",
+      "evidenceCount": 2,
+      "question": "寅午戌一个不少，为什么反而没有合局做功？"
+    },
+    {
+      "order": 261,
+      "caseId": "乾己丙甲乙未子寅丑",
+      "file": "261-命例214-甲己合已经花了钱，为什么不能证明工作就能办成.md",
+      "sha256": "15009ce7691d1f6d7a11e02356485e66fa9bf8c3f4e206b6a8851f219ffe1b07",
+      "evidenceCount": 2,
+      "question": "甲己合已经花了钱，为什么不能证明工作就能办成？"
+    },
+    {
+      "order": 262,
+      "caseId": "乾乙己庚庚巳丑午辰",
+      "file": "262-命例216-坐下午官被穿，为什么仍能讨论与财有关的职务.md",
+      "sha256": "887af2b1b75e46143ba4dbdbf325d58db1d8cbe882c0ad8f639cf1e26433cda9",
+      "evidenceCount": 2,
+      "question": "坐下午官被穿，为什么仍能讨论与财有关的职务？"
+    },
+    {
+      "order": 263,
+      "caseId": "乾戊戊甲己午午子巳",
+      "file": "263-命例255-食伤看似要制印，为什么原解却先取甲己合求财.md",
+      "sha256": "abb28a4c1cab4c068771ae13aef155fc4c2a02e901ba49f67d4388c601c4ce94",
+      "evidenceCount": 2,
+      "question": "食伤看似要制印，为什么原解却先取甲己合求财？"
+    },
+    {
+      "order": 264,
+      "caseId": "坤壬辛庚辛辰亥辰巳",
+      "file": "264-命例301-金水伤官的组合统称，怎样与本盘壬亥食神分层.md",
+      "sha256": "e61abbce3575b7f2773b1b18b9addc95f9f2803e3f61e9514b019e286cef5ca4",
+      "evidenceCount": 2,
+      "question": "金水伤官的组合统称，怎样与本盘壬亥食神分层？"
+    },
+    {
+      "order": 265,
+      "caseId": "乾庚己乙丙申丑未戌",
+      "file": "265-命例318-乙庚合官已有关系，为什么还要丙火与丑未来定职业.md",
+      "sha256": "3c62c6e7fec473b42f22c658b980a7471ce9a8a4336b77a8715bd99547f5e2d8",
+      "evidenceCount": 2,
+      "question": "乙庚合官已有关系，为什么还要丙火与丑未来定职业？"
+    },
+    {
+      "order": 266,
+      "caseId": "乾甲丙乙癸寅子酉未",
+      "file": "266-命例331-伤官配印有才，为什么还要财制印才能说明职务.md",
+      "sha256": "7541f4aaa88f355020d46d6211d171b724ede01b6156179c79d3f37f651c9e9f",
+      "evidenceCount": 2,
+      "question": "伤官配印有才，为什么还要财制印才能说明职务？"
+    },
+    {
+      "order": 267,
+      "caseId": "乾庚乙癸庚辰酉卯申",
+      "file": "267-命例681-八字没有明财，为什么印制卯食神却被取成银行.md",
+      "sha256": "c959eb0ffbee65f29612d40b834765499e6701d1f158f2d419ab47153722508a",
+      "evidenceCount": 2,
+      "question": "八字没有明财，为什么印制卯食神却被取成银行？"
+    },
+    {
+      "order": 268,
+      "caseId": "坤壬癸辛丙寅丑酉申",
+      "file": "268-命例695-丑酉申都被牵动，为什么不能直接相加为三次婚姻.md",
+      "sha256": "873a85a5c1387b0eb553f4968af6c4fce263cf4d0cb4aca9232e5a852fae9673",
+      "evidenceCount": 2,
+      "question": "丑酉申都被牵动，为什么不能直接相加为三次婚姻？"
+    },
+    {
+      "order": 269,
+      "caseId": "乾乙辛戊癸巳巳辰亥",
+      "file": "269-命例722-戊癸已经合财，为什么坐财库仍不能顺手取得.md",
+      "sha256": "da536daa1bc52472f6cb611888e910a6e6d5ceb2dc4cc5151ef65fb8603a97ca",
+      "evidenceCount": 2,
+      "question": "戊癸已经合财，为什么坐财库仍不能顺手取得？"
+    },
+    {
+      "order": 270,
+      "caseId": "坤丙癸辛癸寅巳酉巳",
+      "file": "270-命例797-两癸都在合巳，为什么不能说食神已经制住官.md",
+      "sha256": "e65f7eabb2dbf15df0d500ba9e000b5d11443cc75c687f92dfab51d2f633b729",
+      "evidenceCount": 2,
+      "question": "两癸都在合巳，为什么不能说食神已经制住官？"
+    },
+    {
+      "order": 271,
+      "caseId": "乾戊壬辛甲戌戌亥午",
+      "file": "271-命例850-午亥合能做功，为什么丁壬合却保护了原来要制的水.md",
+      "sha256": "bd67dc23df777a0a65920a339dde2d9af6db6f30b731cda8f6f1d203875655d2",
+      "evidenceCount": 2,
+      "question": "午亥合能做功，为什么丁壬合却保护了原来要制的水？"
+    },
+    {
+      "order": 272,
+      "caseId": "乾戊己癸己申未巳未",
+      "file": "272-命例19-先拿自己的财去合申，为什么原解说舍出去是为了再取得.md",
+      "sha256": "40aa17e4e2ea45cedad912916f7eb06cf2b400b1c6ec875e289828ca736a7d9f",
+      "evidenceCount": 2,
+      "question": "先拿自己的财去合申，为什么原解说舍出去是为了再取得？"
+    },
+    {
+      "order": 273,
+      "caseId": "乾壬丙壬丁子午辰未",
+      "file": "273-命例26-丁壬合财已经成立，为什么还要比较谁能承担谁.md",
+      "sha256": "f03aa286a2daff3cbacc2d35929aa38532ce0bc128dfebd0aa8d76fcad006d87",
+      "evidenceCount": 2,
+      "question": "丁壬合财已经成立，为什么还要比较谁能承担谁？"
+    },
+    {
+      "order": 274,
+      "caseId": "乾癸丁辛辛酉巳卯卯",
+      "file": "274-命例69-巳火已经制掉酉禄，为什么仍说年癸没有制净.md",
+      "sha256": "06c030e8a546b9dbc6188d45079510b0709bb78e2176bd1eacf47a2b5f8ffa91",
+      "evidenceCount": 2,
+      "question": "巳火已经制掉酉禄，为什么仍说年癸没有制净？"
+    },
+    {
+      "order": 275,
+      "caseId": "乾癸乙甲己未卯子巳",
+      "file": "275-命例73-子是坐下正印，为什么此盘允许用未穿它得权.md",
+      "sha256": "f9808c1e497508bbda68ada664427345e8b54df3273ca0b1cdae293516f80f9b",
+      "evidenceCount": 2,
+      "question": "子是坐下正印，为什么此盘允许用未穿它得权？"
+    },
+    {
+      "order": 276,
+      "caseId": "乾壬壬庚辛子寅辰巳",
+      "file": "276-命例100-同一个寅巳穿，为什么既能动工作又会牵出破财.md",
+      "sha256": "359fac012213d2543bb0b57be2ec80e0c19c43faed23a3c1216a49eb8bbd3e16",
+      "evidenceCount": 2,
+      "question": "同一个寅巳穿，为什么既能动工作又会牵出破财？"
+    },
+    {
+      "order": 277,
+      "caseId": "乾癸丙丙甲卯辰午午",
+      "file": "277-命例111-卯辰穿已有制水之意，为什么原解仍要等水运才得财.md",
+      "sha256": "dcfa1280f39dfd9c8c36fcc6581938a5774ae5aefe7c55b9dc9aaa093391b8d2",
+      "evidenceCount": 2,
+      "question": "卯辰穿已有制水之意，为什么原解仍要等水运才得财？"
+    },
+    {
+      "order": 278,
+      "caseId": "乾丁壬甲戊未子寅辰",
+      "file": "278-命例212-有的年份制印提升，有的年份印到提升，为什么不能混成一条.md",
+      "sha256": "4f05a2876bf940b74062c67d5a9704dd56ba4ec98d1525f0d4a8867e805a1d10",
+      "evidenceCount": 2,
+      "question": "有的年份制印提升，有的年份印到提升，为什么不能混成一条？"
+    },
+    {
+      "order": 279,
+      "caseId": "乾壬辛壬辛寅亥子亥",
+      "file": "279-命例253-两个辛亥一样，为什么一个取公家厂一个取自己的厂.md",
+      "sha256": "653a91208a770839a8b1c44ef8b0ad094d9ebf3780a316b977e53c2861f474ff",
+      "evidenceCount": 2,
+      "question": "两个辛亥一样，为什么一个取公家厂一个取自己的厂？"
+    },
+    {
+      "order": 280,
+      "caseId": "乾戊辛乙辛申酉巳巳",
+      "file": "280-命例267-官杀制不了仍可取医生，为什么技术与收入要分开.md",
+      "sha256": "071c78ab843105383edb1eac27f4197fb14baa86f069bab1bd86432e7e4b05a7",
+      "evidenceCount": 2,
+      "question": "官杀制不了仍可取医生，为什么技术与收入要分开？"
+    },
+    {
+      "order": 281,
+      "caseId": "乾丙辛乙戊辰丑酉寅",
+      "file": "281-命例289-看着像公检法，为什么细看酉的位置就改成技术工作.md",
+      "sha256": "772d732da6839dce6f39518473f9435e09a295765539a30910f9503bd855eaa5",
+      "evidenceCount": 2,
+      "question": "看着像公检法，为什么细看酉的位置就改成技术工作？"
+    },
+    {
+      "order": 282,
+      "caseId": "坤癸甲己乙卯子酉丑",
+      "file": "282-命例453-甲己合与卯酉冲都指向丈夫，为什么不能先数成两个.md",
+      "sha256": "fc4226782eb16b640d95e0284d30c8288a4a524be0034c063cb55f900b89412d",
+      "evidenceCount": 2,
+      "question": "甲己合与卯酉冲都指向丈夫，为什么不能先数成两个？"
+    },
+    {
+      "order": 283,
+      "caseId": "坤辛己丙丁酉亥申酉",
+      "file": "283-命例475-日申牵出年时两酉，为什么不能直接当成两位不同对象.md",
+      "sha256": "e1b99bd2a48393372a028c3776e7d66571159d68d6a80ab77181852114de8d75",
+      "evidenceCount": 2,
+      "question": "日申牵出年时两酉，为什么不能直接当成两位不同对象？"
+    },
+    {
+      "order": 284,
+      "caseId": "坤己癸乙壬酉酉卯午",
+      "file": "284-命例489-两个酉完全相同，为什么原解仍说不是同一个人.md",
+      "sha256": "e393a70753fb25918e0462091cb17ab1771a151d9532e9bbea4820f454ef82f0",
+      "evidenceCount": 2,
+      "question": "两个酉完全相同，为什么原解仍说不是同一个人？"
+    },
+    {
+      "order": 285,
+      "caseId": "坤壬丁丁辛子未卯丑",
+      "file": "285-命例510-丁壬合先指对象，为什么后面还要看冲合的去向.md",
+      "sha256": "4c9a1d1f2f1fdd3b80427c4c1689087593ee741d1e31fde5aba47830507c7888",
+      "evidenceCount": 2,
+      "question": "丁壬合先指对象，为什么后面还要看冲合的去向？"
+    },
+    {
+      "order": 286,
+      "caseId": "坤戊甲丁丙申子卯午",
+      "file": "286-命例513-申子为何被说成一个人的不同状态，而不是两位对象.md",
+      "sha256": "1ac5bea3c39779b93bfe48decdc99b31e635a68ff6e01457f1120b06d74ab91c",
+      "evidenceCount": 2,
+      "question": "申子为何被说成一个人的不同状态，而不是两位对象？"
+    },
+    {
+      "order": 287,
+      "caseId": "乾乙己甲庚巳卯戌午",
+      "file": "287-命例615-卯戌合帮助取财，为什么乙庚合却会动到原局的毛病.md",
+      "sha256": "422a0014d70bed6f9244a67fa403a9d65e7f1ac7bc99f0c7ba657dd2ed2106a2",
+      "evidenceCount": 2,
+      "question": "卯戌合帮助取财，为什么乙庚合却会动到原局的毛病？"
+    },
+    {
+      "order": 288,
+      "caseId": "坤戊癸庚戊午亥寅寅",
+      "file": "288-命例642-亥取数字还不够，为什么还要与寅财相合才落到会计.md",
+      "sha256": "1e0bb393da31d37cfd4ab03833d43e69d575d680fe41142701e9110ecde3af3c",
+      "evidenceCount": 2,
+      "question": "亥取数字还不够，为什么还要与寅财相合才落到会计？"
+    },
+    {
+      "order": 289,
+      "caseId": "乾甲丙壬甲辰寅寅辰",
+      "file": "289-命例801-食神一直生财，为什么到午运才从上班转为自行经营.md",
+      "sha256": "0ffa1c3a48ee94eedd3fd202a5fa71622943a138b71225771a821411dd7efae8",
+      "evidenceCount": 2,
+      "question": "食神一直生财，为什么到午运才从上班转为自行经营？"
+    },
+    {
+      "order": 290,
+      "caseId": "乾癸壬甲丁未戌辰卯",
+      "file": "290-命例832-癸印作为体被合去，为什么答疑仍说得到了用.md",
+      "sha256": "0846bdec7334587fcfec53ed8fe5d35f095780ba791b1e3c334ff509279a6f3d",
+      "evidenceCount": 2,
+      "question": "癸印作为体被合去，为什么答疑仍说得到了用？"
+    },
+    {
+      "order": 291,
+      "caseId": "乾癸壬丙丁卯戌午酉",
+      "file": "291-命例31-酉作为财被制可得钱，为什么同一酉作妻星又不能照判好.md",
+      "sha256": "a884ac36646b23e101931bff6e61777e638f3358e2645a1dde23643343c4d698",
+      "evidenceCount": 2,
+      "question": "酉作为财被制可得钱，为什么同一酉作妻星又不能照判好？"
+    },
+    {
+      "order": 292,
+      "caseId": "乾癸戊辛丙巳午丑申",
+      "file": "292-命例38-年巳官很远，为什么申入丑墓反而能把它接回本人.md",
+      "sha256": "5cc3cdd3a09a213d71236df7ed8c65a5ff23dde17e2103aa6ebd639eebcec06f",
+      "evidenceCount": 2,
+      "question": "年巳官很远，为什么申入丑墓反而能把它接回本人？"
+    },
+    {
+      "order": 293,
+      "caseId": "乾壬丙戊乙寅午寅卯",
+      "file": "293-命例43-寅杀已被印化-为何仍怕时上乙卯官.md",
+      "sha256": "7a75281af57ed0ddab536c496c43e9115fdfd5beb2967dcd6d63b5aff1b15d2f",
+      "evidenceCount": 2,
+      "question": "寅杀已被印化-为何仍怕时上乙卯官"
+    },
+    {
+      "order": 294,
+      "caseId": "坤己甲癸甲酉戌未子",
+      "file": "294-命例263-伤官穿禄有损-为何还能掌管公司财务.md",
+      "sha256": "2bd48c93fb98f9c9dcde2e14716dc1344eaafebf90fb3a241ec5744ce21d9bdc",
+      "evidenceCount": 2,
+      "question": "伤官穿禄有损-为何还能掌管公司财务"
+    },
+    {
+      "order": 295,
+      "caseId": "乾辛庚丙癸亥寅寅巳",
+      "file": "295-命例334-杀印相合已到坐下-为何还强调双寅穿巳.md",
+      "sha256": "ffbdccde630c6e24a64abaf315cce4e1d02584d75414cff0ee5c15a8e26c0940",
+      "evidenceCount": 2,
+      "question": "杀印相合已到坐下-为何还强调双寅穿巳"
+    },
+    {
+      "order": 296,
+      "caseId": "乾己庚甲庚酉午寅午",
+      "file": "296-命例389-甲己已合财-为何妻星还要沿午与酉辨归属.md",
+      "sha256": "26d24ebec4cac832f6ef9b06543974854ab47a7bc40eda3d149968465941e910",
+      "evidenceCount": 2,
+      "question": "甲己已合财-为何妻星还要沿午与酉辨归属"
+    },
+    {
+      "order": 297,
+      "caseId": "坤癸壬戊乙丑戌寅卯",
+      "file": "297-命例461-寅是正夫却先作情人-为何原断承认位错了.md",
+      "sha256": "1acaeee93b221e632ed4d640102e2d23b6a0212feb85e66962a7dfa055d8c347",
+      "evidenceCount": 2,
+      "question": "寅是正夫却先作情人-为何原断承认位错了"
+    },
+    {
+      "order": 298,
+      "caseId": "乾甲癸庚甲辰酉辰申",
+      "file": "298-命例738-伤官生财本是取财路-为何癸水反而坏了功.md",
+      "sha256": "49c79edc51135724bff5ba3fd3e9a8d31419a28506f3dc4a08ff44c6842a6dd0",
+      "evidenceCount": 2,
+      "question": "伤官生财本是取财路-为何癸水反而坏了功"
+    },
+    {
+      "order": 299,
+      "caseId": "坤乙丁乙己未亥亥卯",
+      "file": "299-命例805-女命无官以财代夫-为何又不能把两亥数成两婚.md",
+      "sha256": "78bb914a9690d348cd4dc6ddf361f8b07db95e4e2cd545149473899379d0c64c",
+      "evidenceCount": 2,
+      "question": "女命无官以财代夫-为何又不能把两亥数成两婚"
+    },
+    {
+      "order": 300,
+      "caseId": "坤癸丙己丁卯辰酉卯",
+      "file": "300-命例857-酉先冲卯又合辰-为何不能把每个合都当新丈夫.md",
+      "sha256": "febd4d4e1cc6144c403111f64db18249039c59d52ca3c426a0e573479d0e8b8b",
+      "evidenceCount": 2,
+      "question": "酉先冲卯又合辰-为何不能把每个合都当新丈夫"
+    },
+    {
+      "order": 301,
+      "caseId": "乾壬丁辛甲午未巳午",
+      "file": "301-命例22-火已成势仍等水运-为何伤官到反而权力到.md",
+      "sha256": "4dd51a227abc3b82b0bb2c0b8e924bb38d0608a200314faa99d5f83bcf5f8f4e",
+      "evidenceCount": 2,
+      "question": "火已成势仍等水运-为何伤官到反而权力到"
+    },
+    {
+      "order": 302,
+      "caseId": "乾丙辛己辛午丑未未",
+      "file": "302-命例119-丑被两未制却因入辰受保护-为何墓库反救目标.md",
+      "sha256": "5d618f93f528886c6a10bea7b1ba2d2ffa9f777bcfda58c08370b54d09553f2b",
+      "evidenceCount": 2,
+      "question": "丑被两未制却因入辰受保护-为何墓库反救目标"
+    },
+    {
+      "order": 303,
+      "caseId": "坤丙辛丙庚午卯戌子",
+      "file": "303-命例168-同是得财-为何辛金看本人而丁亥看丈夫.md",
+      "sha256": "61ace502ac239ec86ebed24e0073a92ee7a5e2740d85c5ee3f68e5fb0ac6270a",
+      "evidenceCount": 2,
+      "question": "同是得财-为何辛金看本人而丁亥看丈夫"
+    },
+    {
+      "order": 304,
+      "caseId": "乾壬癸癸辛寅丑丑酉",
+      "file": "304-命例195-寅合两丑能取财-为何不能一并定职业与婚次.md",
+      "sha256": "0c2ba461729a30d36c91cbc49ed928b654a7fd22c511828a48285c5e92b63327",
+      "evidenceCount": 2,
+      "question": "寅合两丑能取财-为何不能一并定职业与婚次"
+    },
+    {
+      "order": 305,
+      "caseId": "乾戊癸庚丁子亥戌丑",
+      "file": "305-命例220-金水成势仍碰不到戌-为何时柱争议决定做功.md",
+      "sha256": "899750db31c35731f0e30d8830db9bb80867bca376618279094dfe6b78c6dfa8",
+      "evidenceCount": 2,
+      "question": "金水成势仍碰不到戌-为何时柱争议决定做功"
+    },
+    {
+      "order": 306,
+      "caseId": "乾丁壬辛丁未寅丑酉",
+      "file": "306-命例340-寅丑暗合本能归妻-为何未墓与丑冲又使关系失稳.md",
+      "sha256": "c2472f5efedc6fe01f83cfb90805f73c3b63527445fbf679ec86254e8f2af802",
+      "evidenceCount": 2,
+      "question": "寅丑暗合本能归妻-为何未墓与丑冲又使关系失稳"
+    },
+    {
+      "order": 307,
+      "caseId": "乾壬戊戊甲午申申寅",
+      "file": "307-命例348-年壬明财为何仍存疑-癸卯成婚究竟动了谁.md",
+      "sha256": "407984892fde1af2032d7d7469f80d784e120ec4d615410f170aa2841a39e81d",
+      "evidenceCount": 2,
+      "question": "年壬明财为何仍存疑-癸卯成婚究竟动了谁"
+    },
+    {
+      "order": 308,
+      "caseId": "坤己庚甲戊酉午戌辰",
+      "file": "308-命例350-酉庚戌都作夫象-为何不能按三个符号数三婚.md",
+      "sha256": "4e4e6217a687542d1f34fe4f4eb2e11c4e04801f3d38b5d91acca0d804344d96",
+      "evidenceCount": 2,
+      "question": "酉庚戌都作夫象-为何不能按三个符号数三婚"
+    },
+    {
+      "order": 309,
+      "caseId": "坤戊丁丁戊申巳亥申",
+      "file": "309-命例426-原称巳禄尚有异文-为何宾位比肩又表示另一位女性.md",
+      "sha256": "a7316cf391e738af584c59b08ff410a6c01e75bfbf5b6e18e1c3bcbaccf59448",
+      "evidenceCount": 2,
+      "question": "原称巳禄尚有异文-为何宾位比肩又表示另一位女性"
+    },
+    {
+      "order": 310,
+      "caseId": "坤壬癸癸辛寅丑丑酉",
+      "file": "310-命例462-两丑伏吟可出可归-为何不能简单叫两任丈夫.md",
+      "sha256": "f50ec673a1a549dcdaab45be8673e00187963d24ed8ecd879ea47a9ba58e6d35",
+      "evidenceCount": 2,
+      "question": "两丑伏吟可出可归-为何不能简单叫两任丈夫"
+    },
+    {
+      "order": 311,
+      "caseId": "坤庚丁丙甲戌亥午午",
+      "file": "311-命例476-夫星在亥而午又两现-为何有桃花不等于婚姻必坏.md",
+      "sha256": "48c236038f4fb3daaa447fc3abf830f9374cc91b880e8c3ee8572e52302300db",
+      "evidenceCount": 2,
+      "question": "夫星在亥而午又两现-为何有桃花不等于婚姻必坏"
+    },
+    {
+      "order": 312,
+      "caseId": "乾癸癸庚庚卯亥午辰",
+      "file": "312-命例725-午合月亥像给别人做功-为何辰库又能把权归己.md",
+      "sha256": "15bf093b51273c53db1cdd33dca191455ec42f5daa1c7afab1b70ba694b1fd99",
+      "evidenceCount": 2,
+      "question": "午合月亥像给别人做功-为何辰库又能把权归己"
+    },
+    {
+      "order": 313,
+      "caseId": "坤辛庚庚己亥子寅卯",
+      "file": "313-命例730-两处财与两处宫同现-为何原解反而说婚姻好.md",
+      "sha256": "1512d3f8c470c85589a398d754034676815c8bb2c2e1afb17d454032de191a6d",
+      "evidenceCount": 2,
+      "question": "两处财与两处宫同现-为何原解反而说婚姻好"
+    },
+    {
+      "order": 314,
+      "caseId": "乾辛壬乙丁亥辰酉亥",
+      "file": "314-命例751-丁食神被印制而活木仍有用-为何落成思想研究.md",
+      "sha256": "af3412ed4e3731316613dc5792f37d07f0059801413175ac19723db7c46c11c0",
+      "evidenceCount": 2,
+      "question": "丁食神被印制而活木仍有用-为何落成思想研究"
+    },
+    {
+      "order": 315,
+      "caseId": "乾丙辛乙庚午卯丑辰",
+      "file": "315-命例780-乙庚合官已有求官意-为何伤官做功却落成修车.md",
+      "sha256": "05e73181cde62f603322362f9853e0a60062d4d29a7f6785ff920b84ff7d7a3e",
+      "evidenceCount": 2,
+      "question": "乙庚合官已有求官意-为何伤官做功却落成修车"
+    },
+    {
+      "order": 316,
+      "caseId": "乾癸乙己己巳卯巳巳",
+      "file": "316-命例47-地下卯杀已被巳化-为何天干乙仍成漏项.md",
+      "sha256": "2e28609f837bc7d1627aa6448b3484dd26b7ee6308335363c0a04ee93bf3087e",
+      "evidenceCount": 2,
+      "question": "地下卯杀已被巳化-为何天干乙仍成漏项"
+    },
+    {
+      "order": 317,
+      "caseId": "乾甲戊戊癸寅辰子丑",
+      "file": "317-命例54-戊癸合到了财-为何财又去生杀而不归我.md",
+      "sha256": "10ccf6ead7ed0d5e3d704feeab356b67f02b3b7cc5cd40009e9c2b4621cda145",
+      "evidenceCount": 2,
+      "question": "戊癸合到了财-为何财又去生杀而不归我"
+    },
+    {
+      "order": 318,
+      "caseId": "坤癸乙戊壬巳丑寅戌",
+      "file": "318-命例105-偏星坐宫可制-为何巳禄穿寅却被说成反局.md",
+      "sha256": "5f66e85fee24e95165818ab9ceb02812cfc3322654c5621f6947b3ec6db29591",
+      "evidenceCount": 2,
+      "question": "偏星坐宫可制-为何巳禄穿寅却被说成反局"
+    },
+    {
+      "order": 319,
+      "caseId": "乾戊己庚丁辰未午亥",
+      "file": "319-命例166-亥财源已被制-为何年辰无制却能暂不追究.md",
+      "sha256": "c8c5009fe3d08111e29c570c2ae586cbd095d57406c4bf88322096d35d860502",
+      "evidenceCount": 2,
+      "question": "亥财源已被制-为何年辰无制却能暂不追究"
+    },
+    {
+      "order": 320,
+      "caseId": "乾乙庚丁辛巳辰未亥",
+      "file": "320-命例219-庚辰财官在月令-为何乙印从未透出才说明归己.md",
+      "sha256": "d4fd53b05bd5c284f224dc39b2becb4b1da920ddb2208c95724c1618e57c2f6f",
+      "evidenceCount": 2,
+      "question": "庚辰财官在月令-为何乙印出自日未才说明归己"
+    },
+    {
+      "order": 321,
+      "caseId": "坤丁辛戊辛卯亥辰酉",
+      "file": "321-命例408-同是辛伤官-为何辛亥与辛酉被分成不同作用.md",
+      "sha256": "f0b096b55b9f6e465ab4d1cd583c81f2984f02b4c2ab16925459ad1697dedff4",
+      "evidenceCount": 2,
+      "question": "同是辛伤官-为何辛亥与辛酉被分成不同作用"
+    },
+    {
+      "order": 322,
+      "caseId": "乾己丙戊丁巳寅午巳",
+      "file": "322-命例693-寅木能生火-为何两巳见寅仍被说成穿禄反局.md",
+      "sha256": "d3050e7e87923f7b0a82030b83795ed40d70d7643e1fa96187b58601bd0d0abf",
+      "evidenceCount": 2,
+      "question": "寅木能生火-为何两巳见寅仍被说成穿禄反局"
+    },
+    {
+      "order": 323,
+      "caseId": "乾壬丙壬己子午辰酉",
+      "file": "323-命例774-己酉印带官帽已合坐下-为何仍不能据此定官命.md",
+      "sha256": "67325998c2c6345a4b20ffbbdd0928100ca1996af1dab6f308ac71337e0cd6bf",
+      "evidenceCount": 2,
+      "question": "己酉印带官帽已合坐下-为何仍不能据此定官命"
+    },
+    {
+      "order": 324,
+      "caseId": "乾壬己乙戊寅酉卯寅",
+      "file": "324-命例821-酉金是病却不能没有-为何制官不成仍可发财.md",
+      "sha256": "705e5fad638c5b14990183eb1c413dffc12ca9f94abfb23b5a14a88c855182b4",
+      "evidenceCount": 2,
+      "question": "酉金是病却不能没有-为何制官不成仍可发财"
+    },
+    {
+      "order": 325,
+      "caseId": "坤戊甲乙辛申寅巳巳",
+      "file": "325-命例846-巳申合已能制官-为何庚透合身反而坏了原路.md",
+      "sha256": "f4b68d2f187bf6d342e81526349a3fa7180394a1ee9cc05cdf2959037636961e",
+      "evidenceCount": 2,
+      "question": "巳申合已能制官-为何庚透合身反而坏了原路"
+    }
+  ],
+  "validation": {
+    "build": "passed",
+    "audit": "325 cases / 653 exact source snippets",
+    "smoke": "144 passed / 0 failed",
+    "caseRegression": "1328 passed",
+    "browser": "Chrome 320 dark 20px, 390 dark/light, 820 light, 1440 dark; new100 x5 =500 states, no overflow; screenshots reviewed",
+    "notebook": "saved unique case784 inference paragraph, returned via layer=chai and highlighted; test notes removed",
+    "offline": "service worker cached and offline-reloaded new case784 successfully",
+    "preservation": "original225 essay hashes and directory prefix, original936 field hash preserved",
+    "sourceExternalYears": 0,
+    "publicPathLeaks": 0,
+    "cache": "mangpai-course-v62-reasoning-325"
+  }
+}
