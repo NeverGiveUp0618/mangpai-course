@@ -2136,6 +2136,7 @@ RENDER.qlist = function () {
           return '<div class="qrow" data-q="' + it.n + '">' +
             '<span class="qn">' + it.seq + '</span>' +
             '<span class="t">' + (it.star ? '⭐'.repeat(Math.min(it.star, 3)) + ' ' : '') + esc(reasoningMode?(it.reasoningOrder+' · '+it.reasoningTitle):it.title) +
+            (it.reasoningOrder >= 481 ? ' <span class="pill g" style="font-size:10px">google</span>' : '') +
             (it.noAnswer ? ' <span class="pill g" style="font-size:10px">反推</span>' : '') + '</span>' +
             '<span class="s"><i class="dot ' + (seen[qk(it)] ? 'ok' : 'new') + '"></i></span></div>';
         }).join('') + '</div></div>';
@@ -2200,7 +2201,7 @@ RENDER.quiz = function (n) {
       bindDoc($('#L2'));
       if (it.chai) {
         $('#L3').innerHTML = '<button class="btn" id="bChai" style="width:100%;margin-top:10px">' +
-          (it.reasoningOrder ? 'AI推理拆解 · 为什么这样断' : '🔍 还是不懂 · 看拆解') + '</button>';
+          (it.reasoningOrder ? (it.reasoningOrder >= 481 ? 'google推理拆解 · 为什么这样断' : 'AI推理拆解 · 为什么这样断') : '🔍 还是不懂 · 看拆解') + '</button>';
         $('#bChai').onclick = openChai;
       }
     }

@@ -608,7 +608,8 @@ def attach_case_reasoning(items):
             quote_text = e['quote'].replace('**', '') if row['order'] > 125 else e['quote']
             evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(quote_text), html_lib.escape(label))
         body = re.sub(r'^#\s+.*?\n', '', text, count=1)
-        it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), md2html(body), evidence)
+        g_badge = ' <span class="pill g" style="font-size:11px;vertical-align:middle;margin-left:6px">google推理拆解</span>' if row['order'] >= 481 else ''
+        it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), g_badge, md2html(body), evidence)
         it['reasoningTitle'] = row['title']
         it['reasoningOrder'] = row['order']
     return batches
