@@ -601,7 +601,8 @@ def attach_case_reasoning(items):
         evidence = ''
         for e in row['evidence']:
             source = os.path.abspath(os.path.join(ROOT, e['file']))
-            assert source.startswith(os.path.abspath(CONTENT) + os.sep)
+            txt_root = os.path.abspath(os.path.join(ROOT, '_src', 'txt')) + os.sep
+            assert source.startswith(os.path.abspath(CONTENT) + os.sep) or source.startswith(txt_root), e
             assert len(norm(e['quote'])) >= 6 and norm(e['quote']) in norm(read(source)), e
             label = e.get('label') or os.path.splitext(os.path.basename(source))[0]
             # New batch excerpts retain source Markdown for exact matching; show readable quote text.
