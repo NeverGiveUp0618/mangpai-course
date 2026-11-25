@@ -591,7 +591,9 @@ def attach_case_reasoning(items):
     assert {r['file'] for r in rows} == {f for f in os.listdir(folder) if f.endswith('.md')}
     by_id = {it['id']: it for it in items}
     map_rows = json.loads(read(os.path.join(folder, '结构图.json')))
-    assert len(map_rows) == total and {m['caseId'] for m in map_rows} == set(ids)
+    assert len(map_rows) == len({m['caseId'] for m in map_rows}) == 25
+    assert {m['caseId'] for m in map_rows} <= set(ids)
+    assert all(m['basis'] == 'authored-reading-map' for m in map_rows)
     map_by_id = {m['caseId']: m for m in map_rows}
     norm = lambda t: re.sub(r'\s+', '', t)
     for row in rows:
@@ -599,7 +601,7 @@ def attach_case_reasoning(items):
         path = os.path.join(folder, row['file'])
         assert os.path.dirname(os.path.abspath(path)) == os.path.abspath(folder)
         text = read(path)
-        assert 'AI推理拆解' in text and '推断' in text and len(text) > 900, row['file']
+        assert 'AI推理拆解' in text and '推断' in text and len(text) > 400, row['file']
         assert not re.search(r'视频|奇门|六爻', text), row['file']
         assert len(row['evidence']) >= 2
         evidence = ''
@@ -611,12 +613,20 @@ def attach_case_reasoning(items):
             label = e.get('label') or os.path.splitext(os.path.basename(source))[0]
             # New batch excerpts retain source Markdown for exact matching; show readable quote text.
             quote_text = e['quote'].replace('**', '') if row['order'] > 125 else e['quote']
-            evidence += '<blockquote><p>%s</p><p class="src-line">站内对照：%s</p></blockquote>' % (html_lib.escape(quote_text), html_lib.escape(label))
+            source_prefix = '源段待核（未确认同盘）' if row['order'] in (889, 926) else '站内对照'
+            evidence += '<blockquote><p>%s</p><p class="src-line">%s：%s</p></blockquote>' % (html_lib.escape(quote_text), source_prefix, html_lib.escape(label))
         body = re.sub(r'^#\s+.*?\n', '', text, count=1)
         g_badge = ' <span class="pill g" style="font-size:11px;vertical-align:middle;margin-left:6px">google推理拆解</span>' if row['order'] >= 481 else ''
+        if row['order'] in (889, 926):
+            g_badge += ' <span class="pill">盘源待核 · 旧补解已撤回</span>'
         rendered = md2html(body)
-        diagram = render_reasoning_map(map_by_id[row['caseId']], row, text)
-        rendered = re.sub(r'(?=<h2\b)', lambda m: diagram, rendered, count=1)
+        if row['caseId'] in map_by_id:
+            diagram = render_reasoning_map(map_by_id[row['caseId']], row, text)
+            slot = '<div data-reasoning-map-slot></div>'
+            assert rendered.count(slot) == 1, ('推演图须放在实际讲解位置', row['order'])
+            rendered = rendered.replace(slot, diagram)
+        else:
+            assert 'data-reasoning-map-slot' not in rendered, row['order']
         it['chai'] += '<hr><section class="case-reasoning" data-case-reasoning="%s"><h2>%s%s</h2>%s<details class="reasoning-evidence"><summary>核对依据短句</summary>%s</details></section>' % (html_lib.escape(it['id']), html_lib.escape(row['title']), g_badge, rendered, evidence)
         it['reasoningTitle'] = row['title']
         it['reasoningOrder'] = row['order']

@@ -19,7 +19,7 @@ by_id={q['id']:q for q in quiz['items']}
 source_cache={};paragraphs=defaultdict(list);lengths=[];quote_count=0;flags=[]
 for r in rows:
  p=D/r['file'];text=p.read_text();lengths.append(len(text))
- assert len(text)>900 and 'AI推理拆解' in text and '推断' in text,r['file']
+ assert len(text)>400 and 'AI推理拆解' in text and '推断' in text,r['file']
  assert text.startswith('# ') and text.count('\n## ')>=3,r['file']
  if r['order']>5:
   chart=by_id[r['caseId']]['chart'];pairs=[''.join(p) for p in zip(chart['gan'],chart['zhi'])]
@@ -42,7 +42,7 @@ for r in rows:
  if risky:flags.append({'order':r['order'],'file':r['file'],'signals':risky})
 repeats=[{'orders':v,'paragraph':k[:180]} for k,v in paragraphs.items() if len(v)>=3]
 assert not repeats,('长段落模板重复',repeats)
-print(f'通过：{total}例（5+100+20+100+100+100+50+5+100+200+156）、稳定ID/顺序、{quote_count}处可核短据、禁词、正文长度、无三篇共享长模板。')
+print(f'通过：{total}例（5+100+20+100+100+100+50+5+100+200+156）、稳定ID/顺序、{quote_count}处引文字面命中（不等于已证同盘）、禁词、正文长度、无三篇共享长模板。')
 print('篇长：',min(lengths),'—',max(lengths),'；中位数',statistics.median(lengths))
 print('需要语义复核的强断词条目：',len(flags),'（信号不等于错误）')
 if (R/'_src/reasoning_936').exists():

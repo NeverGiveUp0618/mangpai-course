@@ -10,17 +10,6 @@ var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 var META = window.DATA_META || {};
 
-// A reading-map jump stays within the current case; no hash-route or history change.
-document.addEventListener('click', function (event) {
-  var button = event.target.closest('[data-cr-jump]');
-  if (!button) return;
-  var section = button.closest('.case-reasoning');
-  var title = button.getAttribute('data-cr-jump');
-  var target = Array.prototype.find.call(section.querySelectorAll('h2,h3'), function (h) { return h.textContent.trim() === title; });
-  if (target) { target.scrollIntoView({block:'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }
-});
-
-
 /* 论命八步法入站自检：通过后 5 天内不再出现（2026-11-08 用户：已经记得差不多了，不用次次做）。 */
 
 
