@@ -1885,32 +1885,86 @@ function trackRead(id) {
 
 
 
+// Keep the original case analysis together; supplementary AI belongs after it.
+function chapterReasoningAnchor(chart) {
+  var analysisTitle = /^(?:[一二三四五六七八九十\d.、．（）()\s]+)?(?:原文|原局|命局)?(?:分析|解析|解说|解读|解|断语|断解|实际|反馈|做功|作用|运年|大运|流年|应期|婚姻|财运|官运|职业|学业|学历|六亲|父母|子女|健康|点评|说明|提示|小结|结论|第.{1,4}步)/;
+  var caseTitle = /^(?:\d+(?:\.\d+)*\s*)?(?:命例|案例|例\s*[一二三四五六七八九十百\d]|[乾坤]造|另一造|对照造)/;
+  var level = 2, prev = chart.previousElementSibling;
+  while (prev) {
+    if (/^H[1-6]$/.test(prev.tagName)) { level = +prev.tagName.slice(1); break; }
+    prev = prev.previousElementSibling;
+  }
+  var anchor = chart, hasAnalysis = false;
+  for (var next = chart.nextElementSibling; next; next = next.nextElementSibling) {
+    if (next.classList.contains('ch-rs-wrap')) continue;
+    var text = next.textContent.trim().replace(/^[★⭐🔍\s]+/, '');
+    var isChart = next.matches('.ichart') || !!next.querySelector('.ichart');
+    if (isChart) {
+      if (hasAnalysis) break;
+      // Adjacent comparison charts can share the analysis which follows them.
+      anchor = next;
+      continue;
+    }
+    if (next.tagName === 'HR') break;
+    if (/^H[1-6]$/.test(next.tagName)) {
+      var nl = +next.tagName.slice(1), isAnalysis = analysisTitle.test(text);
+      if (caseTitle.test(text) || nl < level || (!isAnalysis && (nl <= level || level <= 2))) break;
+      // A deeper heading introducing another chart belongs to that next case.
+      var after = next.nextElementSibling;
+      if (!isAnalysis && after && (after.matches('.ichart') || after.querySelector('.ichart'))) break;
+    } else if (next.tagName === 'P' && text.length < 110 && caseTitle.test(text)) {
+      var following = next.nextElementSibling;
+      var captionOnly = !/^[乾坤]造/.test(text) || /^[乾坤]造[：:\s]*$/.test(text) || (following && following.matches('.ichart'));
+      if (captionOnly) {
+        if (!hasAnalysis && following && following.matches('.ichart')) {
+          // The label and second chart introduce a comparison whose analysis follows both.
+          anchor = next;
+          continue;
+        }
+        break;
+      }
+    }
+    anchor = next;
+    if (text && !/^大运[：:\s]/.test(text)) hasAnalysis = true;
+  }
+  return anchor;
+}
+
 function attachChapterReasoning(root) {
   $$('.ichart[data-case-id]', root).forEach(function (el) {
-    if (el.nextElementSibling && el.nextElementSibling.classList.contains('ch-rs-wrap')) return;
+    if (el._chapterReasoningWrap && el._chapterReasoningWrap.isConnected) return;
     var cid = el.dataset.caseId;
     var cn = el.dataset.caseN;
     var isG = el.dataset.caseG === '1';
     var wrap = document.createElement('div');
     wrap.className = 'ch-rs-wrap';
+    wrap.dataset.caseId = cid;
+    wrap.dataset.caseN = cn;
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'btn ch-rs-btn';
+    btn.setAttribute('aria-expanded', 'false');
     btn.textContent = isG ? 'google推理拆解 · 为什么这样断' : 'AI推理拆解 · 为什么这样断';
     var box = document.createElement('div');
     box.className = 'ch-rs-box';
     box.hidden = true;
     wrap.appendChild(btn);
     wrap.appendChild(box);
-    el.parentNode.insertBefore(wrap, el.nextSibling);
+    var anchor = chapterReasoningAnchor(el);
+    var tail = anchor._chapterReasoningTail || anchor;
+    tail.parentNode.insertBefore(wrap, tail.nextSibling);
+    anchor._chapterReasoningTail = wrap;
+    el._chapterReasoningWrap = wrap;
     btn.onclick = function () {
       if (!box.hidden) {
         box.hidden = true;
         btn.classList.remove('on');
+        btn.setAttribute('aria-expanded', 'false');
         return;
       }
       box.hidden = false;
       btn.classList.add('on');
+      btn.setAttribute('aria-expanded', 'true');
       if (box.dataset.loaded === '1') return;
       box.innerHTML = '<div class="muted">载入AI推理拆解中…</div>';
       needQuiz().then(function (Q) {

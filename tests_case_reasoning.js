@@ -88,9 +88,12 @@ ok(errors.length===0,'无脚本异常');ok(!Object.keys(w.localStorage).some(k=>
 // Course chapter inline reasoning buttons under matching .ichart elements
 w.YGN_HOOK.go({scr:'chapter',id:1});await wait(30);
 const chBtns=d.querySelectorAll('#chapterBody .ch-rs-btn');
-ok(chBtns.length>0,'课程教材匹配命例盘下方渲染AI推理拆解按钮（第1章共'+chBtns.length+'例）');
+ok(chBtns.length>0,'课程教材匹配命例分析后渲染AI推理拆解按钮（第1章共'+chBtns.length+'例）');
+ok([...chBtns].every(b=>b.getAttribute('aria-expanded')==='false'&&b.nextElementSibling.hidden),'课程AI默认全部折叠，点击前不自动展示');
 click(chBtns[0]);await wait(50);
 const chMap=d.querySelector('#chapterBody .ch-rs-box .case-reasoning .reasoning-map pre code');
-ok(!!chMap,'课程内点击按钮展开AI推理及正文内箭头图');
+ok(!!chMap&&chBtns[0].getAttribute('aria-expanded')==='true','课程内手动点击展开AI推理及箭头图');
+click(chBtns[0]);ok(chBtns[0].nextElementSibling.hidden&&chBtns[0].getAttribute('aria-expanded')==='false','再次点击收起AI拆解');
+click(chBtns[0]);await wait(10);w.YGN_HOOK.go({scr:'chapter',id:2});await wait(30);w.YGN_HOOK.go({scr:'chapter',id:1});await wait(30);ok([...d.querySelectorAll('#chapterBody .ch-rs-box')].every(b=>b.hidden),'离开已展开章节后重进，AI仍默认折叠');
 console.log('通过',checks,'项批次、936例及回查检查');dom.window.close();
 })().catch(e=>{console.error(e);dom.window.close();process.exitCode=1});
