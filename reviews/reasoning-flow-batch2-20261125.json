@@ -1,0 +1,757 @@
+{
+  "date": "2026-11-25",
+  "scope": 125,
+  "reference": "bazi-course正文内pre/code箭头图；去卡片、序号圆圈、折叠框及统一摘要说明",
+  "cases": [
+    {
+      "caseId": "乾癸丁甲己巳巳戌巳",
+      "order": 1,
+      "flowSha256": "b46d7042521d6a71a66cabc5440d6fc0db480f7fa2647c77b5a86545af82d474",
+      "bodySha256": "5de1af97d7adfff68a2866235bb6a402932a943c09bdb9d0487d8dc5c8e05bd2"
+    },
+    {
+      "caseId": "乾辛庚甲庚巳寅申午",
+      "order": 2,
+      "flowSha256": "ef2bfc55b03b68087de6d143f45a1b95d7a87e4810eaaa649cf76d6d6cd29bfc",
+      "bodySha256": "b26272869a8a9baf29d590b3c91e04348c87e1e54b2290b4901ca8f8efe31956"
+    },
+    {
+      "caseId": "乾癸丙戊丙未辰戌辰",
+      "order": 3,
+      "flowSha256": "54293f4adf3f8c59f273c23a1d021c13f6ec0319159851069189a847408174b3",
+      "bodySha256": "4f33775386af6a5b31629e6a0000c46bfbbd2279e23a2b8e731093d82e253903"
+    },
+    {
+      "caseId": "乾乙己己庚巳丑未午",
+      "order": 4,
+      "flowSha256": "1e5dfab4b7001054a1326766e371db6612a0c40ebc5720155c34f156cdfa6a41",
+      "bodySha256": "b9ba27f15ce24c127ca1080d2473f1a50171b1da7202edd3c0f2c9f46670c871"
+    },
+    {
+      "caseId": "乾乙乙戊甲巳酉子寅",
+      "order": 5,
+      "flowSha256": "4bbdbf36c00121918549436aac1b452bf19b337fa027744a6c47479ca2716cda",
+      "bodySha256": "d4c684d674f8802da99a13b463ac3ff1be7287f6fae9bae846a77bd7882f9664"
+    },
+    {
+      "caseId": "乾辛辛丙癸丑卯寅巳",
+      "order": 6,
+      "flowSha256": "3e1d67b8776ca1cf31bfea4f31062d862e695a2cfc0717e43b7d046aa59892e2",
+      "bodySha256": "abaad15b1735f0ae0d83251dd8b5c6c381242166e1d9656f20bbf985dbd82049"
+    },
+    {
+      "caseId": "乾戊甲辛癸申寅卯巳",
+      "order": 7,
+      "flowSha256": "37cf6dab3d092089b7393c34baee18c37ecb580746600e975791e174c287ae72",
+      "bodySha256": "ff181d433ba5fadef47facfe81bbb8597e72b9d802b41dcd659974f0c4d4f1aa"
+    },
+    {
+      "caseId": "乾丁庚己庚亥戌巳午",
+      "order": 8,
+      "flowSha256": "88da2ac8d69c598d1a5300c60002c36acd24fcd79ba77b8680552039f7c295f6",
+      "bodySha256": "f90cfda5822ce79f810cb86efbc2fb7182b9254a6759204cf26cb5cefee80606"
+    },
+    {
+      "caseId": "乾甲壬癸甲午申卯寅",
+      "order": 9,
+      "flowSha256": "d1679b3bded4325535c4f560944c558c368e3d9a132f95dc1ac5e15a0d4a9c25",
+      "bodySha256": "85966981add6277fe9a0f29e27258a47ddb6aa14fc72b0668293d80c082ea7ac"
+    },
+    {
+      "caseId": "乾壬癸己己寅丑未巳",
+      "order": 10,
+      "flowSha256": "bb53384c9b096a8f8a0fa5acea48310154fe93515a73d8ce1d75e00b0a040c23",
+      "bodySha256": "c7b2d841e9862a0045192d612fc2b68407ba60a1186aa8ee0c7279ec9a4c3fb3"
+    },
+    {
+      "caseId": "乾癸丙戊丙卯辰子辰",
+      "order": 11,
+      "flowSha256": "901cfb365174b3b81f27e901e6873a8c227fde282e9e91aa07e792a683e8af73",
+      "bodySha256": "f3ad17a62199bd902523e023016766337b0976d521741b6824661e8cdf9c88f8"
+    },
+    {
+      "caseId": "坤乙乙丙庚未酉戌寅",
+      "order": 12,
+      "flowSha256": "848505788686b52702de749f25581243eac7609ecce8f86fa5a29af26e97893a",
+      "bodySha256": "05482e1a119aa18ada2682e4492483c654bf91ee79239eb3ef0192a1be01b262"
+    },
+    {
+      "caseId": "乾庚癸己丁寅未巳卯",
+      "order": 13,
+      "flowSha256": "672607ac94a16d33bbf4e9cb0136b4b38b21393f2dd82ccf02851f3c77f79029",
+      "bodySha256": "4a8f709aa264ce789338f2dd15540a60ad08579c4bb1c3df525ed640efa68022"
+    },
+    {
+      "caseId": "乾壬壬丁辛辰寅酉丑",
+      "order": 14,
+      "flowSha256": "f6cd93cddd5bdf54b9c745aa503d0c2c4b126161e31aa4868a4b15be896c1edc",
+      "bodySha256": "181bb6c3e65d0957892b554a3b9a1b6ed961813e7f02f92db6364087b1c0757e"
+    },
+    {
+      "caseId": "坤壬丙己辛子午巳未",
+      "order": 15,
+      "flowSha256": "13f50c8992ea2be0c7ed0273180e04ddecf612f2c115f98b4987798c2888acaf",
+      "bodySha256": "b049a853be62c35cae2188f1433086a388e3429c9295c6a2540885a677812499"
+    },
+    {
+      "caseId": "坤己丙丁癸酉寅卯卯",
+      "order": 16,
+      "flowSha256": "b8d42417382f7f7eddb893cc4caa9f7396f85fbcd1921b79b82c0b8a3285403b",
+      "bodySha256": "5d14ef0ddcf3812cd9c4b6b0c60f2205ff6e13f093c978b19e4b94046388a8fb"
+    },
+    {
+      "caseId": "坤丙戊丁丁子戌丑未",
+      "order": 17,
+      "flowSha256": "8185c63a5c548dfd982c8565a00beb5176527b5dee71b0982c11efa6d4e54c1c",
+      "bodySha256": "40fa4ed910bc2654b3668d811f5b4c54d21ba6a2b99df5831dafdc58a1db3648"
+    },
+    {
+      "caseId": "乾丁庚丙庚酉戌辰子",
+      "order": 18,
+      "flowSha256": "f33136e1d9f2fbbca2e66417cb6cf7764463fadd759c207fa037d515d244ac71",
+      "bodySha256": "9cf2237b9bda586fe13dd750616862635985c586d8683449efc3e3160ac56708"
+    },
+    {
+      "caseId": "坤己甲甲乙酉戌申丑",
+      "order": 19,
+      "flowSha256": "b8b4d628809f976763112722f53a1f68047653cf53c5062215fd85dae5b40daf",
+      "bodySha256": "64bd738da609a20abbb376f77e8be5684076011f3d702debf726edb6448d4453"
+    },
+    {
+      "caseId": "乾壬己癸辛申酉巳酉",
+      "order": 20,
+      "flowSha256": "19c72797f86feb5e96e38cfbc9c8e29f709e6a4469df961526809fd26bac2dec",
+      "bodySha256": "47e9b6a1f2b6b4fd34803d623064ae9333de1f1ac18efcecc08d383b01815caa"
+    },
+    {
+      "caseId": "乾己癸丁丁未酉巳未",
+      "order": 21,
+      "flowSha256": "682952f53545eeeeecda825b5eb717d6338666d696fa82739129cf266bc43b05",
+      "bodySha256": "29af12d3050229bf1df8da5989730cdb0daf9c60182854b8cd6907919c933799"
+    },
+    {
+      "caseId": "乾庚庚戊壬戌辰辰戌",
+      "order": 22,
+      "flowSha256": "ce1f2d9909ab084e960064bbc9a0e4d7dba549717ebae8cfd69af3a7752924e9",
+      "bodySha256": "236f4eee27c0abc063e246119b7b51ca269f4e923394178710335f2769785baa"
+    },
+    {
+      "caseId": "乾壬戊癸甲寅申巳寅",
+      "order": 23,
+      "flowSha256": "351d3da7852bb93439c1c531bfa1c1abbf3a64ca570c41f72a3a332e4f87f601",
+      "bodySha256": "8273cf4ff22ef623b8464a66aff206e07306072ea9ea1c6d5928234722046d03"
+    },
+    {
+      "caseId": "坤丙辛丙戊午卯戌子",
+      "order": 24,
+      "flowSha256": "7400386e8313645a1665fe596a3a50afe12cef9cac31fd9b37a9b2efecbbfebe",
+      "bodySha256": "2ac40672a2f003234a02d8315c064b598edf90c9eda64a45309965bd525ae8df"
+    },
+    {
+      "caseId": "坤乙乙丙己未酉戌丑",
+      "order": 25,
+      "flowSha256": "e83818036a957ed76a35e2c03f78eec9247690b2c72f627bb7df9c3a78e042a6",
+      "bodySha256": "76f7a7c69a990abad3b245a3f07b959dbec4eb1016971eb0c0621453c98035af"
+    },
+    {
+      "caseId": "乾辛戊庚己丑戌寅卯",
+      "order": 26,
+      "flowSha256": "f6692c5f005b4c71bcbd461ed4e82b7a78cf52b92b8f979a7acbe43c91bc5a08",
+      "bodySha256": "ca6fe959ca1bb2a4c075664c82ad5e2444554dc4be4459d4381dccdc8ec1e614"
+    },
+    {
+      "caseId": "乾乙丙辛戊巳戌亥戌",
+      "order": 27,
+      "flowSha256": "b1d935fd0c7f6b1ab02b669b01dc9b713863e33c19ea811e899f70c09aaf1aef",
+      "bodySha256": "aa7964cbcb6c664f3bd07f3c3b745d7d5535e7c9c0bc1f218957724948c95c18"
+    },
+    {
+      "caseId": "乾癸庚乙戊卯申未寅",
+      "order": 28,
+      "flowSha256": "afea0372cbe6f557d366ca249afc639665439cc78c3e3b0eabcf1b6989cacb27",
+      "bodySha256": "61af68ccac69519617b9d2a3c2970d016a5b874ec5d61be99a8462bb82fb77e7"
+    },
+    {
+      "caseId": "乾庚乙庚壬午酉子午",
+      "order": 29,
+      "flowSha256": "95d5d26738d010ea4a3ce59bf2a6d11eab3465be2b1ebbab23b5ca257571e282",
+      "bodySha256": "e5efbbfe0a5c452e6757523e1fcb95e3607d7dd6aac55a004f12d39491848abc"
+    },
+    {
+      "caseId": "乾丁壬庚壬亥子辰午",
+      "order": 30,
+      "flowSha256": "718b80655c1305e2439810fdc993f82b0e1f64e700f69d4b283f1cf06a67e8eb",
+      "bodySha256": "bf66281a90af363efb803786e468673411ca4fe3b7f3ccc9a145e7389d9ac6d2"
+    },
+    {
+      "caseId": "乾辛丁癸戊丑酉酉午",
+      "order": 31,
+      "flowSha256": "19210f09464d0c82e3168b24b139667730b981824af29fb96969a931afe574a2",
+      "bodySha256": "3b17366e8504f3fa244f6c87b509c58790ad8c2032ddce5ec7688ac3873cbf35"
+    },
+    {
+      "caseId": "乾辛己壬丙卯亥申午",
+      "order": 32,
+      "flowSha256": "8c23b038c1a1a32654e2d02807c0c2e7a0553827c60bc1b550e9b2e4042a87d9",
+      "bodySha256": "d22ba801a1e48089832db3f9781cc9de012c7ab56ffdb8ba3d42aa3481f138f9"
+    },
+    {
+      "caseId": "乾己辛丙丁巳未午酉",
+      "order": 33,
+      "flowSha256": "f14cb03cee49d35e4f6aed087edc4d43edeb591b4445695d122688082f90f5ae",
+      "bodySha256": "d4ae00830071a79132e0c611ed9480bf73ded11cf7c3dac63eea98a0df94bce1"
+    },
+    {
+      "caseId": "坤丁癸庚辛酉卯辰巳",
+      "order": 34,
+      "flowSha256": "8e56350c506d1d0b48e56b7f5112ba9fbdaab1b7c8e474ae6614a0582fb55fef",
+      "bodySha256": "a1ab00eb3d13d850d57d10e2e268c627f5e033961d8696f3ec2d33f6fcd3d881"
+    },
+    {
+      "caseId": "乾乙丙丙癸未戌寅巳",
+      "order": 35,
+      "flowSha256": "f45bfb4eff6788ab995fb8d53e7b6a4aa42b287c488f30028887d24293fbbf57",
+      "bodySha256": "cf44a55b2aba2f0fe3fa4b834ff18538541a36f38662ef103525d72b71825bb8"
+    },
+    {
+      "caseId": "乾乙甲己己未申未巳",
+      "order": 36,
+      "flowSha256": "835cbca676ec2ce47fa2607dcd94a437d862db3095387e71fe796f90dfe0af31",
+      "bodySha256": "448e82b333ffad4b088283acbd2141bc9ef67ba35cde9ad6523804135da43606"
+    },
+    {
+      "caseId": "乾丁戊庚丙酉申午戌",
+      "order": 37,
+      "flowSha256": "76cf3a94d7d26af3c82ced53ff748ff3e6c5778a4a0a4daeb7e5eea02401c055",
+      "bodySha256": "2d65e11866a321990b192406756826ebd9aa782c2b901bf882774e1f2908dde8"
+    },
+    {
+      "caseId": "乾壬辛丁癸寅亥丑卯",
+      "order": 38,
+      "flowSha256": "fbb95b798e5040d7386c8f2d6ba8a00dcc6961e02efb7f43bfc36d09e6ce638b",
+      "bodySha256": "9963c2c810142cad56e5f38f8e539507dcd8b210861f226d6f3c279d1af04d01"
+    },
+    {
+      "caseId": "乾甲癸丁庚寅酉丑子",
+      "order": 39,
+      "flowSha256": "acf88289100792bc222ec581fc457d4c02f0d4af07a063cb061acd6960a5199c",
+      "bodySha256": "d9e64a1f3bd3589838a93f62bef7daeda00e9ba9550ca5f9734dc788800508ef"
+    },
+    {
+      "caseId": "坤丙壬辛己申辰酉亥",
+      "order": 40,
+      "flowSha256": "784bbd32d4630aa33a324c8530b3b822af140db46b8aed92cdd8d61c8554d672",
+      "bodySha256": "73946c7252fcc992d7f96370a4e0925258d07d4b01da7eed799bca40f29d7649"
+    },
+    {
+      "caseId": "坤丁癸丁丙酉卯亥午",
+      "order": 41,
+      "flowSha256": "4441049256f004347d98c39468124be281223c6aac6bb91cf15d34bed6d1d18a",
+      "bodySha256": "681746d55fdcd07d68d8bab468f2914108dd5e8f6dcdebe83c5903283f6dc941"
+    },
+    {
+      "caseId": "乾甲庚庚丁辰午戌亥",
+      "order": 92,
+      "flowSha256": "88d4a320ae0380f996a8eef6c7cc1fe12fad00b1f2c4081a3379205832275e04",
+      "bodySha256": "1d08b5d54a82fdcbeeb5221555fabb4b6851d2da2ed5d44c9d2030afd034e1c6"
+    },
+    {
+      "caseId": "乾庚庚庚乙子辰午酉",
+      "order": 144,
+      "flowSha256": "a7f2b97b6eb9312d6f8f9716aba31862288debda1aaf44c1fe5fe5076335ee21",
+      "bodySha256": "d9ac30840c80075876714ee310f80983d16c44cd128d22b235582345d7e209ff"
+    },
+    {
+      "caseId": "坤戊甲丁丁午寅巳未",
+      "order": 147,
+      "flowSha256": "077571e22025e97c075f9ce15e7d3b78c7440c7370ebc29f12c600b3dd910537",
+      "bodySha256": "4793996732bd10dde2e554d8e835d933ed814dc183e147a68786361dafb96b08"
+    },
+    {
+      "caseId": "乾己癸壬庚未酉寅子",
+      "order": 155,
+      "flowSha256": "04972960a5e1042283d78ce92d5d9f6def5c2cbe2e00e10513398ed4a6f9f996",
+      "bodySha256": "b701ac25fb924725a3835f3e7769cba49dbedc429a25534cd7c6f03cdd6e478e"
+    },
+    {
+      "caseId": "乾戊癸庚丙子亥戌子",
+      "order": 172,
+      "flowSha256": "9602b777266a08dacf53c24ea7907b0cddfbe4ebf6fb59468858f700f14b3af0",
+      "bodySha256": "47da49a0591f0e8044f65f8d07f7cda149ef8fd702107d61c3b4119fa6abaaeb"
+    },
+    {
+      "caseId": "坤己丁癸庚酉丑卯申",
+      "order": 173,
+      "flowSha256": "28a4ff933ac9057f862fc74cb76c684af8cf10d23401a9f9122c5e5cd3778394",
+      "bodySha256": "8e5fcc6f80bc50e8e82d4e966caf05ffe579a0887a927e1a64b35d268dec5a85"
+    },
+    {
+      "caseId": "坤丁丙丙壬巳午午辰",
+      "order": 216,
+      "flowSha256": "0892369a9061a5dedf847537daf4f24a8ac4e09a120507dd2b8474e43fb0c470",
+      "bodySha256": "091566f4e2594f9fa7c3b24ff927524f62036b30b3260eefc96f9a75468bae37"
+    },
+    {
+      "caseId": "乾乙己壬丙卯卯申午",
+      "order": 221,
+      "flowSha256": "0e79ce31f2340f7f070dd9a2d6567d33f1b759b9225e3de9a0036bdc36cc3b2b",
+      "bodySha256": "a3180262bad15c4f569dddc0571d841f86e4363902eaa8ed5c205cb8881acee0"
+    },
+    {
+      "caseId": "乾戊壬乙丁午戌巳丑",
+      "order": 225,
+      "flowSha256": "7ffc3be2aae66f6d3809c9aa88e7009489abc11072674439231abac256860f6d",
+      "bodySha256": "0a9ed1a7dd505568b4ec65f573651d4b35e4b05da10ac0914717854b637013bf"
+    },
+    {
+      "caseId": "乾庚丁癸丙申亥丑辰",
+      "order": 234,
+      "flowSha256": "8f1bd595b50338c4f2c5ecbbe594ef81931b6e42be8cc146b73193629c7cf904",
+      "bodySha256": "03410fa7103ed04c38297358bcbf6d49fa7f9cdc7109453336a67757bb9e6f34"
+    },
+    {
+      "caseId": "乾壬癸壬丙子卯子午",
+      "order": 247,
+      "flowSha256": "d884817c93f06d5683acd4c4a0d7f0c0aadd17b3b74e8cbccc41207e91ff0dd7",
+      "bodySha256": "14e8880e0f1674c7a4c85af14b5972ad0b5c0c49c25e1c410d2030dadf849e7e"
+    },
+    {
+      "caseId": "乾丙辛丁壬午卯卯子",
+      "order": 258,
+      "flowSha256": "632878362c9006f062157c1192ff9c973be9086899d0d33ae1537cbc8a0ecd90",
+      "bodySha256": "a8b124b755e68bfaea185440cad665833306aed8e96710884305bd508d2bec32"
+    },
+    {
+      "caseId": "坤壬辛庚辛辰亥辰巳",
+      "order": 264,
+      "flowSha256": "bafc62610193fc9ded6bc866713eb5e964a657110b6a5f521f2d88c6b7d63aa7",
+      "bodySha256": "8447e6821746e429ea73ee7d99c26feb4aa6a6bcc88ab80cac26dced033ae3ff"
+    },
+    {
+      "caseId": "坤戊癸庚戊午亥寅寅",
+      "order": 288,
+      "flowSha256": "1dab9041f8192d6a34a3799ed22e3a3a0ad8747ea59f16fa1106034aa5b4daee",
+      "bodySha256": "5cd48877e3960d39bcce245d473ef17a7843234bb0fd167439b566e6580e9e5e"
+    },
+    {
+      "caseId": "乾丙辛乙庚午卯丑辰",
+      "order": 315,
+      "flowSha256": "85706a691d288b3be72950cde8a010bb37a3336807e888d06d37821e94afe8ca",
+      "bodySha256": "9ae08e709b75364d903bb9e50af409c8840f5389b5eef37dc8085d4a125ddf06"
+    },
+    {
+      "caseId": "乾甲丁癸壬午卯酉戌",
+      "order": 334,
+      "flowSha256": "f4c9c9ca48b88bdaf7168a0f97e0ad913833932e377a80ad1d6ae9692fd5c778",
+      "bodySha256": "ef1097d8a65b85686ff090054d7e6bd30d8b7b17a61a95537d90555e232d1f69"
+    },
+    {
+      "caseId": "坤辛庚己壬丑子亥申",
+      "order": 347,
+      "flowSha256": "7bd71eabff6fd1966d8b3138eeb2d4e1c8dfc82fefcda22d7b0be902800c78ab",
+      "bodySha256": "5221aee442398f434ad02bc998bd1196f3340179866919bb9c87852d2912a047"
+    },
+    {
+      "caseId": "乾丙甲乙甲申午卯申",
+      "order": 357,
+      "flowSha256": "c5e9f14a0379e8ff24a08b639567e1cfdd09818ce4a132412f70d86373d1df4a",
+      "bodySha256": "b5e039abdde53aefa92bc85d5c6bb6fc63520b136c2167a84eca9e1cd864aa22"
+    },
+    {
+      "caseId": "坤辛庚甲丙酉寅子寅",
+      "order": 375,
+      "flowSha256": "1b893bff02910554b4d1b1f3c23fcee20d4cebd204942be654011fcd25fbf1f8",
+      "bodySha256": "5002127b9fd0d8ee7e534336834e462c07633d83f8490f214e007476b82310c5"
+    },
+    {
+      "caseId": "坤戊丙己己午辰未巳",
+      "order": 403,
+      "flowSha256": "05e79065991adce92b3c3e4e4ec39d0d0124a5077fdd3040d1d4e8b8d6e311fd",
+      "bodySha256": "e47b07e384349035c37d7f7015a7787a61c727fb78e809fe5c9ebf171f3f2663"
+    },
+    {
+      "caseId": "乾己丁壬癸酉卯午卯",
+      "order": 405,
+      "flowSha256": "2d288592ee8ee1ec116a4a892fa84b06188ad02bc3b8dbc8d3319351e9e523e9",
+      "bodySha256": "9fe0471b30f7cd080ef29ec95bbdc9e3e7ae94c22d1e7b8a560d37575cf6dcca"
+    },
+    {
+      "caseId": "乾丙庚庚丙申子戌戌",
+      "order": 413,
+      "flowSha256": "b22129f6e93005ca377b9b424469e0933553290af170b0a446cb00563012afb8",
+      "bodySha256": "fd002f6614b41a8c3f76ae2854a5544db8a4d4f8387482d96e90a591d5205659"
+    },
+    {
+      "caseId": "乾癸庚癸戊巳申丑午",
+      "order": 418,
+      "flowSha256": "7f3b0b85fdf7f0eeed14b4872e0bdde90f572cd02ab8bd04062f9ccd33650c79",
+      "bodySha256": "41023ffb3a958ed8b5db082ac8238ca0c7edf90177fd5199a9a1cf25d1fd0393"
+    },
+    {
+      "caseId": "乾丙丙庚乙申申午酉",
+      "order": 420,
+      "flowSha256": "48a0eff1b48d4d3922bd8fd47f21184ee63efc28b54ae426e2c193956b323be2",
+      "bodySha256": "13f8c24e6410057cd87979290fb60166f376b84353659b0872c69648a7aa384f"
+    },
+    {
+      "caseId": "乾己乙甲甲酉亥午戌",
+      "order": 426,
+      "flowSha256": "c53e4159826c19a8cea5220ad3dcc3146215adfb9fe9da045182e223c1e22c8e",
+      "bodySha256": "e08702a173350cd3bb3494eb03a2482dc4adf0de618b59e8687dfa6cedc66698"
+    },
+    {
+      "caseId": "乾己丙丙戊巳子寅戌",
+      "order": 427,
+      "flowSha256": "3f8163d99ae64bc075a657376d37fc91ff4142f15e24dbf14fab1937373b33cc",
+      "bodySha256": "69fca01aaec344403c62bb343b7e1eadf22588b9e990d3f9113b70d693bddc87"
+    },
+    {
+      "caseId": "乾戊己乙丁戌未巳亥",
+      "order": 429,
+      "flowSha256": "1edf4e2f113ef379a568d430af17a061ecaa42d777a233ef7409edbbcbb78c93",
+      "bodySha256": "05e2d887f486286bb0dfbe58f8ba589413b6733110f136430d0a849c059e88c1"
+    },
+    {
+      "caseId": "乾庚戊丁庚申寅未子",
+      "order": 430,
+      "flowSha256": "d5744535eb35df5dac224040ddc5d2d5aa929e2b2dca9e8d0e5e8c4c83f368be",
+      "bodySha256": "30b9b035006509773c73824bddfd898003f2c6743a19c27062f85e6ecdf90117"
+    },
+    {
+      "caseId": "乾丁癸丁辛亥丑未亥",
+      "order": 433,
+      "flowSha256": "7a5da06262f5902f6773e2c6976f0922f80fc5eab9eb5a603c62fc82dc135ba4",
+      "bodySha256": "785eb36a753a11ef3efcf6366afc426281cd0303ad48bd157b7291c5eef6259c"
+    },
+    {
+      "caseId": "乾辛丙辛丙卯申巳申",
+      "order": 437,
+      "flowSha256": "fd5a86cec1b69d1af386c66ce2376121ecb6077ad08380a3ac90bbc518069fd1",
+      "bodySha256": "86d9fb0c95fef21e3680947051e9de5a1be2eafe3387a013c6a6c4a2c72cac0e"
+    },
+    {
+      "caseId": "坤己丙己乙亥寅未亥",
+      "order": 441,
+      "flowSha256": "e306aeb3a203e28396698a9fb73b7694d12060e6c00b9f73d7744e50af6f0d0d",
+      "bodySha256": "bfaa1bb379a2ac2c351dbb1966b8c67ced9fd884252a015e5d4cddab018607bc"
+    },
+    {
+      "caseId": "坤癸庚壬乙卯申辰巳",
+      "order": 447,
+      "flowSha256": "5721f58667376525f74be28deea3626446eb770ba98fb7625dfad98d3b30315f",
+      "bodySha256": "1bfc8b0e2cdb54028f403d76e5d87f66cb14e0d935e756950f67063e3d64adb8"
+    },
+    {
+      "caseId": "坤乙丁乙己未亥丑卯",
+      "order": 451,
+      "flowSha256": "c88f0837addd41da7c8efbfc5ed36f12b4360e7ca5bec28f550e611cbba19668",
+      "bodySha256": "5f4bdf5725719ac7c94a849a748e65c20aafb5f9bedbc7eea43d9b69e2789636"
+    },
+    {
+      "caseId": "乾壬己辛己子酉酉丑",
+      "order": 454,
+      "flowSha256": "e539d2f260c0e365b08e8720c8c6cbba4e2d609abeaab22eb6c72659977bec11",
+      "bodySha256": "18ffbf50de3c749d9af8f73a5991f2b07a62ae6ebebc1f096bd3cc7934395092"
+    },
+    {
+      "caseId": "坤癸乙辛己卯丑未丑",
+      "order": 455,
+      "flowSha256": "af792c654af814b717581572e7f4c25cfce111cebb4368f02f9a27ee18011a51",
+      "bodySha256": "478cee013e3a7a23e4c731d30454fe0a6b89bea794ad0e76a54e978268dd991d"
+    },
+    {
+      "caseId": "坤戊壬丁丙午戌卯午",
+      "order": 460,
+      "flowSha256": "e39e7549a99412784fe828aaca4b074c742d5166ebf8f67fb7f5c0765a6cd30a",
+      "bodySha256": "14d0ce8114cef7c5c20fcacdb66ac16abee788a13b8b1b75214ba629f41ece03"
+    },
+    {
+      "caseId": "乾庚己庚庚戌卯子辰",
+      "order": 461,
+      "flowSha256": "59cc5c1d88c7fa942da2e97e01a36177c7a39c09cf83fda123373c96c5b1ab75",
+      "bodySha256": "7fd53449bb2a738aff51ae1cef8f2b9b5af8987e2e70337fec46ee7050f075d0"
+    },
+    {
+      "caseId": "乾乙戊壬壬丑子午寅",
+      "order": 469,
+      "flowSha256": "aaeeec4c6815879926eb11981cb2baba0c189e9d1b222f370cf55ac6d3427f16",
+      "bodySha256": "b53c6b19cd4dd1f2ca6a05d157737b5bd38c67ab701021633fe7fd20dba096a5"
+    },
+    {
+      "caseId": "坤乙己己丙未丑丑寅",
+      "order": 472,
+      "flowSha256": "41e0fdd8ce609468ed360836f89fbe8e8488dfa261beca03a16c864469fd6e0c",
+      "bodySha256": "87a5754f95b37f9d8b935a32ee3a5afaa0668a3a0baea1d834d419c4e1b4a42c"
+    },
+    {
+      "caseId": "坤丙丙辛丁午申亥酉",
+      "order": 473,
+      "flowSha256": "f6b384bc6ac19b53f7f9fd43fa752ed990c8350626b666b4c6378d2c4d96bc38",
+      "bodySha256": "ec155c2f1aa4c1c90307e98667fc2e0fa80b0737872d333f3c9bb56c6370c59e"
+    },
+    {
+      "caseId": "乾己戊丙丁丑辰寅酉",
+      "order": 475,
+      "flowSha256": "8ea14a25e1429e5ba79459816c1d0c6a7a422a68936c4ee72f1fde9b1cf0f4a1",
+      "bodySha256": "5844392a6684a3e885a3def8d3d6d733149e4907e824c0faccea720a8cf4eeba"
+    },
+    {
+      "caseId": "乾癸甲丁甲巳子酉辰",
+      "order": 476,
+      "flowSha256": "2744d02451e02034cbb80e9c523393d0fd2cd5c9bbb2886ffa20b99e87e19d5d",
+      "bodySha256": "5dd5a3a94c0af182b7397fd33a7d692475673f4b9b66c4da1f5f6f412fb251fa"
+    },
+    {
+      "caseId": "坤壬辛丁辛子亥巳亥",
+      "order": 477,
+      "flowSha256": "244e451f5ffbe3c3b733a09c1b378180c4f6d03463c6e9f267523f12e5a67ea8",
+      "bodySha256": "674331e93aca06e18c1d9443dc79d8f7428d15b54a09c13e20dcaf8a88e836d2"
+    },
+    {
+      "caseId": "乾丙辛丁丁戌丑酉未",
+      "order": 478,
+      "flowSha256": "832515a8181d2ba599fe319c17c5cd3d8c44f027731c12d9c96e7deaabc8da0c",
+      "bodySha256": "b7927f00614913357a883fac62a72d2104ddcc94f835910b1dd542b5256b2c28"
+    },
+    {
+      "caseId": "坤辛庚乙辛酉子丑巳",
+      "order": 479,
+      "flowSha256": "f8a73c3de5f9e7e0d8deb0bb11980a4de55d1bee65f1ecacd8521955aeaa2964",
+      "bodySha256": "2f1abc24f9e5522f198c6bebd88ded020f95ca5dffc12f938cbf773d0a46c924"
+    },
+    {
+      "caseId": "坤乙辛乙庚巳巳亥辰",
+      "order": 480,
+      "flowSha256": "29b945ec506a1f35012484e825a3445ea7502f59a6daba09fe431c00f498246f",
+      "bodySha256": "07ba30a96d63119db0d3acd4c632e18d5cc7521f0e429f3bb9a55b893e731469"
+    },
+    {
+      "caseId": "乾甲甲丙壬申戌寅辰",
+      "order": 481,
+      "flowSha256": "5c85ddaa76826842b35ede1db033263c98bf2f35982e48051613c28c2797b7e6",
+      "bodySha256": "2baf8b0f1a9df30a684697fb02c595ae2561b010df0f86f4c579ba19900e3143"
+    },
+    {
+      "caseId": "乾己辛戊甲卯未辰寅",
+      "order": 486,
+      "flowSha256": "40605ce4126a1a8a540c1f4f15a5718ec08e1d9fe2fd35aacd41f3ea2cd6248c",
+      "bodySha256": "fd5ca28d3a35d2d4ea284a0b996873fc95eba9a8cc854fe3a603ae27ef62fc46"
+    },
+    {
+      "caseId": "坤己丁庚癸酉卯辰未",
+      "order": 495,
+      "flowSha256": "515457977a45a9e6c62d1d5b271a2567d10b8d1eca4df7386324b28afd658819",
+      "bodySha256": "ba6f6c4d76bfddfc24aa7e5fae2dab808f2a0a82c9ab951ad389691223cad87f"
+    },
+    {
+      "caseId": "乾戊丙甲丙申辰寅寅",
+      "order": 498,
+      "flowSha256": "dee0447e4d056a443275c7f1617ca6b8fc4da0d7c61d65a23af6f914d9abf192",
+      "bodySha256": "b52fb2556fb55bb83ee4cdf7ac94abb57afbb61f8f9e0b307a2cc21656f2b860"
+    },
+    {
+      "caseId": "乾庚丙庚己子戌辰卯",
+      "order": 500,
+      "flowSha256": "2e19bbdd4e73474bd806e5fc6efbae1fcfb180b52d14f70167e630bdcc4e2e99",
+      "bodySha256": "2d6ac20354b55259e1da39209c0f4bce686322edf4ac0f75ba5c64be5ed394d4"
+    },
+    {
+      "caseId": "坤丙庚己庚寅寅卯午",
+      "order": 505,
+      "flowSha256": "8825d6967c1793b50d6629eaa3c6ca069d7a7774e537a5887dbb492baf598bbb",
+      "bodySha256": "15eb3d7859a3b9e4d5d9ee50c35d4c77c7b0f853e41844424128855806398cee"
+    },
+    {
+      "caseId": "乾壬癸辛乙子丑酉未",
+      "order": 512,
+      "flowSha256": "27eef429f615a32741e3821f798aa882a3283b26ec7842eac58f8f7876a3b184",
+      "bodySha256": "ece0d8ea2a286c1e76771117adfaadbc5584681f7d509722851a94206c1ff3bc"
+    },
+    {
+      "caseId": "乾丁壬庚丁未子戌亥",
+      "order": 549,
+      "flowSha256": "253d39c6c14107811daf2e843179169243d4e6aab43ffa72fee78d20ff86ce83",
+      "bodySha256": "4e501e49dc688eddfffb3030f20fb1cb44262b7c76c61a0dd723f983cdf34229"
+    },
+    {
+      "caseId": "乾甲丁丙己辰丑寅亥",
+      "order": 551,
+      "flowSha256": "461d70102f7057a06032e66872eeb8250848409a6d531cd56024513a0f009cd1",
+      "bodySha256": "9735cfd02d7829ad6e43cd525d0a7087254b0dc878f17a6992cc6f984d79bdb2"
+    },
+    {
+      "caseId": "乾乙甲辛甲丑申丑午",
+      "order": 565,
+      "flowSha256": "b67e9c3c955d779bdfac732779ae862747b820ad08de62a7adabbd13e658bbcf",
+      "bodySha256": "2fb88ef9b084d49d2e59b1a2f54042bd921bf71ab73aac3b03de85054d607450"
+    },
+    {
+      "caseId": "坤丁乙壬甲卯巳寅辰",
+      "order": 578,
+      "flowSha256": "d3da1ffd2827f767a202641ab72d4d9b29ef3753337bebb6bde1822c552925ff",
+      "bodySha256": "b6ab0f1979b1f94c6cbb5dbad9b4d47d52a917f7e25887524a378850e28ba9ac"
+    },
+    {
+      "caseId": "乾丙乙己甲申未卯戌",
+      "order": 620,
+      "flowSha256": "133f69e95ec253e861172a9b79ded1802786d2ef3814485343d3e72dae661c53",
+      "bodySha256": "175feac41318a22247fddcc6b7476b1502388a94d55f4b67245adef3f2ab8c34"
+    },
+    {
+      "caseId": "乾辛戊己甲亥戌卯子",
+      "order": 624,
+      "flowSha256": "d20e7dc37b086d289239b50123f384665c041f320be6338da391bb88f87c98b9",
+      "bodySha256": "4eeb050cb487f026dccf881cc3bfb2424fd059ec7976207b82a907459f0aabfe"
+    },
+    {
+      "caseId": "乾甲丁甲丁辰丑戌卯",
+      "order": 649,
+      "flowSha256": "b7a8f7b6fb032324258cc88f04b0eba6926c8039bf48b1f0c8b4956e0ed33f8a",
+      "bodySha256": "c19113278a602cb7f3428a63eea624952be49ddbdac4609c3ef02ca80d0338a6"
+    },
+    {
+      "caseId": "乾戊乙甲丁申卯申卯",
+      "order": 659,
+      "flowSha256": "870265d643227b35a8c620c72516e64cfeb117bf3c3ac76ec959457a251af112",
+      "bodySha256": "a4a180e69a26cfc675b5332824e4ccfaa9ce5cc7a15343b9a79853b41736c1d0"
+    },
+    {
+      "caseId": "乾丁庚庚壬酉戌辰午",
+      "order": 664,
+      "flowSha256": "9e815b19b68f131d0c1a69614e796dcf7a8ddff649d62a8c0e9a0e62428d6c86",
+      "bodySha256": "28f9de1d25491e8a34fc1ca9a6ec4a0762e3354f93fff6c594425a0674158807"
+    },
+    {
+      "caseId": "乾癸甲癸乙未子丑卯",
+      "order": 670,
+      "flowSha256": "8dc6776a425e2e96643d9ac09f980f5b3a97ed7939e59a0884c82431f0920343",
+      "bodySha256": "cc75d7de8e51950a7e2a68e2cfddd6f4e383647054d6c6c811bf17bf12153760"
+    },
+    {
+      "caseId": "乾庚己戊癸戌卯子亥",
+      "order": 687,
+      "flowSha256": "2f7ba14a552f3858b48ec6b002798ba9a5a0ff77f4de005f6f1774eeecc226cd",
+      "bodySha256": "d6a016c55b58551f5435e505ceded30c297c2c34fbd23f715b2dd0ab0caf8dce"
+    },
+    {
+      "caseId": "坤壬戊己癸辰申亥酉",
+      "order": 688,
+      "flowSha256": "21bac4625aa9243f3098dad64efe1dbadb3adf6e76753b85d730ddedfd2a7459",
+      "bodySha256": "8901405f3ea720a3bef334b0f80bee0abb1cd8ec3ee50afe99595b3836fba2c5"
+    },
+    {
+      "caseId": "乾乙戊癸庚巳子卯申",
+      "order": 689,
+      "flowSha256": "2d6e77bc6daa83688bff24355a1182e56f3d7dbc864e8437d0feebb3a6144b4b",
+      "bodySha256": "45ff75ac8c2f7224261e7f8bd90dad842b3d3afbd13c8fe8407443eb63174258"
+    },
+    {
+      "caseId": "乾壬丙乙戊子午酉寅",
+      "order": 691,
+      "flowSha256": "d8bab5715df182d0dfaf4e5541012baff3a5dd7bedd4ce2d8570216218dcf3cf",
+      "bodySha256": "84c45a7211f6a1d937e8c999a56922c1fc54c44bb21aebbac3ee7b92552f33a0"
+    },
+    {
+      "caseId": "坤己丙丁丁未子卯未",
+      "order": 710,
+      "flowSha256": "8c9b2636abb93ba3264ea7fab16e00d7130b69c3aa6390d63f123cbf42fef22d",
+      "bodySha256": "c13fe20990569797707ea92d2838ccffca3b30660394c91a9715158f7d701a78"
+    },
+    {
+      "caseId": "坤庚庚丁甲戌辰卯辰",
+      "order": 711,
+      "flowSha256": "d2ffcacec847f2777107a1b8a06400f70f3032c6f735ce3fc123bfb8a86f618f",
+      "bodySha256": "ff94270898508516f33243668869d5fd8b5ec368ed639cf73a0be1507208f4fb"
+    },
+    {
+      "caseId": "坤戊戊辛庚辰午丑寅",
+      "order": 720,
+      "flowSha256": "cc668e759d5b820c62271b26562d7dd6fee170c5a3dac293baec5656d6228e5f",
+      "bodySha256": "7de1b296f894263c1e81f9d1e0e785d5c7622f0c9e528026b1cb0a952b0a38fd"
+    },
+    {
+      "caseId": "坤丁丙己辛未午酉未",
+      "order": 739,
+      "flowSha256": "2d17ff5066ea62064ba6ddb7ba3eb586fb65c192b86f56dee1e8385d8797c732",
+      "bodySha256": "b40d65e716fceeef8750202502daa6b2fcf15a8fb4dcbfd61368fcfd0e4135bd"
+    },
+    {
+      "caseId": "坤甲庚戊戊午午午午",
+      "order": 741,
+      "flowSha256": "ad43d25e14202b0593f664d439466ffdd7561ba0cd7e69c315d3708f65aa6f0e",
+      "bodySha256": "fd03832af8a71dc60fe5b70645febbfbafa60ded2e8119773d7b12c40306e601"
+    },
+    {
+      "caseId": "乾壬己己丁戌酉酉卯",
+      "order": 763,
+      "flowSha256": "25ab9632343fe11cba975974f2797329a323d69f6d8174f857d53f00e2da74d2",
+      "bodySha256": "9a309986f9cb228d2ed810775cd9062b42b1bacf9bfc3646c02609740faef451"
+    },
+    {
+      "caseId": "乾癸甲丁丙亥寅卯午",
+      "order": 779,
+      "flowSha256": "2cd412ac7bd78d7e26d4e807d53a9759c1150f7f1208021ced9eb6eeadd0c57d",
+      "bodySha256": "88d558943da552d56f717dccb3b6a42a63b15b47b767c4d9c86f3fd05f30cb4d"
+    },
+    {
+      "caseId": "坤辛辛壬壬丑丑申寅",
+      "order": 782,
+      "flowSha256": "d212bedb2fb11b9277e4744ae5f6eed9ae866e4c4af4877d6205429791b72309",
+      "bodySha256": "a2e247311bf3ada1daeb905c99ba0cef6d64598d7366d22b3b6f2077a0f319c8"
+    },
+    {
+      "caseId": "坤壬壬戊己寅寅子未",
+      "order": 794,
+      "flowSha256": "51ea3f10ca8075b4af76881d85bf9c259b87f130ea60133bf858a54742568739",
+      "bodySha256": "3d861f5629b2da5b2a99fe5fa244cdfb8c169c3332dc6cd7f032f8d5b4c172a5"
+    },
+    {
+      "caseId": "乾乙壬戊壬巳午申戌",
+      "order": 801,
+      "flowSha256": "3ca66e0c8de28d64b448852edcfd91f09dbc5c3a23d183b47f0f2e99c04eecb3",
+      "bodySha256": "bf5069af597812eda62b9053556733628f3d01906400c19ce0bf716ea466762a"
+    },
+    {
+      "caseId": "乾乙乙庚丙酉酉寅戌",
+      "order": 813,
+      "flowSha256": "310dc2d0cd450299f21762ae4b727efc30eba674c0a2cbdafa52c489d37a8db1",
+      "bodySha256": "6e825f33090a03f3ef19c83f04d1180c41b75725c4b102962274609f264fe3fa"
+    },
+    {
+      "caseId": "乾丙乙丁癸午未亥卯",
+      "order": 832,
+      "flowSha256": "e2e0407173774469f747405cea2834d196198e3e4f897ec7a41d5762fc63f907",
+      "bodySha256": "314eee33fdb458b75fbb6c5cd93f2f894f396527562ce5b4ac4ab972a7de579c"
+    },
+    {
+      "caseId": "坤丁癸乙丙未丑巳子",
+      "order": 840,
+      "flowSha256": "c71caf29a39d2ef376c5a5c1e5be62f3d22f917231cbfad17d42ec4a36b8a25a",
+      "bodySha256": "68c75239943f69949cfd406b7898d20815236a405db21b89d5f707f59a14c6d7"
+    },
+    {
+      "caseId": "坤庚戊甲丁子寅子卯",
+      "order": 857,
+      "flowSha256": "7e1b14cffb4517bdcac508d2042460213151c7aebee5fad54cf01e6418e4c8b5",
+      "bodySha256": "1fd2ddf530a23214772a0b02726ebbed7648576c43d3fe4208982042a0897927"
+    },
+    {
+      "caseId": "坤己乙丁甲酉亥酉辰",
+      "order": 865,
+      "flowSha256": "0989fd0be51b4d33d1299cb9f26a72858f763186ee6c760f81ae9374b8e15f7e",
+      "bodySha256": "df270bf46061ae1f8be622c0bb67f1cece144cca67419e306f4d193a26cef69e"
+    },
+    {
+      "caseId": "乾癸戊乙甲巳午未申",
+      "order": 889,
+      "flowSha256": "da3d32696ed5ee682bc398959d31d9de8b98c719265d33eafaeff1fe50831939",
+      "bodySha256": "ba7aa5b5cb579b32676fa32fbb65cb2fade837b46b695e52447af520c57bc654"
+    },
+    {
+      "caseId": "坤己庚辛壬酉午巳辰",
+      "order": 926,
+      "flowSha256": "5f840adf110ad1ffa5fdf77e26a93494fa22b5ca42dd175f1e3068edc1a82c03",
+      "bodySha256": "e6eed9f460898fd8f46fc860c512defdaf1a0983d61347ec1ef0e639855a8dbf"
+    }
+  ]
+}
