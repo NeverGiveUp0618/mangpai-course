@@ -13,12 +13,14 @@ style2=load(R/'reviews/reasoning-style-batch2-20261125.json')
 style3=load(R/'reviews/reasoning-style-batch3-20261125.json')
 style4=load(R/'reviews/reasoning-style-batch4-20261125.json')
 style5=load(R/'reviews/reasoning-style-batch5-fix-20261126.json')
+style6=load(R/'reviews/reasoning-full-verdict-batch6-20261127.json')
 rewrites={c['file']:c for c in style['changes']}
 rewrites2={c['file']:c for c in style2['changes']}
 rewrites3={c['file']:c for c in style3['changes']}
 rewrites4={c['file']:c for c in style4['changes']}
 rewrites5={c['file']:c for c in style5['changes']}
-assert len(rewrites)==25 and len(rewrites2)==100 and len(rewrites3)==700 and len(rewrites4)==111 and len(rewrites5)==3 and style['removedParagraphMaps']==911
+rewrites6={c['file']:c for c in style6['changes']}
+assert len(rewrites)==25 and len(rewrites2)==100 and len(rewrites3)==700 and len(rewrites4)==111 and len(rewrites5)==3 and len(rewrites6)==498 and style['removedParagraphMaps']==911
 cases={x['caseId']:x for x in report['cases']}
 for r in rows:
  p=D/r['file'];expected=cases[r['caseId']]['sha256']
@@ -36,6 +38,9 @@ for r in rows:
   expected=c['afterSha256']
  if r['file'] in rewrites5:
   c=rewrites5[r['file']];assert c['beforeSha256']==expected
+  expected=c['afterSha256']
+ if r['file'] in rewrites6:
+  c=rewrites6[r['file']];assert c['beforeSha256']==expected
   expected=c['afterSha256']
  assert sha(p)==expected,r['order']
 by_id={r['caseId']:r for r in rows}
