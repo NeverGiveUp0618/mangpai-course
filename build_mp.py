@@ -321,6 +321,7 @@ def build_plain(courses):
         ('初级', '初级白话课', '课程目录.json', 'bh', 0),
         ('中级', '中级白话课', '中级课程目录.json', 'bhz', 19),
         ('高级', '高级白话课', '高级课程目录.json', 'bhg', 36),
+        ('专题', '专题白话课', '专题课程目录.json', 'bhzt', 67),
     ]
     docs = []
     for lv, plain_lv, manifest_file, prefix, offset in specs:
