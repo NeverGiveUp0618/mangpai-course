@@ -508,7 +508,7 @@ function lastLabel(l) {
   if (l.scr === 'chapter') return '课程 · 第 ' + l.id + ' 讲';
   if (l.scr === 'note') return '专题 ' + l.id;
   if (l.scr === 'qnote') return '笔记 ' + l.id;
-  if (l.scr === 'plain') return (+l.id > 19 ? '中级白话课 · 第 ' + (+l.id - 19) : '初级白话课 · 第 ' + l.id) + ' 课';
+  if (l.scr === 'plain') return (+l.id > 36 ? '高级白话课 · 第 ' + (+l.id - 36) : +l.id > 19 ? '中级白话课 · 第 ' + (+l.id - 19) : '初级白话课 · 第 ' + l.id) + ' 课';
   if (l.scr === 'quiz') return '命例';
   return TITLES[l.scr] || '';
 }
@@ -551,8 +551,10 @@ RENDER.course = function () {
     }
     var plainChu = plain.filter(function (c) { return c.level === '初级白话课'; });
     var plainZhong = plain.filter(function (c) { return c.level === '中级白话课'; });
+    var plainGao = plain.filter(function (c) { return c.level === '高级白话课'; });
     var html = plainGroupHtml('白话初级', '初级白话课 · 生活里的八字', '共' + plainChu.length + '课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材与真实命例。', plainChu) +
-      plainGroupHtml('白话中级', '中级白话课 · 进阶规则与取象', '共' + plainZhong.length + '课，与中级教材逐课对应。每课先讲清比初级拓展了哪些，再配生活类比与真实命例。', plainZhong);
+      plainGroupHtml('白话中级', '中级白话课 · 进阶规则与取象', '共' + plainZhong.length + '课，与中级教材逐课对应。每课先讲清比初级拓展了哪些，再配生活类比与真实命例。', plainZhong) +
+      plainGroupHtml('白话高级', '高级白话课 · 专题深论与行业象法', '共' + plainGao.length + '课，与高级教材逐课对应。每课先讲清比初/中级拓展了哪些，再配生活类比与真实命例。', plainGao);
     (META.levels || []).forEach(function (L) {
       var lv = L.name;
       var tb = list.filter(function (x) { return x.level === lv && !x.raw; });
@@ -2429,7 +2431,7 @@ function saveMyNotes(v) { save(K.notes, v); }
 function noteCtx() {
   if (cur.scr === 'chapter') return { root: $('#chapterBody'), from: '第' + cur.id + '章' };
   if (cur.scr === 'note')    return { root: $('#noteBody'),    from: '笔记 ' + cur.id };
-  if (cur.scr === 'plain')   return { root: $('#plainBody'), from: (+cur.id > 19 ? '中级白话课 ' + (+cur.id - 19) : '初级白话课 ' + cur.id) };
+  if (cur.scr === 'plain')   return { root: $('#plainBody'), from: (+cur.id > 36 ? '高级白话课 ' + (+cur.id - 36) : +cur.id > 19 ? '中级白话课 ' + (+cur.id - 19) : '初级白话课 ' + cur.id) };
   if (cur.scr === 'qnote')   return { root: $('#qnoteBody'),   from: '我的提问 ' + cur.id };
   if (cur.scr === 'quiz')    return { root: $('#quizBody'),    from: '题 ' + cur.id };
   if (cur.scr === 'index')   return { root: $('#indexBody'),   from: '问题清单' };
