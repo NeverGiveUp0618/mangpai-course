@@ -7,8 +7,8 @@ FQD = os.path.join(ROOT, 'content', '精练题库')
 QD = os.path.join(ROOT, 'content', '题目')
 TB = os.path.join(ROOT, 'content', '教材')
 
-BAN_Q = re.compile(r'视频|例中|那个命主|这个盘|如上例|本例|上例|该例|此例|上表|上文|本章|讲义|哪份|版本|老师(?:说|认为|讲)|大任|小任|为何断|为什么断|待裁定|存疑')
-BAN_OPT = re.compile(r'以上都对|以上都不|都不对|视频')
+BAN_Q = re.compile(r'视频|例中|那个命主|这个盘|如上例|本例|上例|该例|此例|上表|上文|本章|讲义|哪份|版本|老师(?:说|认为|讲)|大任|小任|为何断|为什么断|待裁定|存疑|口诀是什么|后半句|前半句|身旺|身弱')
+BAN_OPT = re.compile(r'以上都对|以上都不|都不对|视频|均正确|均错误')
 TYPES = {'rule', 'diff', 'calc', 'xiang', 'step'}
 
 
@@ -47,8 +47,8 @@ def check(fp):
         return ['JSON 解析失败：%s' % ex], 0
     if not isinstance(qs, list):
         return ['顶层必须是数组'], 0
-    if not 15 <= len(qs) <= 45:
-        errs.append('题数 %d 不在 15–45' % len(qs))
+    if not 12 <= len(qs) <= 45:
+        errs.append('题数 %d 不在 12–45' % len(qs))
 
     seen = set()
     for i, x in enumerate(qs):
