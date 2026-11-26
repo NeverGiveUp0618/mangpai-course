@@ -317,23 +317,28 @@ def render_plain_flows(html):
 def build_plain(courses):
     """独立白话教程：稳定ID，不插入原教材的章节序号。"""
     folder = os.path.join(CONTENT, '白话课')
-    manifest = json.loads(read(os.path.join(folder, '课程目录.json')))
-    originals = [c for c in courses if c['level'] == '初级' and not c['raw']]
-    assert len(manifest) == len(originals), '白话初级必须完整对应初级教材'
+    specs = [
+        ('初级', '初级白话课', '课程目录.json', 'bh', 0),
+        ('中级', '中级白话课', '中级课程目录.json', 'bhz', 19),
+    ]
     docs = []
-    for i, item in enumerate(manifest, 1):
-        source = next(c for c in originals if os.path.basename(PATHS[c['id']]) == item['source'])
-        assert item['id'] == 'bh%02d' % i and item['n'] == i
-        assert source['id'] == originals[i - 1]['id'], '白话课与原初级教材顺序必须一致'
-        path = os.path.join(folder, '初级', item['file'])
-        doc = build_doc(path, item['id'], i, read(path).split('\n', 1)[0].lstrip('# ').strip(),
-                        {'sourceN': source['n'], 'sourceTitle': source['title'], 'level': '初级白话课'}, manual='light')
-        doc['html'] = render_plain_flows(doc['html'])
-        # strip_md会略过代码围栏；关系图是教学正文，须进入搜索索引。
-        doc['text'] = re.sub(r'\s+', ' ', html_lib.unescape(re.sub(r'<[^>]+>', ' ', doc['html']))).strip()
-        assert not doc['html'].count('class="ichart"'), '白话课不编造命盘'
-        docs.append(doc)
-    assert len({d['sourceN'] for d in docs}) == len(manifest)
+    for lv, plain_lv, manifest_file, prefix, offset in specs:
+        manifest = json.loads(read(os.path.join(folder, manifest_file)))
+        originals = [c for c in courses if c['level'] == lv and not c['raw']]
+        assert len(manifest) == len(originals), f'白话{lv}必须完整对应{lv}教材'
+        for i, item in enumerate(manifest, 1):
+            source = next(c for c in originals if os.path.basename(PATHS[c['id']]) == item['source'])
+            assert item['id'] == f'{prefix}{i:02d}' and item['n'] == offset + i
+            assert source['id'] == originals[i - 1]['id'], f'白话{lv}与原{lv}教材顺序必须一致'
+            path = os.path.join(folder, lv, item['file'])
+            doc = build_doc(path, item['id'], offset + i, read(path).split('\n', 1)[0].lstrip('# ').strip(),
+                            {'sourceN': source['n'], 'sourceTitle': source['title'], 'level': plain_lv}, manual='light')
+            doc['html'] = render_plain_flows(doc['html'])
+            # strip_md会略过代码围栏；关系图是教学正文，须进入搜索索引。
+            doc['text'] = re.sub(r'\s+', ' ', html_lib.unescape(re.sub(r'<[^>]+>', ' ', doc['html']))).strip()
+            assert not doc['html'].count('class="ichart"'), '白话课不编造命盘'
+            docs.append(doc)
+        assert len({d['sourceN'] for d in docs if d['level'] == plain_lv}) == len(manifest)
     return docs
 
 

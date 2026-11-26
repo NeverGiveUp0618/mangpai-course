@@ -24,6 +24,7 @@ _LINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 _SRC = re.compile(r'〔([^〕\n]{1,60})〕')
 # 【21】【题18】—— 题号交叉引用，做成可点击
 _QREF = re.compile(r'【题?\s*(\d{1,3})】')
+_QREF_TAG = re.compile(r'<a\s+class="qref"\s+data-q="(\d+)">([^<]+)</a>')
 # 【劫财】【竞争者】—— 强调短语，与 ** 加粗重复，只留高亮不留括号
 _HL = re.compile(r'【([^】\n]{1,40})】')
 # 「原文原话」—— 标示这句是原文。去掉括号改用颜色区分，减少视觉噪音。
@@ -35,12 +36,18 @@ _QUOTE = re.compile(r'「([^」]+?)」')
 def _inline(s):
     """处理行内语法。先摘出行内码，避免其中的 ** 被当粗体。"""
     stash = []
+    qstash = []
 
     def keep(m):
         stash.append(m.group(1))
         return f'\x00C{len(stash) - 1}\x00'
 
+    def keep_q(m):
+        qstash.append((m.group(1), m.group(2)))
+        return f'\x00Q{len(qstash) - 1}\x00'
+
     s = _INLINE_CODE.sub(keep, s)
+    s = _QREF_TAG.sub(keep_q, s)
     s = _html.escape(s, quote=False)
     # 干支串要在 _BOLD 之前上色：串里的 ** 是标日主的，一旦被转成 <strong>
     # 就断了正则，认不出整串了。
@@ -72,6 +79,8 @@ def _inline(s):
     s = _WIKI.sub(_wiki, s)
     for i, c in enumerate(stash):
         s = s.replace(f'\x00C{i}\x00', f'<code>{_html.escape(c, quote=False)}</code>')
+    for i, (qn, qt) in enumerate(qstash):
+        s = s.replace(f'\x00Q{i}\x00', f'<a class="qref" data-q="{qn}">{_html.escape(qt, quote=False)}</a>')
     return s
 
 

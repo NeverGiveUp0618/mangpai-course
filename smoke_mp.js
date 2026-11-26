@@ -56,8 +56,8 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   console.log('课程');
   window.localStorage.setItem('mp_course_lvopen', JSON.stringify({'初级':1,'白话初级':1}));
   click($('[data-tab="course"]')); await wait(120);
-  ok($$('.lvg:not(.plain-group)').length === 4 && $$('.plain-group').length === 1, '原四级课程与独立白话课组');
-  ok(!$('.plain-group').classList.contains('open') && !$('.plain-group').textContent.includes('试读'), '默认折叠且旧预览展开状态已迁移，入口去试读');
+  ok($$('.lvg:not(.plain-group)').length === 4 && $$('.plain-group').length === 2, '原四级课程与初/中级白话课组');
+  ok($$('.plain-group').every(e => !e.classList.contains('open')) && !$('.plain-group').textContent.includes('试读'), '默认折叠且旧预览展开状态已迁移，入口去试读');
   ok($$('.lvg.open').length === 1, '默认只展开一级');
   click($$('.lvg:not(.plain-group) > .qgh')[1]); await wait(30);
   ok($$('.lvg.open').length === 2, '点击可展开另一级');
@@ -76,33 +76,49 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   click($('#readToggle')); await wait(30);
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_read') || '{}')).length === 0, '再点取消');
 
-  console.log('完整初级白话课');
-  ok(M.counts.plain === 19 && window.DATA_PLAIN.length === 19, '初级19课齐全，原课程78章及936命例保留');
+  console.log('完整初/中级白话课');
+  ok(M.counts.plain === 36 && window.DATA_PLAIN.length === 36, '初级19课+中级17课齐全，原课程78章及936命例保留');
   click($('[data-tab="course"]')); await wait(100);
-  click($('.plain-group > .qgh')); await wait(20);
-  ok($$('[data-bh]').length === 19 && $('.plain-group').classList.contains('open'), '独立入口展开19课');
+  $$('.plain-group > .qgh').forEach(click); await wait(30);
+  ok($$('[data-bh]').length === 36 && $$('.plain-group').every(e => e.classList.contains('open')), '独立入口展开全部36课');
   click($('[data-tab="home"]')); await wait(50);
   click($('[data-tab="course"]')); await wait(100);
-  ok($('.plain-group').classList.contains('open'), '手动展开后返目录仍保留选择');
+  ok($$('.plain-group').every(e => e.classList.contains('open')), '手动展开后返目录仍保留选择');
   click($('[data-bh="1"]')); await wait(130);
-  ok($('#prevPlain').disabled && !$('#nextPlain').disabled, '首课翻页边界');
+  ok($('#prevPlain').disabled && !$('#nextPlain').disabled, '初级首课翻页边界');
   for (let n=1;n<=19;n++) {
-    if(n>1){click($('#nextPlain'));await wait(130);}
+    if(n>1){click($('#nextPlain'));await wait(100);}
     const c=window.DATA_PLAIN[n-1];
     ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===c.title && !$('#plainBody .ichart'), '第'+n+'课完整正文可达，无虚构命盘');
     ok($('#plainSource').textContent.includes(c.sourceTitle) && !!$('#plainBody details'), '第'+n+'课有原课对照及分节阅读');
     ok($$('#plainBody .plain-flow').length >= 1 && !$('#plainBody pre.lang-关系图') && $$('#plainBody .pf-key').every(e=>e.textContent.trim()), '第'+n+'课关系图为可选取的正文文字');
+    ok($$('#plainBody a.qref').length >= 1, '第'+n+'课含真实命例链接');
   }
-  ok($('#nextPlain').disabled, '第19课停住，无越界下一课');
+  ok($('#nextPlain').disabled, '初级第19课停住，无越界下一课');
   click($('#readToggle')); await wait(20);
   ok(JSON.parse(window.localStorage.getItem('mp_course_read')).bh19 === 100 && !JSON.parse(window.localStorage.getItem('mp_course_read')).c19, '白话已读与原教材进度隔离');
-  click($('#readToggle')); await wait(20);
   const whiteLoc=window.YGN_HOOK.loc();
   ok(whiteLoc.scr==='plain' && whiteLoc.id===19 && $('[data-tab="course"]').classList.contains('on'), '全科笔记保存白话课位置，底栏仍归课程');
   click($('#plainSource')); await wait(180);
   ok($('#chapterBody h1').textContent.includes(window.DATA_PLAIN[18].sourceTitle), '回看原教材跳到正确对应章');
   window.YGN_HOOK.go(whiteLoc); await wait(200);
   ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===window.DATA_PLAIN[18].title, '全科笔记出处钩子可返回白话课');
+  // 测中级白话课 (20..36)
+  click($('[data-tab="course"]')); await wait(80);
+  click($('[data-bh="20"]')); await wait(130);
+  ok($('#prevPlain').disabled && !$('#nextPlain').disabled, '中级首课翻页边界');
+  for (let n=20;n<=36;n++) {
+    if(n>20){click($('#nextPlain'));await wait(100);}
+    const c=window.DATA_PLAIN[n-1];
+    ok($('#s-plain').classList.contains('active') && $('#plainBody h1').textContent===c.title && !$('#plainBody .ichart'), '中级第'+(n-19)+'课完整正文可达，无虚构命盘');
+    ok($('#plainSource').textContent.includes(c.sourceTitle) && !!$('#plainBody details'), '中级第'+(n-19)+'课有原课对照及分节阅读');
+    ok($$('#plainBody .plain-flow').length >= 1 && !$('#plainBody pre.lang-关系图') && $$('#plainBody .pf-key').every(e=>e.textContent.trim()), '中级第'+(n-19)+'课关系图为可选取的正文文字');
+    ok($$('#plainBody a.qref').length >= 1, '中级第'+(n-19)+'课含真实命例链接');
+  }
+  ok($('#nextPlain').disabled, '中级第17课停住，无越界下一课');
+  click($('#readToggle')); await wait(20);
+  ok(JSON.parse(window.localStorage.getItem('mp_course_read')).bhz17 === 100, '中级白话已读记录正确');
+  click($('#readToggle')); await wait(20);
 
   const rawCard = $('.rawg [data-ch]');
   ok(!!rawCard, '有原稿讲义卡片');

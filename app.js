@@ -508,7 +508,7 @@ function lastLabel(l) {
   if (l.scr === 'chapter') return '课程 · 第 ' + l.id + ' 讲';
   if (l.scr === 'note') return '专题 ' + l.id;
   if (l.scr === 'qnote') return '笔记 ' + l.id;
-  if (l.scr === 'plain') return '初级白话课 · 第 ' + l.id + ' 课';
+  if (l.scr === 'plain') return (+l.id > 19 ? '中级白话课 · 第 ' + (+l.id - 19) : '初级白话课 · 第 ' + l.id) + ' 课';
   if (l.scr === 'quiz') return '命例';
   return TITLES[l.scr] || '';
 }
@@ -544,8 +544,15 @@ RENDER.course = function () {
         '</div>' + (p > 0 && p < 90 ? '<div class="bar"><i style="width:' + p + '%"></i></div>' : '') +
         '</div>';
     }
-    var plainDone = plain.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
-    var html = '<div class="qgrp lvg plain-group' + (open['白话初级'] ? ' open' : '') + '" data-g="白话初级"><button class="qgh"><span class="ar">›</span><span class="nm">初级白话课 · 生活里的八字</span><span class="ct">' + plainDone + '/' + plain.length + '</span></button><div class="qgb"><p class="muted" style="padding:4px 14px 12px;line-height:1.8">共' + plain.length + '课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材。</p>' + plain.map(function (c) { return '<div class="card tap" data-bh="' + c.n + '"><div class="row spread"><div style="flex:1"><b>' + String(c.n).padStart(2, '0') + ' · ' + esc(c.title) + '</b><div class="muted" style="margin-top:5px">对应原课：' + esc(c.sourceTitle) + '</div></div>' + ((read[c.id] || 0) >= 90 ? '<span class="pill">已读</span>' : '<span>›</span>') + '</div></div>'; }).join('') + '</div></div>';
+    function plainGroupHtml(key, title, desc, items) {
+      if (!items.length) return '';
+      var done = items.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
+      return '<div class="qgrp lvg plain-group' + (open[key] ? ' open' : '') + '" data-g="' + esc(key) + '"><button class="qgh"><span class="ar">›</span><span class="nm">' + esc(title) + '</span><span class="ct">' + done + '/' + items.length + '</span></button><div class="qgb"><p class="muted" style="padding:4px 14px 12px;line-height:1.8">' + esc(desc) + '</p>' + items.map(function (c, idx) { return '<div class="card tap" data-bh="' + c.n + '"><div class="row spread"><div style="flex:1"><b>' + String(idx + 1).padStart(2, '0') + ' · ' + esc(c.title) + '</b><div class="muted" style="margin-top:5px">对应原课：' + esc(c.sourceTitle) + '</div></div>' + ((read[c.id] || 0) >= 90 ? '<span class="pill">已读</span>' : '<span>›</span>') + '</div></div>'; }).join('') + '</div></div>';
+    }
+    var plainChu = plain.filter(function (c) { return c.level === '初级白话课'; });
+    var plainZhong = plain.filter(function (c) { return c.level === '中级白话课'; });
+    var html = plainGroupHtml('白话初级', '初级白话课 · 生活里的八字', '共' + plainChu.length + '课，与初级教材逐课对应。先读生活故事，再看八字关系；每课可回看原教材与真实命例。', plainChu) +
+      plainGroupHtml('白话中级', '中级白话课 · 进阶规则与取象', '共' + plainZhong.length + '课，与中级教材逐课对应。每课先讲清比初级拓展了哪些，再配生活类比与真实命例。', plainZhong);
     (META.levels || []).forEach(function (L) {
       var lv = L.name;
       var tb = list.filter(function (x) { return x.level === lv && !x.raw; });
@@ -585,15 +592,17 @@ RENDER.course = function () {
 RENDER.plain = function (n) {
   needPlain().then(function (list) {
     var c = list.filter(function (x) { return x.n === +n; })[0]; if (!c) return;
-    curDoc = c; $('#ttl').textContent = '白话 ' + c.n + ' · ' + c.title;
+    var sameLevel = list.filter(function (x) { return x.level === c.level; });
+    var pos = sameLevel.indexOf(c);
+    curDoc = c; $('#ttl').textContent = '白话 ' + (pos + 1) + ' · ' + c.title;
     var root = $('#plainBody');
-    root.innerHTML = '<h1>' + esc(c.title) + '</h1><p class="plain-intro">初级白话课 · 第 ' + c.n + ' / ' + list.length + ' 课。生活故事均为教学假设，用于理解关系；具体八字仍按原课条件判断。</p>' + c.html;
+    root.innerHTML = '<h1>' + esc(c.title) + '</h1><p class="plain-intro">' + esc(c.level) + ' · 第 ' + (pos + 1) + ' / ' + sameLevel.length + ' 课。生活故事均为教学假设，用于理解关系；具体八字仍按原课条件判断。</p>' + c.html;
     foldChapterSections(root, c.id); bindDoc(root);
     $('#plainSource').textContent = '回看原教材 · ' + c.sourceTitle;
     $('#plainSource').onclick = function () { show('chapter', c.sourceN); };
-    $('#prevPlain').disabled = c.n === 1; $('#nextPlain').disabled = c.n === list.length;
-    $('#prevPlain').onclick = function () { show('plain', c.n - 1); };
-    $('#nextPlain').onclick = function () { show('plain', c.n + 1); };
+    $('#prevPlain').disabled = pos <= 0; $('#nextPlain').disabled = pos >= sameLevel.length - 1;
+    $('#prevPlain').onclick = function () { if (pos > 0) show('plain', sameLevel[pos - 1].n); };
+    $('#nextPlain').onclick = function () { if (pos < sameLevel.length - 1) show('plain', sameLevel[pos + 1].n); };
     trackRead(c.id); addReadToggle(c.id, '#prevPlain'); afterDoc(root, c.id);
   });
 };
@@ -2420,7 +2429,7 @@ function saveMyNotes(v) { save(K.notes, v); }
 function noteCtx() {
   if (cur.scr === 'chapter') return { root: $('#chapterBody'), from: '第' + cur.id + '章' };
   if (cur.scr === 'note')    return { root: $('#noteBody'),    from: '笔记 ' + cur.id };
-  if (cur.scr === 'plain')   return { root: $('#plainBody'), from: '初级白话课 ' + cur.id };
+  if (cur.scr === 'plain')   return { root: $('#plainBody'), from: (+cur.id > 19 ? '中级白话课 ' + (+cur.id - 19) : '初级白话课 ' + cur.id) };
   if (cur.scr === 'qnote')   return { root: $('#qnoteBody'),   from: '我的提问 ' + cur.id };
   if (cur.scr === 'quiz')    return { root: $('#quizBody'),    from: '题 ' + cur.id };
   if (cur.scr === 'index')   return { root: $('#indexBody'),   from: '问题清单' };
