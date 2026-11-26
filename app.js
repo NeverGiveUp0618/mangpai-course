@@ -162,7 +162,7 @@ var cur = { scr: 'home', id: null };
 var TITLES = {
   home: '盲派八字', course: '课程', chapter: '', notes: '专题与答疑',
   note: '', index: '问题清单', outline: '学习路线', review: '复习卡', ref: '知识点速查', qlist: '命例题库',
-  plain: '', quiz: '', qna: '笔记 · 我的提问', qnote: '', st: '章节自测', search: '搜索', mynotes: '我的笔记', desk: '断命台',
+  plain: '', quiz: '', qna: '笔记 · 我的提问', qnote: '', st: '章节自测', report: '学习报告', search: '搜索', mynotes: '我的笔记', desk: '断命台',
   vke: 'v课笔记', vkeread: ''
 };
 var ROOTS = { home: 1, course: 1, notes: 1, qlist: 1, ref: 1, qna: 1 };
@@ -457,7 +457,7 @@ RENDER.home = function () {
   var cmb = $('#clearMarks');
   if (cmb) cmb.onclick = function () {
     if (!window.confirm('清除全部「已读」「已学」' + (K.gap ? '「已掌握」' : '') + '标记？\n此操作不可撤销（我的笔记、阅读位置不受影响）。')) return;
-    save(K.read, {}); save(K.seen, {}); if (K.gap) save(K.gap, {}); save('mp_course_st', {}); save('mp_course_wrong', {});
+    save(K.read, {}); save(K.seen, {}); if (K.gap) save(K.gap, {}); save('mp_course_st', {}); save('mp_course_wrong', {}); save('mp_course_st_seen', {});
     RENDER.home(); toast('已清除全部标记');
   };
   $('#hCourse').textContent = c.course || 0;
@@ -476,8 +476,10 @@ RENDER.home = function () {
     }).length;
   }
   var chDone = done('c'), ntDone = done('n');
+  var plainDone = Object.keys(read).filter(function (k) { return /^bh(z|g|zt)?\d+$/.test(k) && read[k] >= 90; }).length;
   var qDone = Object.keys(ls(K.seen, {})).length;
-  // 口径与五术堂导航看板一致：教材16 + 笔记14 + 命例92
+  var stSeen = ls('mp_course_st_seen', {}), stSeenCnt = Object.keys(stSeen).length;
+  var wrongCnt = Object.keys(wrongMap()).length;
   var total = (c.course || 16) + (c.notes || 14) + (c.quiz || 92);
   var pct = Math.round((chDone + ntDone + qDone) / total * 100);
   $('#progPct').textContent = pct + '%';
@@ -485,8 +487,11 @@ RENDER.home = function () {
 
   $('#progChips').innerHTML =
     '<span class="pill g">课程 ' + chDone + '/' + (c.course || 16) + '</span>' +
-    '<span class="pill g">专题 ' + ntDone + '/' + (c.notes || 14) + '</span>' +
-    '<span class="pill g">命例 ' + qDone + '/' + (c.quiz || 92) + '</span>';
+    (c.plain ? '<span class="pill g">白话 ' + plainDone + '/' + c.plain + '</span>' : '') +
+    (c.selftest ? '<span class="pill g">章节题 ' + stSeenCnt + '/' + c.selftest + '</span>' : '') +
+    '<span class="pill g">命例 ' + qDone + '/' + (c.quiz || 92) + '</span>' +
+    (wrongCnt ? '<span class="pill">错题 ' + wrongCnt + '</span>' : '');
+  var rb = $('#openReport'); if (rb) rb.onclick = function () { show('report', null); };
 
   var gd = Object.keys(ls(K.gap, {})).length, gh = $('#gapHint');
   if (gh) gh.textContent = gd ? ('已掌握 ' + gd + ' 条 · 和你之前学的对照：哪些没讲过、在哪章读') : '和你之前学的对照：哪些没讲过、在哪章读、哪些口径不同';
@@ -2030,23 +2035,98 @@ function stRes() { return ls('mp_course_st', {}); }
 RENDER.st = function (id) {
   var box = $('#stBody');
   box.innerHTML = '<div class="empty">载入中…</div>';
-  needSt().then(function (S) { if (id == null) stList(box, S); else if (id === 'wrong') wrongRun(box, S); else stRun(box, S, +id); });
+  needSt().then(function (S) {
+    if (id == null) stList(box, S);
+    else if (id === 'wrong') wrongRun(box, S);
+    else if (typeof id === 'object' && id.n != null) stRun(box, S, +id.n, false, id);
+    else stRun(box, S, +id, false);
+  });
 };
+function stAllQs(ch) { return (ch.qs || []).concat(ch.fine || []); }
+function stSeenMap() { return ls('mp_course_st_seen', {}); }
+function stSeenMark(n, q, good) {
+  var m = stSeenMap(), k = wkey(n, q), o = m[k] || [0, 0, 0];
+  m[k] = [Math.round(Date.now() / 1000), good ? 1 : 0, (o[2] || 0) + 1];
+  save('mp_course_st_seen', m);
+}
+function stShuffleOpts(q) {
+  var idx = [0, 1, 2, 3];
+  for (var j = idx.length - 1; j > 0; j--) {
+    var r = Math.floor(Math.random() * (j + 1)), t = idx[j]; idx[j] = idx[r]; idx[r] = t;
+  }
+  return { q: q.q, opts: idx.map(function (i) { return q.opts[i]; }), ans: idx.indexOf(q.ans), exp: q.exp, sec: q.sec, t: q.t, _redo: q._redo };
+}
+function stOrder(pool, n) {
+  var s = stSeenMap();
+  var un = [], wr = [], ok = [];
+  pool.forEach(function (q) {
+    var v = s[wkey(n, q)];
+    if (!v) un.push(q);
+    else if (!v[1]) wr.push({ q: q, t: v[0] || 0 });
+    else ok.push({ q: q, t: v[0] || 0 });
+  });
+  function shuf(a) {
+    for (var j = a.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)), t = a[j]; a[j] = a[r]; a[r] = t; }
+    return a;
+  }
+  wr.sort(function (a, b) { return a.t - b.t; });
+  ok.sort(function (a, b) { return a.t - b.t; });
+  return shuf(un).concat(wr.map(function (x) { return x.q; })).concat(ok.map(function (x) { return x.q; }));
+}
 function stList(box, S) {
-  var res = stRes(), lv = '', wn = wrongList(S).length, h = '<div class="card tap" id="wrongEntry"><div class="row spread"><div><b style="font-size:15px">📕 错题本</b><div class="muted" style="margin-top:2px">' + (wn ? wn + ' 道在错题本里，是否移出由你决定' : '暂无错题') + '</div></div><span style="color:var(--ink3)">›</span></div></div>' +
-    '<div class="muted" style="margin:0 2px 10px">每章练习题都是选择题，答完立刻判对错；成绩只记「最好一次」，答错的会自动进错题本，在错题本里由你决定移不移出。</div>';
+  var res = stRes(), seen = stSeenMap(), lv = '', wn = wrongList(S).length;
+  var h = '<div class="row" style="gap:8px;margin-bottom:8px">' +
+    '<div class="card tap" id="wrongEntry" style="flex:1;margin:0"><div class="row spread"><div><b style="font-size:15px">📕 错题本</b><div class="muted" style="margin-top:2px">' + (wn ? wn + ' 道待巩固' : '暂无错题') + '</div></div><span style="color:var(--ink3)">›</span></div></div>' +
+    '<div class="card tap" id="stReportEntry" style="flex:0 0 auto;margin:0"><div class="row spread"><div><b style="font-size:15px">📊 报告</b><div class="muted" style="margin-top:2px">统计与薄弱</div></div></div></div>' +
+    '</div>' +
+    '<div class="muted" style="margin:0 2px 10px">每章含章末题与精练细题，点击直接按「未做→错题→最久未练」轮换出 15 题（答错本组自动回炉），也可点「小节」专项练。</div>';
   S.chapters.forEach(function (c) {
     if (c.level !== lv) { lv = c.level; h += '<h3 class="lvh">' + esc(lv) + '</h3>'; }
-    var best = res[c.n];
-    h += '<div class="card tap" data-st="' + c.n + '"><div class="row spread"><div style="flex:1"><b style="font-size:15px">' + esc(c.title) + '</b><div class="muted" style="margin-top:3px">' + c.qs.length + ' 题</div></div>' +
-      (best != null ? '<span class="pill' + (best === c.qs.length ? '' : ' g') + '">最好 ' + best + '/' + c.qs.length + '</span>' : '<span style="color:var(--ink3)">›</span>') + '</div></div>';
+    var all = stAllQs(c), doneCnt = 0, okCnt = 0;
+    all.forEach(function (q) { var v = seen[wkey(c.n, q)]; if (v) { doneCnt++; if (v[1]) okCnt++; } });
+    var best = res[c.n], acc = doneCnt ? Math.round(okCnt / doneCnt * 100) : null;
+    h += '<div class="card tap" data-st="' + c.n + '"><div class="row spread"><div style="flex:1"><b style="font-size:15px">' + esc(c.title) + '</b>' +
+      '<div class="muted" style="margin-top:3px">已练 ' + doneCnt + '/' + all.length + ' 题' + (acc != null ? ' · 近期正确率 ' + acc + '%' : '') + '</div></div>' +
+      '<button class="btn" data-stsec="' + c.n + '" style="font-size:12px;padding:4px 9px;margin-right:6px">小节</button>' +
+      (best != null ? '<span class="pill' + (best >= 10 ? '' : ' g') + '">最好 ' + best + '</span>' : '<span style="color:var(--ink3)">›</span>') +
+      '</div>' + (doneCnt ? '<div class="bar"><i style="width:' + Math.round(doneCnt / all.length * 100) + '%"></i></div>' : '') + '</div>';
   });
   box.innerHTML = h;
   $$('[data-st]', box).forEach(function (el) { el.onclick = function () { show('st', +el.dataset.st); }; });
+  $$('[data-stsec]', box).forEach(function (b) {
+    b.onclick = function (e) { e.stopPropagation(); stSecPanel(box, S, +b.dataset.stsec); };
+  });
   $('#wrongEntry').onclick = function () { show('st', 'wrong'); };
+  $('#stReportEntry').onclick = function () { show('report', null); };
+}
+function stSecPanel(box, S, n) {
+  var ch = S.chapters.filter(function (c) { return c.n === n; })[0]; if (!ch) return;
+  var all = stAllQs(ch), seen = stSeenMap(), secs = [], map = {};
+  all.forEach(function (q) {
+    var k = q.sec || '其他';
+    if (!map[k]) { map[k] = { sec: k, n: 0, d: 0 }; secs.push(map[k]); }
+    map[k].n++; if (seen[wkey(n, q)]) map[k].d++;
+  });
+  var totalDone = all.filter(function (q) { return !!seen[wkey(n, q)]; }).length;
+  box.innerHTML = '<div class="muted" style="margin:0 2px 8px">' + esc(ch.title) + ' · 共 ' + all.length + ' 题（已练 ' + totalDone + ' 题）</div>' +
+    '<div class="row" style="gap:8px;margin-bottom:10px">' +
+    '<button class="btn pri" id="secRot" style="flex:1">智能轮换 15 题</button>' +
+    '<button class="btn" id="secAll" style="flex:1">整章全刷（' + all.length + ' 题）</button>' +
+    '</div>' +
+    secs.map(function (g, idx) {
+      return '<div class="card tap" data-si="' + idx + '"><div class="row spread"><b>' + esc(g.sec) + '</b><span class="muted">' + g.d + '/' + g.n + ' 题 ›</span></div></div>';
+    }).join('') +
+    '<button class="btn" id="secBack" style="width:100%;margin-top:8px">返回章节列表</button>';
+  $('#secRot', box).onclick = function () { stRun(box, S, n, false, {}); };
+  $('#secAll', box).onclick = function () { stRun(box, S, n, false, { all: true }); };
+  $('#secBack', box).onclick = function () { stList(box, S); };
+  $$('[data-si]', box).forEach(function (el) {
+    el.onclick = function () { stRun(box, S, n, false, { sec: secs[+el.dataset.si].sec, all: true }); };
+  });
+  window.scrollTo(0, 0);
 }
 
-/* ============ 错题本：章末题答错自动记入；移不移出由自己决定（答对也不会自动移出） ============ */
+/* ============ 错题本：章末题与精练题答错自动记入；移不移出由自己决定（答对也不会自动移出） ============ */
 function wrongMap() { return ls('mp_course_wrong', {}); }
 function wkey(n, q) { return n + '|' + q.q; }
 function wrongMark(n, q, good, fromBook) {
@@ -2058,7 +2138,7 @@ function wrongRemove(n, q) { var m = wrongMap(), k = wkey(n, q); if (m[k]) { del
 function wrongList(S) {
   var m = wrongMap(), out = [];
   S.chapters.forEach(function (c) {
-    c.qs.forEach(function (q) { var o = m[wkey(c.n, q)]; if (o) out.push({ ch: c, q: q, t: o.t || 0, c: o.c || 1, ok: o.ok || 0 }); });
+    stAllQs(c).forEach(function (q) { var o = m[wkey(c.n, q)]; if (o) out.push({ ch: c, q: q, t: o.t || 0, c: o.c || 1, ok: o.ok || 0 }); });
   });
   out.sort(function (a, b) { return b.t - a.t; });
   return out;
@@ -2066,7 +2146,7 @@ function wrongList(S) {
 function wrongRun(box, S) {
   var list = wrongList(S);
   if (!list.length) {
-    box.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:30px">🎉</div><div style="margin:8px 0">错题本是空的</div><div class="muted">在章末练习里答错的题会自动记到这里，移不移出由你决定</div><button class="btn" id="wBack" style="margin-top:12px;width:100%">回到章节练习</button></div>';
+    box.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:30px">🎉</div><div style="margin:8px 0">错题本是空的</div><div class="muted">在章节练习里答错的题会自动记到这里，移不移出由你决定</div><button class="btn" id="wBack" style="margin-top:12px;width:100%">回到章节练习</button></div>';
     $('#wBack', box).onclick = function () { show('st', null); };
     return;
   }
@@ -2080,7 +2160,7 @@ function wrongRun(box, S) {
       $('#wBack', box).onclick = function () { show('st', null); };
       return;
     }
-    var it = list[i], q = it.q, answered = false;
+    var it = list[i], q = stShuffleOpts(it.q), answered = false;
     box.innerHTML = '<div class="muted" style="margin:0 2px 8px">错题本 · 第 ' + (i + 1) + ' / ' + list.length + ' 题 · 错过 ' + it.c + ' 次' + (it.ok ? ' · 后来答对 ' + it.ok + ' 次' : '') + '</div>' +
       '<div class="muted" style="margin:0 2px 6px;font-size:12px">' + esc(it.ch.title) + '</div>' +
       '<div class="card"><b style="font-size:15.5px;line-height:1.7">' + esc(q.q) + '</b></div>' +
@@ -2095,6 +2175,7 @@ function wrongRun(box, S) {
         var k = +b.dataset.k, good = k === q.ans;
         if (good) fixed++;
         wrongMark(it.ch.n, q, good, true);
+        stSeenMark(it.ch.n, q, good);
         $$('.stopt', box).forEach(function (x) { x.disabled = true; if (+x.dataset.k === q.ans) x.classList.add('stok'); });
         if (!good) b.classList.add('stno');
         $('#stNext', box).innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了' : '✗ 答错了') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div>' +
@@ -2108,22 +2189,39 @@ function wrongRun(box, S) {
   }
   draw();
 }
-function stRun(box, S, n, inline) {
+function stRun(box, S, n, inline, opt) {
   var ch = S.chapters.filter(function (c) { return c.n === n; })[0];
   if (!ch) { if (!inline) stList(box, S); return; }
-  var i = 0, ok = 0, best0 = stRes()[n];
-  var head = inline ? '<div class="row spread" style="margin:0 2px 8px"><b style="font-size:15px">📝 本章练习</b><span class="muted">' + ch.qs.length + ' 题' + (best0 != null ? ' · 最好 ' + best0 + '/' + ch.qs.length : '') + '</span></div>' : '';
+  var queue, baseTotal;
+  if (inline) {
+    queue = (ch.qs || []).slice();
+    baseTotal = queue.length;
+  } else {
+    var all = stAllQs(ch);
+    var pool = opt && opt.sec ? all.filter(function (q) { return (q.sec || '其他') === opt.sec; }) : all;
+    queue = (opt && opt.all) ? stOrder(pool, n) : stOrder(pool, n).slice(0, Math.min(15, pool.length));
+    baseTotal = queue.length;
+  }
+  var i = 0, ok = 0, redoTotal = 0, redoOk = 0, best0 = stRes()[n];
+  var head = inline ? '<div class="row spread" style="margin:0 2px 8px"><b style="font-size:15px">📝 本章练习</b><span class="muted">' + baseTotal + ' 题' + (best0 != null ? ' · 最好 ' + best0 + '/' + baseTotal : '') + '</span></div>' : '';
   function draw() {
-    if (i >= ch.qs.length) {
-      var res = stRes(); if (res[n] == null || ok > res[n]) { res[n] = ok; save('mp_course_st', res); }
-      box.innerHTML = head + '<div class="card" style="text-align:center"><div class="muted">' + esc(ch.title) + ' · 练习完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">' + ok + ' / ' + ch.qs.length + '</div>' +
-        '<div class="row" style="gap:10px"><button class="btn" id="stAgain" style="flex:1">再做一遍</button>' + (inline ? '' : '<button class="btn" id="stBack" style="flex:1">回到本章</button>') + '</div></div>';
-      $('#stAgain', box).onclick = function () { i = 0; ok = 0; draw(); };
-      if (!inline) $('#stBack', box).onclick = function () { show('chapter', n); };
+    if (i >= queue.length) {
+      if (inline || !(opt && opt.sec)) {
+        var res = stRes(); if (res[n] == null || ok > res[n]) { res[n] = ok; save('mp_course_st', res); }
+      }
+      var redoMsg = (!inline && redoTotal) ? '<div class="muted" style="margin-bottom:10px">🔁 本组错题回炉 ' + redoTotal + ' 题，第二次答对 ' + redoOk + ' 题</div>' : '';
+      box.innerHTML = head + '<div class="card" style="text-align:center"><div class="muted">' + esc(ch.title) + (opt && opt.sec ? ' · ' + esc(opt.sec) : '') + ' · 练习完成</div><div style="font-size:34px;font-weight:700;margin:10px 0">' + ok + ' / ' + baseTotal + '</div>' + redoMsg +
+        '<div class="row" style="gap:10px"><button class="btn pri" id="stAgain" style="flex:1">' + (inline ? '再做一遍' : '再来一组') + '</button>' + (inline ? '' : '<button class="btn" id="stBack" style="flex:1">回章节列表</button><button class="btn" id="stCh" style="flex:0 0 auto">读课文</button>') + '</div></div>';
+      $('#stAgain', box).onclick = function () { stRun(box, S, n, inline, opt); };
+      if (!inline) {
+        $('#stBack', box).onclick = function () { show('st', null); };
+        $('#stCh', box).onclick = function () { show('chapter', n); };
+      }
       return;
     }
-    var q = ch.qs[i], answered = false;
-    box.innerHTML = head + '<div class="muted" style="margin:0 2px 8px">' + (inline ? '' : esc(ch.title) + ' · ') + '第 ' + (i + 1) + ' / ' + ch.qs.length + ' 题</div>' +
+    var rawQ = queue[i], q = inline ? rawQ : stShuffleOpts(rawQ), answered = false;
+    var tag = rawQ._redo ? '<span class="pill" style="margin-right:6px">🔁 刚才错过 · 再练一次</span>' : '';
+    box.innerHTML = head + '<div class="muted" style="margin:0 2px 8px">' + tag + (inline ? '' : esc(ch.title) + ' · ') + '第 ' + Math.min(i + 1, baseTotal) + ' / ' + baseTotal + ' 题' + (rawQ._redo ? '（回炉）' : '') + '</div>' +
       '<div class="card"><b style="font-size:15.5px;line-height:1.7">' + esc(q.q) + '</b></div>' +
       q.opts.map(function (o, k) { return '<button class="btn stopt" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') +
       '<div id="stNext"></div>';
@@ -2131,11 +2229,15 @@ function stRun(box, S, n, inline) {
       b.onclick = function () {
         if (answered) return; answered = true;
         var k = +b.dataset.k, good = k === q.ans;
-        if (good) ok++;
-        wrongMark(n, q, good, false);
+        if (!rawQ._redo) {
+          if (good) ok++;
+          else if (!inline) { redoTotal++; queue.push({ q: rawQ.q, opts: rawQ.opts, ans: rawQ.ans, exp: rawQ.exp, sec: rawQ.sec, t: rawQ.t, _redo: true }); }
+        } else if (good) redoOk++;
+        wrongMark(n, rawQ, good, false);
+        if (!inline) stSeenMark(n, rawQ, good);
         $$('.stopt', box).forEach(function (x) { x.disabled = true; if (+x.dataset.k === q.ans) x.classList.add('stok'); });
         if (!good) b.classList.add('stno');
-        $('#stNext', box).innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了' : '✗ 答错了，绿色是正确答案') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div><button class="btn pri" id="stGo" style="width:100%;margin-top:6px">' + (i + 1 >= ch.qs.length ? '看成绩' : '下一题 ›') + '</button>';
+        $('#stNext', box).innerHTML = '<div class="card" style="margin:6px 0"><div style="font-weight:600;color:' + (good ? 'var(--ok)' : 'var(--cinnabar)') + '">' + (good ? '✓ 答对了' : '✗ 答错了，绿色是正确答案') + '</div><div style="margin-top:6px;line-height:1.75;font-size:14px">' + esc(q.exp || '') + (q.sec ? '<span class="muted">〔' + esc(q.sec) + '〕</span>' : '') + '</div></div><button class="btn pri" id="stGo" style="width:100%;margin-top:6px">' + (i + 1 >= queue.length ? '看成绩' : '下一题 ›') + '</button>';
         $('#stGo', box).onclick = function () { i++; draw(); };
       };
     });
@@ -2143,6 +2245,58 @@ function stRun(box, S, n, inline) {
   }
   draw();
 }
+
+RENDER.report = function () {
+  var box = $('#reportBody');
+  box.innerHTML = '<div class="empty">汇总中…</div>';
+  Promise.all([needCourse(), needPlain(), needSt()]).then(function (sets) {
+    var courses = sets[0].filter(function (c) { return !c.raw; }), plain = sets[1] || [], st = sets[2];
+    var read = ls(K.read, {}), seenQ = ls(K.seen, {}), stSeen = stSeenMap(), wrong = wrongList(st);
+    var chDone = courses.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
+    var plDone = plain.filter(function (p) { return (read[p.id] || 0) >= 90; }).length;
+    var qDone = Object.keys(seenQ).length, qTotal = (META.counts && META.counts.quiz) || 936;
+    var totalQs = 0, doneQs = 0, okQs = 0, weakChs = [];
+    st.chapters.forEach(function (c) {
+      var all = stAllQs(c), cd = 0, co = 0;
+      all.forEach(function (q) { var v = stSeen[wkey(c.n, q)]; if (v) { cd++; if (v[1]) co++; } });
+      totalQs += all.length; doneQs += cd; okQs += co;
+      if (cd > 0) weakChs.push({ n: c.n, title: c.title, level: c.level, cd: cd, total: all.length, acc: Math.round(co / cd * 100) });
+    });
+    var accAll = doneQs ? Math.round(okQs / doneQs * 100) : 0;
+    weakChs.sort(function (a, b) { return a.acc - b.acc || b.cd - a.cd; });
+    var lvs = ['初级', '中级', '高级', '专题'];
+    var lvHtml = lvs.map(function (lv) {
+      var lc = courses.filter(function (c) { return c.level === lv; });
+      var lcd = lc.filter(function (c) { return (read[c.id] || 0) >= 90; }).length;
+      var lqs = st.chapters.filter(function (c) { return c.level === lv; });
+      var lqt = 0, lqd = 0, lqo = 0;
+      lqs.forEach(function (c) {
+        stAllQs(c).forEach(function (q) { lqt++; var v = stSeen[wkey(c.n, q)]; if (v) { lqd++; if (v[1]) lqo++; } });
+      });
+      var lacc = lqd ? Math.round(lqo / lqd * 100) + '%' : '—';
+      return '<div class="card"><div class="row spread"><b>' + esc(lv) + '</b><span class="muted">教材 ' + lcd + '/' + lc.length + ' · 题目 ' + lqd + '/' + lqt + '（正确率 ' + lacc + '）</span></div>' +
+        '<div class="bar"><i style="width:' + (lqt ? Math.round(lqd / lqt * 100) : 0) + '%"></i></div></div>';
+    }).join('');
+    var weakHtml = weakChs.length ? weakChs.slice(0, 8).map(function (w) {
+      return '<div class="card tap" data-rpch="' + w.n + '"><div class="row spread"><div style="flex:1"><b>' + esc(w.title) + '</b><div class="muted" style="margin-top:2px">' + esc(w.level) + ' · 已练 ' + w.cd + '/' + w.total + ' 题</div></div><span class="pill' + (w.acc >= 80 ? ' g' : '') + '">' + w.acc + '%</span></div></div>';
+    }).join('') : '<div class="card muted">还没有章节练习记录，去「章节练习」做一组题就会生成薄弱分析。</div>';
+    box.innerHTML = '<div class="card"><b style="font-size:16px">📊 盲派八字学习报告</b>' +
+      '<div class="row wrap" style="gap:8px;margin-top:10px">' +
+      '<span class="pill g">教材 ' + chDone + '/' + courses.length + '</span>' +
+      '<span class="pill g">白话 ' + plDone + '/' + plain.length + '</span>' +
+      '<span class="pill g">章节题 ' + doneQs + '/' + totalQs + '</span>' +
+      '<span class="pill g">正确率 ' + (doneQs ? accAll + '%' : '—') + '</span>' +
+      '<span class="pill g">命例 ' + qDone + '/' + qTotal + '</span>' +
+      '<span class="pill">错题本 ' + wrong.length + '</span>' +
+      '</div></div>' +
+      '<h3 class="lvh">分级进度</h3>' + lvHtml +
+      '<h3 class="lvh">薄弱章节（按近期正确率排序）</h3>' + weakHtml +
+      '<div class="row" style="gap:10px;margin-top:14px"><button class="btn pri" id="rpSt" style="flex:1">去章节练习</button><button class="btn" id="rpWrong" style="flex:1">去刷错题本（' + wrong.length + '）</button></div>';
+    $$('[data-rpch]', box).forEach(function (el) { el.onclick = function () { show('st', +el.dataset.rpch); }; });
+    $('#rpSt', box).onclick = function () { show('st', null); };
+    $('#rpWrong', box).onclick = function () { show('st', 'wrong'); };
+  });
+};
 
 function addReadToggle(id, anchor) {
   var old = $('#readToggle'); if (old) old.parentNode.removeChild(old);

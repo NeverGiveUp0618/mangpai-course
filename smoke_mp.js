@@ -222,6 +222,13 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
   }
   ok(/\d+ \/ \d+/.test($('#stBody').textContent), '做完显示成绩');
   ok(Object.keys(JSON.parse(window.localStorage.getItem('mp_course_st') || '{}')).length === 1, '成绩按章节记录（只记最好一次）');
+  ok(M.counts.selftest >= 2600 && Object.keys(JSON.parse(window.localStorage.getItem('mp_course_st_seen') || '{}')).length >= 15, '精练题库总数≥2600且记录已练进度');
+  click($('#btnBack')); await wait(40);
+  click($('[data-tab="home"]')); await wait(60);
+  click($('#openReport')); await wait(150);
+  ok($('#s-report').classList.contains('active') && /盲派八字学习报告/.test($('#reportBody').textContent) && /薄弱章节/.test($('#reportBody').textContent), '学习报告页正常渲染分级进度与薄弱章节');
+  click($('#btnBack')); await wait(40);
+  click($('[data-tab="qlist"]')); await wait(60);
   console.log('错题本');
   const W = () => JSON.parse(window.localStorage.getItem('mp_course_wrong') || '{}');
   const nw = Object.keys(W()).length;

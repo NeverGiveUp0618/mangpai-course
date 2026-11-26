@@ -1022,8 +1022,8 @@ def link_related(courses, quiz):
 
 
 def build_selftest(courses):
-    """章末题：读 content/题目/<级>/<教材文件名>.json（人工出题、校验见 check_questions.py）。
-    选项位置按 (题序+章号) 轮换，保证四个位置均衡又不成规律；没有题目文件的章不出题（不再用旧的拼凑干扰项）。"""
+    """章末题（content/题目/）+ 章节精练细题（content/精练题库/）。
+    章末题保留给正文末尾约10题；精练细题与章末题合并进「练 → 章节练习」。"""
     import random
     chs = []
     for c in courses:
@@ -1032,19 +1032,28 @@ def build_selftest(courses):
         pth = PATHS[c['id']]
         rel = os.path.relpath(pth, os.path.join(CONTENT, '教材'))[:-3]
         qf = os.path.join(CONTENT, '题目', rel + '.json')
-        if not os.path.exists(qf):
+        fqf = os.path.join(CONTENT, '精练题库', rel + '.json')
+        if not os.path.exists(qf) and not os.path.exists(fqf):
             continue
-        raw = json.load(io.open(qf, encoding='utf-8'))
-        qs = []
-        for k, x in enumerate(raw):
-            rnd = random.Random('%s-%d' % (c['n'], k))
-            others = list(x['w']); rnd.shuffle(others)
-            pos = (k + c['n']) % 4
-            opts = others[:pos] + [x['a']] + others[pos:]
-            sec = re.sub(r'^#+\s*', '', x['sec']).replace('**', '').strip()
-            qs.append({'q': x['q'], 'opts': opts, 'ans': pos, 'exp': x['e'], 'sec': sec, 't': x['t']})
-        if qs:
-            chs.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'qs': qs})
+
+        def pack(src_path, salt):
+            if not os.path.exists(src_path):
+                return []
+            raw = json.load(io.open(src_path, encoding='utf-8'))
+            out = []
+            for k, x in enumerate(raw):
+                rnd = random.Random('%s-%s-%d' % (c['n'], salt, k))
+                others = list(x['w']); rnd.shuffle(others)
+                pos = (k + c['n']) % 4
+                opts = others[:pos] + [x['a']] + others[pos:]
+                sec = re.sub(r'^#+\s*', '', x['sec']).replace('**', '').strip()
+                out.append({'q': x['q'], 'opts': opts, 'ans': pos, 'exp': x['e'], 'sec': sec, 't': x['t']})
+            return out
+
+        qs = pack(qf, 'end')
+        fine = pack(fqf, 'fine')
+        if qs or fine:
+            chs.append({'n': c['n'], 'level': c['level'], 'title': c['title'], 'qs': qs, 'fine': fine})
     return {'chapters': chs}
 
 
@@ -1124,7 +1133,7 @@ def main():
     st = build_selftest(courses)
     meta = {
         'name': '盲派八字', 'built': time.strftime('%Y-%m-%d %H:%M'),
-        'counts': {'plain': len(plain), 'qna': len(qna), 'selftest': sum(len(c['qs']) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
+        'counts': {'plain': len(plain), 'qna': len(qna), 'selftest': sum(len(c['qs']) + len(c.get('fine', [])) for c in st['chapters']), 'course': sum(1 for c in courses if not c['raw']) or len(courses), 'rawCourse': sum(1 for c in courses if c['raw']), 'notes': len(notes), 'quiz': len(quiz['items']),
                    'quizChart': len(quiz['items']), 'quizChai': len(quiz['items'])},
         'levels': [{'name': lv, 'n': sum(1 for c in courses if c['level'] == lv and not c['raw']), 'raw': sum(1 for c in courses if c['level'] == lv and c['raw'])} for lv in LEVELS],
         'outline': build_outline(courses, notes, quiz),
