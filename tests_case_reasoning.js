@@ -16,7 +16,9 @@ const styleReview3=JSON.parse(fs.readFileSync('reviews/reasoning-style-batch3-20
 const styleChanges3=new Map(styleReview3.changes.map(r=>[r.file,r]));
 const styleReview4=JSON.parse(fs.readFileSync('reviews/reasoning-style-batch4-20261125.json'));
 const styleChanges4=new Map(styleReview4.changes.map(r=>[r.file,r]));
-const preservedOrReviewed=(file,expected)=>{let current=expected;for(const changes of [reviewedChanges,styleChanges,styleChanges2,styleChanges3,styleChanges4]){const r=changes.get(file);if(r&&r.beforeSha256===current)current=r.afterSha256;}return sha(fs.readFileSync('content/命例拆解/'+file))===current;};
+const styleReview5=JSON.parse(fs.readFileSync('reviews/reasoning-style-batch5-fix-20261126.json'));
+const styleChanges5=new Map(styleReview5.changes.map(r=>[r.file,r]));
+const preservedOrReviewed=(file,expected)=>{let current=expected;for(const changes of [reviewedChanges,styleChanges,styleChanges2,styleChanges3,styleChanges4,styleChanges5]){const r=changes.get(file);if(r&&r.beforeSha256===current)current=r.afterSha256;}return sha(fs.readFileSync('content/命例拆解/'+file))===current;};
 const baselineManifest=manifest.map(r=>reviewedChanges.get(r.file)?.originalRow||r);
 ok(fullReview.scope===936&&fullReview.cases.every(r=>preservedOrReviewed(r.file,r.sha256)),'全936篇审校与后续改写版本逐篇可追溯');
 const firstHashes=['a513577303050edc8b2d6919581a020e897e4f79c0bd8a4d600695275a4d6748','cc2a0bfa9135ca4c619971494a62bac6a8fda900992819e2a66c8c41e12c6a76','1c58da1cf993a22b5bf352b78b3c1bee3c0cea3ea5f769e0d6d972a30d52b9ac','78c0e221fa3b2d5b8f912a61471fa995969f6f711242c2e6d71b226010f80808','acfde514ca0e8914145861390057f47e770aa3172b9c3e4ccffcaf61bfacc379'];

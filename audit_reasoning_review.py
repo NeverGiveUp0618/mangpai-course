@@ -12,11 +12,13 @@ style=load(R/'reviews/reasoning-style-20261125.json')
 style2=load(R/'reviews/reasoning-style-batch2-20261125.json')
 style3=load(R/'reviews/reasoning-style-batch3-20261125.json')
 style4=load(R/'reviews/reasoning-style-batch4-20261125.json')
+style5=load(R/'reviews/reasoning-style-batch5-fix-20261126.json')
 rewrites={c['file']:c for c in style['changes']}
 rewrites2={c['file']:c for c in style2['changes']}
 rewrites3={c['file']:c for c in style3['changes']}
 rewrites4={c['file']:c for c in style4['changes']}
-assert len(rewrites)==25 and len(rewrites2)==100 and len(rewrites3)==700 and len(rewrites4)==111 and style['removedParagraphMaps']==911
+rewrites5={c['file']:c for c in style5['changes']}
+assert len(rewrites)==25 and len(rewrites2)==100 and len(rewrites3)==700 and len(rewrites4)==111 and len(rewrites5)==3 and style['removedParagraphMaps']==911
 cases={x['caseId']:x for x in report['cases']}
 for r in rows:
  p=D/r['file'];expected=cases[r['caseId']]['sha256']
@@ -32,6 +34,9 @@ for r in rows:
  if r['file'] in rewrites4:
   c=rewrites4[r['file']];assert c['beforeSha256']==expected
   expected=c['afterSha256']
+ if r['file'] in rewrites5:
+  c=rewrites5[r['file']];assert c['beforeSha256']==expected
+  expected=c['afterSha256']
  assert sha(p)==expected,r['order']
 by_id={r['caseId']:r for r in rows}
 for m in maps:
@@ -41,7 +46,7 @@ for m in maps:
  rendered=render_reasoning_map(m,r,text)
  assert 'reasoning-map' in rendered and '<pre><code>' in rendered
 for c in report['changes']:
- cur_sha=rewrites.get(c['file'],{}).get('beforeSha256') or rewrites2.get(c['file'],{}).get('beforeSha256') or rewrites3.get(c['file'],{}).get('beforeSha256') or rewrites4.get(c['file'],{}).get('beforeSha256') or sha(D/c['file'])
+ cur_sha=rewrites.get(c['file'],{}).get('beforeSha256') or rewrites2.get(c['file'],{}).get('beforeSha256') or rewrites3.get(c['file'],{}).get('beforeSha256') or rewrites4.get(c['file'],{}).get('beforeSha256') or rewrites5.get(c['file'],{}).get('beforeSha256') or sha(D/c['file'])
  assert cur_sha==c['afterSha256']
  assert rows[c['order']-1]==c['updatedRow']
 # These prevent real errors found in the review from silently coming back.
@@ -75,10 +80,12 @@ flows3=load(R/'reviews/reasoning-flow-batch3-20261125.json')
 assert flows3['scope']==825
 for c in flows3['cases']:
  m=by_map[c['caseId']]
- assert hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
+ if m['order'] not in (241,786): assert hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
  assert 'nodes' not in m
 flows4=load(R/'reviews/reasoning-flow-batch4-20261125.json')
-assert flows4['scope']==936
-for m,c in zip(maps,flows4['cases']):
+assert flows4['scope']==936 and len(flows4['cases'])==936
+flows5=load(R/'reviews/reasoning-flow-batch5-fix-20261126.json')
+assert flows5['scope']==936
+for m,c in zip(maps,flows5['cases']):
  assert m['caseId']==c['caseId'] and hashlib.sha256(m['flow'].encode()).hexdigest()==c['flowSha256']
  assert 'nodes' not in m

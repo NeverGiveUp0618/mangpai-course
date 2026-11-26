@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-26",
+  "baseline": "275cdce",
+  "scope": "全库936例知识点冲突复查订正：422(子卯相破)、741(不讲自刑改伏吟多现)、786(申子半合水局非化印)，另结构图同步修正241(己禄午非戌)与786流图。",
+  "totalStyled": 936,
+  "changes": [
+    {
+      "order": 422,
+      "caseId": "乾丙乙庚戊辰未辰子",
+      "file": "422-命例440-未财入辰为何不全算自己妻-同一辰连接谁须逐柱查.md",
+      "beforeSha256": "fde22c34b04a91daa9359c703cc5f56c6aa991330c279a33287df0628d85cd80",
+      "afterSha256": "2b7521cfc8f8a476e21ea1980ee652d37736068e5622e66c28dffd377b0c6c02",
+      "beforeLength": 762,
+      "afterLength": 769
+    },
+    {
+      "order": 741,
+      "caseId": "坤甲庚戊戊午午午午",
+      "file": "741-命例745-满盘四午自刑为何不断凶反而断夫当官-夫妻宫伏吟与官杀生宫.md",
+      "beforeSha256": "fd03832af8a71dc60fe5b70645febbfbafa60ded2e8119773d7b12c40306e601",
+      "afterSha256": "8557ff01a6733b3ed030fe4dd5c095614d9c0833b7c6419028631ce189f363a1",
+      "beforeLength": 760,
+      "afterLength": 782
+    },
+    {
+      "order": 786,
+      "caseId": "乾乙甲乙丙酉申未子",
+      "file": "786-命例275-官杀混杂夹日为何能成著书学者.md",
+      "beforeSha256": "2b014a1b1fc1a203ac68a4f2f812059d06020e9543279009a2b917f24ddd7588",
+      "afterSha256": "57927abc602ed9714d826d8545bac573299c400e2b9c96b58ba26b35611fee23",
+      "beforeLength": 660,
+      "afterLength": 668
+    }
+  ]
+}
